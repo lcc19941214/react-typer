@@ -1,0 +1,53 @@
+/* toolbar */
+.RichEditor-toolbar {
+  font-family: system, -apple-system, 'PingFang SC', 'Segoe UI', 'Microsoft YaHei',
+    Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  margin-bottom: 10px;
+  user-select: none;
+}
+
+.RichEditor-toolbar-group {
+  display: inline-block;
+
+  & + .RichEditor-toolbar-group::before {
+    content: '';
+    display: inline-block;
+    border-right: 1px solid #e6e6e6;
+    margin: 0 5px;
+    height: 20px;
+    vertical-align: middle;
+  }
+}
+
+.RichEditor-toolbar-button {
+  display: inline-block;
+  padding: 7px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  font-size: 12px;
+  text-align: center;
+  color: #888;
+
+  & + .RichEditor-toolbar-button {
+    margin-left: 2px;
+  }
+}
+
+.RichEditor-toolbar-button__active {
+  color: #444;
+  background-color: #f9f9f9;
+}
+
+.RichEditor-toolbar-button:hover {
+  background-color: #fcfcfc;
+}
+
+.RichEditor-toolbar-button__active,
+.RichEditor-toolbar-button__active:hover,
+.RichEditor-toolbar-button:hover {
+  border-color: #ddd;
+}
