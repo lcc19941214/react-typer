@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import ColorPicker from './toolbarControls/colorPicker';
-// import AddImage from './toolbarControls/addImage';
+import AddImage from './toolbarControls/addImage';
+import { PLUGINS } from './plugins/';
+
+const { imagePlugin } = PLUGINS;
 
 const noop = () => {};
 
@@ -38,7 +41,7 @@ const STYLE_TYPES = [
     key: 'action',
     controls: [
       // { key: 'color', component: ColorPicker },
-      // { key: 'image', type: 'action', component: AddImage }
+      { key: 'image', type: 'action', component: AddImage }
     ]
   }
 ];
@@ -81,7 +84,7 @@ export default class Toolbar extends Component {
   };
 
   static defaultProps = {
-    controls: ['headline', 'fontStyle', 'list']
+    controls: ['headline', 'fontStyle', 'list', 'action']
   };
 
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
@@ -106,14 +109,8 @@ export default class Toolbar extends Component {
     }
   };
 
-  //   <AddImage
-  //   editorState={editorState}
-  //   onChange={this.onChange}
-  //   modifier={imagePlugin.addImage}
-  // />
-
   render() {
-    const { controls, editorState, onToggle, focus } = this.props;
+    const { controls, editorState, onToggle, onChange, focus } = this.props;
     const groups = this.matchStyleControls(controls);
     const { inlineStyles, blockType } = this.getCurrentStyles(editorState);
     return (
@@ -123,9 +120,18 @@ export default class Toolbar extends Component {
             {group.controls.map(control => {
               switch (control.type) {
                 case 'action':
+                  const Elem = control.component;
                   switch (control.key) {
                     case 'image':
-                      break;
+                      return (
+                        <Elem
+                          key={control.key}
+                          editorState={editorState}
+                          onChange={onChange}
+                          modifier={imagePlugin.addImage}
+                          focus={focus}
+                        />
+                      );
                     default:
                   }
                   break;

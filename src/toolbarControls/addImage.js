@@ -26,9 +26,14 @@ export default class AddImage extends Component {
   openPopover = () => {
     if (!this.state.open) {
       this.preventNextClose = true;
-      this.setState({
-        open: true
-      });
+      this.setState(
+        {
+          open: true
+        },
+        () => {
+          document.querySelector('.RichEditor-toolbar__add-image__input').focus();
+        }
+      );
     }
   };
 
@@ -43,8 +48,13 @@ export default class AddImage extends Component {
   };
 
   addImage = () => {
-    const { editorState, onChange } = this.props;
-    onChange(this.props.modifier(editorState, this.state.url));
+    const { editorState, onChange, focus } = this.props;
+    const { url } = this.state;
+    if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
+      onChange(this.props.modifier(editorState, url), focus);
+      this.closePopover();
+      this.setState({ url: '' });
+    }
   };
 
   changeUrl = evt => {
@@ -52,33 +62,40 @@ export default class AddImage extends Component {
   };
 
   render() {
-    const popoverClassName = this.state.open
-      ? styles.addImagePopover
-      : styles.addImageClosedPopover;
-    const buttonClassName = this.state.open
-      ? styles.addImagePressedButton
-      : styles.addImageButton;
-
+    const { open, url } = this.state;
     return (
-      <div className={styles.addImage}>
-        <button className={buttonClassName} onMouseUp={this.openPopover} type="button">
+      <div className="RichEditor-toolbar__add-image">
+        <span
+          className={classnames(
+            'RichEditor-toolbar-button',
+            'RichEditor-toolbar__add-image__button',
+            {
+              'RichEditor-toolbar-button__active': open
+            }
+          )}
+          onClick={this.openPopover}
+        >
           +
-        </button>
-        <div className={popoverClassName} onClick={this.onPopoverClick}>
+        </span>
+        <div
+          className={classnames('RichEditor-toolbar__add-image__popover', {
+            'RichEditor-popover__hidden': !open
+          })}
+          onClick={this.onPopoverClick}
+        >
           <input
             type="text"
-            placeholder="Paste the image url …"
-            className={styles.addImageInput}
+            placeholder="http://"
+            className="RichEditor-toolbar__add-image__input"
             onChange={this.changeUrl}
-            value={this.state.url}
+            value={url}
           />
-          <button
-            className={styles.addImageConfirmButton}
-            type="button"
+          <span
+            className="RichEditor-toolbar__add-image__confirm-button"
             onClick={this.addImage}
           >
-            Add
-          </button>
+            +
+          </span>
         </div>
       </div>
     );

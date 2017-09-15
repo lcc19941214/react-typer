@@ -11,9 +11,9 @@ const alignmentPlugin = createAlignmentPlugin();
 const { AlignmentTool } = alignmentPlugin;
 
 const decorator = composeDecorators(
+  focusPlugin.decorator,
   resizeablePlugin.decorator,
-  alignmentPlugin.decorator,
-  focusPlugin.decorator
+  alignmentPlugin.decorator
   // blockDndPlugin.decorator
 );
 

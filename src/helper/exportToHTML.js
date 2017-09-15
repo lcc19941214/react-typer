@@ -1,5 +1,15 @@
 import { defaultInlineStyleMap } from '../editorUtils/inlineEnhance';
-import * as entityType from '../constants/entity';
+import * as EntityType from '../constants/entity';
+
+const ALIGNMENT = {
+  default: {},
+  center: {
+    margin: '0 auto'
+  },
+  right: {
+    marginLeft: 'auto'
+  }
+}
 
 export const inlineStyles = {
   ITALIC: {
@@ -21,12 +31,29 @@ export const inlineStyles = {
 
 export const entityStyleFn = entity => {
   const entityType = entity.get('type');
-  if (entityType === 'labelBlock') {
-    const { highlight } = entity.getData();
-    return {
-      element: 'mark',
-      style: highlight ? inlineStyles['LABEL-HIGHLIGHT'].style : inlineStyles.LABEL.style
-    };
+  const data = entity.getData();
+  switch (entityType) {
+    case EntityType.LABEL_BLOCK:
+      const { highlight } = data;
+      return {
+        element: 'span',
+        style: highlight
+          ? inlineStyles['LABEL-HIGHLIGHT'].style
+          : inlineStyles.LABEL.style
+      };
+    case EntityType.IMAGE:
+      const { src, alignment = 'default' , width = 100 } = data;
+      return {
+        element: 'img',
+        attributes: {
+          src: data.src
+        },
+        style: {
+          width: `${width}%`,
+          ...ALIGNMENT[alignment]
+        }
+      }
+    default:
   }
 };
 

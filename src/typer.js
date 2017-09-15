@@ -4,7 +4,7 @@ import PluginEditor from 'draft-js-plugins-editor';
 import Toolbar from './toolbar.js';
 import { typerDecorator, textEditDecorator, entityEditDecorator } from './decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
-import { PLUGINS, AlignmentTool } from './plugins/';
+import { AlignmentTool } from './plugins/';
 
 import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
@@ -23,8 +23,6 @@ const {
 
 const Editor = PluginEditor;
 // const Editor = OriginalEditor;
-
-const { imagePlugin } = PLUGINS;
 
 /**
  * For more information, see https://github.com/facebook/draft-js/blob/1ea57ab0b1a7e70f8f6211f96958e3bb74f2663a/docs/APIReference-Editor.md
