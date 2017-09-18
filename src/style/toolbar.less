@@ -56,29 +56,17 @@
 .RichEditor-toolbar__add-image {
   display: inline-block;
   position: relative;
+  .RichEditor-popover {
+    width: 250px;
+    height: 36px;
+    display: flex;
+    box-sizing: border-box;
+  }
 }
 .RichEditor-toolbar__add-image__button {
 }
 .RichEditor-toolbar__add-image__button__active {
   filter: opacity(0.5);
-}
-.RichEditor-toolbar__add-image__popover {
-  .RichEditor-popover();
-  top: 100%;
-  margin-top: 25px;
-  width: 250px;
-  height: 36px;
-  display: flex;
-  box-sizing: border-box;
-  transform-origin: top center;
-  &::before {
-    .RichEditor-popover-arrow-shadow();
-    .RichEditor-popover-arrow-shadow__top();
-  }
-  &::after {
-    .RichEditor-popover-arrow();
-    .RichEditor-popover-arrow__top();
-  }
 }
 .RichEditor-toolbar__add-image__input {
   flex: 1 1 0;
@@ -91,7 +79,6 @@
     border-color: #999;
   }
 }
-
 .RichEditor-toolbar__add-image__confirm-button {
   width: 36px;
   line-height: 36px;

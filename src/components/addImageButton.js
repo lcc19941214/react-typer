@@ -1,50 +1,21 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import Popover from './popover';
 
 export default class AddImage extends Component {
   // Start the popover closed
   state = {
     url: '',
-    open: false
+    active: false
   };
 
-  // When the popover is open and users click anywhere on the page,
-  // the popover should close
-  componentDidMount() {
-    document.addEventListener('click', this.closePopover);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.closePopover);
-  }
-
-  // Note: make sure whenever a click happens within the popover it is not closed
-  onPopoverClick = () => {
-    this.preventNextClose = true;
+  onToggle = () => {
+    this.setState(({ active }) => ({ active: !active }));
+    this.Popover.open();
   };
 
-  openPopover = () => {
-    if (!this.state.open) {
-      this.preventNextClose = true;
-      this.setState(
-        {
-          open: true
-        },
-        () => {
-          document.querySelector('.RichEditor-toolbar__add-image__input').focus();
-        }
-      );
-    }
-  };
-
-  closePopover = () => {
-    if (!this.preventNextClose && this.state.open) {
-      this.setState({
-        open: false
-      });
-    }
-
-    this.preventNextClose = false;
+  handleOnClose = () => {
+    this.setState(({ active }) => ({ active: false }));
   };
 
   addImage = () => {
@@ -52,7 +23,7 @@ export default class AddImage extends Component {
     const { url } = this.state;
     if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
       onChange(this.props.modifier(editorState, url), focus);
-      this.closePopover();
+      this.Popover.close();
       this.setState({ url: '' });
     }
   };
@@ -62,7 +33,7 @@ export default class AddImage extends Component {
   };
 
   render() {
-    const { open, url } = this.state;
+    const { active, url } = this.state;
     return (
       <div className="RichEditor-toolbar__add-image">
         <span
@@ -70,18 +41,17 @@ export default class AddImage extends Component {
             'RichEditor-toolbar-button',
             'RichEditor-toolbar__add-image__button',
             {
-              'RichEditor-toolbar-button__active': open
+              'RichEditor-toolbar-button__active': active
             }
           )}
-          onClick={this.openPopover}
+          onClick={this.onToggle}
         >
           +
         </span>
-        <div
-          className={classnames('RichEditor-toolbar__add-image__popover', {
-            'RichEditor-popover__hidden': !open
-          })}
-          onClick={this.onPopoverClick}
+        <Popover
+          ref={ref => (this.Popover = ref)}
+          placement="bottom"
+          onClose={this.handleOnClose}
         >
           <input
             type="text"
@@ -96,7 +66,7 @@ export default class AddImage extends Component {
           >
             +
           </span>
-        </div>
+        </Popover>
       </div>
     );
   }
