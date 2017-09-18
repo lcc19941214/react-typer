@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import classnames from 'classnames';
 import Popover from './popover';
 
+const noop = () => {};
+
 export default class AddImage extends Component {
   // Start the popover closed
   state = {
@@ -14,22 +16,53 @@ export default class AddImage extends Component {
     this.Popover.open();
   };
 
+  handleOnOpen = () => {
+    document.querySelector('.add-image__input').focus();
+  };
+
   handleOnClose = () => {
     this.setState(({ active }) => ({ active: false }));
   };
 
-  addImage = () => {
+  addImage = (url, cb = noop) => {
     const { editorState, onChange, focus } = this.props;
+    onChange(this.props.modifier(editorState, url), focus);
+    this.Popover.close();
+    cb();
+  };
+
+  changeURL = e => {
+    const url = e.target.value;
+    this.setState({ url });
+  };
+
+  handleConfirm = () => {
     const { url } = this.state;
     if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
-      onChange(this.props.modifier(editorState, url), focus);
-      this.Popover.close();
-      this.setState({ url: '' });
+      this.addImage(url, () => {
+        this.setState({ url: '' });
+      });
     }
   };
 
-  changeUrl = evt => {
-    this.setState({ url: evt.target.value });
+  handleUploadClick = () => {
+    this.uploadInput.value = null;
+    this.uploadInput.click();
+  };
+
+  handleOnUpload = e => {
+    const file = e.target.files[0];
+    if (file.type.includes('image/')) {
+      const url = URL.createObjectURL(file);
+      this.addImage(url, () => {
+        setTimeout(() => {
+          URL.revokeObjectURL(url);
+        }, 2000);
+      });
+
+      // TODO
+      // upload file to remote server
+    }
   };
 
   render() {
@@ -49,22 +82,36 @@ export default class AddImage extends Component {
           +
         </span>
         <Popover
+          className="RichEditor-toolbar__add-image__popover"
           ref={ref => (this.Popover = ref)}
           placement="bottom"
+          onOpen={this.handleOnOpen}
           onClose={this.handleOnClose}
         >
           <input
             type="text"
             placeholder="http://"
-            className="RichEditor-toolbar__add-image__input"
-            onChange={this.changeUrl}
+            className="add-image__input"
+            onChange={this.changeURL}
             value={url}
           />
           <span
-            className="RichEditor-toolbar__add-image__confirm-button"
-            onClick={this.addImage}
+            className="add-image__button add-image__confirm-button"
+            onClick={this.handleConfirm}
           >
             +
+          </span>
+          <span
+            className="add-image__button add-image__upload-button"
+            onClick={this.handleUploadClick}
+          >
+            ↑
+            <input
+              type="file"
+              accept="image/*"
+              ref={ref => (this.uploadInput = ref)}
+              onChange={this.handleOnUpload}
+            />
           </span>
         </Popover>
       </div>

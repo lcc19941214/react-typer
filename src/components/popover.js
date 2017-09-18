@@ -35,7 +35,9 @@ export default class Popover extends Component {
           visible: true
         },
         () => {
-          document.querySelector('.RichEditor-toolbar__add-image__input').focus();
+          if (this.props.onOpen) {
+            this.props.onOpen();
+          }
         }
       );
     }
