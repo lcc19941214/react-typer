@@ -1,6 +1,7 @@
 // editor decorator
 import React from 'react';
 import classnames from 'classnames';
+import Label from '../components/inlines/label';
 import * as EntityType from '../constants/entity';
 
 // strategy
@@ -12,24 +13,6 @@ export function findLabel(contentBlock, callback, contentState) {
     );
   }, callback);
 }
-
-
-// component
-export const Label = props => {
-  const data = props.contentState.getEntity(props.entityKey).getData();
-  const { label, highlight } = data;
-  return (
-    <span className={classnames(
-      'RichEditor-style-block__label',
-      {
-        'RichEditor-style-block__label__highlight': highlight
-      }
-    )}
-      data-highlight={!!highlight}>
-      {props.children}
-    </span>
-  );
-};
 
 
 // decorator

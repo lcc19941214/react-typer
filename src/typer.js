@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
-import Toolbar from './toolbar.js';
-import { typerDecorator, textEditDecorator, entityEditDecorator } from './decorators';
+import Toolbar from './components/toolbar.js';
+import { typerDecorator, textEditDecorator, entityEditDecorator } from './helper/decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
 
@@ -17,8 +17,8 @@ const {
   Editor: OriginalEditor,
   EditorState,
   ContentState,
-  RichUtils,
-  convertToRaw
+  convertToRaw,
+  RichUtils
 } = Draft;
 
 const Editor = PluginEditor;
@@ -129,18 +129,6 @@ class Typer extends Component {
     return cls;
   };
 
-  toggleToolbar = (style, type, cb = noop) => {
-    switch (type) {
-      case 'block':
-        this.onChange(RichUtils.toggleBlockType(this.state.editorState, style), cb);
-        break;
-      case 'inline':
-        this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, style), cb);
-        break;
-      default:
-    }
-  };
-
   handleKeyCommand = (command, editorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
@@ -205,7 +193,7 @@ class Typer extends Component {
       );
 
       const inlineStyles = highlight ? ['LABEL-HIGHLIGHT'] : ['LABEL'];
-      this.insertText(val, inlineStyles, entityKey, this.focus);
+      this.insertText(val, [], entityKey, this.focus);
     }
   };
 
@@ -220,7 +208,6 @@ class Typer extends Component {
         <div className="RichEditor-root">
           <Toolbar
             editorState={editorState}
-            onToggle={this.toggleToolbar}
             onChange={this.onChange}
             focus={this.focus}
           />

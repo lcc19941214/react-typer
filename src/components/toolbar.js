@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
-import ColorPicker from './toolbarControls/colorPicker';
-import AddImage from './toolbarControls/addImage';
-import { PLUGINS } from './plugins/';
+import { RichUtils } from 'draft-js';
+import ColorPicker from './colorPicker';
+import AddImageButton from './addImageButton';
+import { PLUGINS } from '../plugins/';
 
 const { imagePlugin } = PLUGINS;
 
@@ -41,7 +42,7 @@ const STYLE_TYPES = [
     key: 'action',
     controls: [
       // { key: 'color', component: ColorPicker },
-      { key: 'image', type: 'action', component: AddImage }
+      { key: 'image', type: 'action', component: AddImageButton }
     ]
   }
 ];
@@ -87,6 +88,19 @@ export default class Toolbar extends Component {
     controls: ['headline', 'fontStyle', 'list', 'action']
   };
 
+  toggleToolbar = (style, type, cb = noop) => {
+    const { onChange, editorState } = this.props;
+    switch (type) {
+      case 'block':
+        onChange(RichUtils.toggleBlockType(editorState, style), cb);
+        break;
+      case 'inline':
+        onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
+        break;
+      default:
+    }
+  };
+
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
 
   getCurrentStyles = editorState => {
@@ -99,7 +113,7 @@ export default class Toolbar extends Component {
     return { inlineStyles, blockType };
   };
 
-  getActive = (style, type, { inlineStyles, blockType }) => {
+  getButtonActive = (style, type, { inlineStyles, blockType }) => {
     switch (type) {
       case 'block':
         return style === blockType;
@@ -110,7 +124,7 @@ export default class Toolbar extends Component {
   };
 
   render() {
-    const { controls, editorState, onToggle, onChange, focus } = this.props;
+    const { controls, editorState, onChange, focus } = this.props;
     const groups = this.matchStyleControls(controls);
     const { inlineStyles, blockType } = this.getCurrentStyles(editorState);
     return (
@@ -121,20 +135,15 @@ export default class Toolbar extends Component {
               switch (control.type) {
                 case 'action':
                   const Elem = control.component;
-                  switch (control.key) {
-                    case 'image':
-                      return (
-                        <Elem
-                          key={control.key}
-                          editorState={editorState}
-                          onChange={onChange}
-                          modifier={imagePlugin.addImage}
-                          focus={focus}
-                        />
-                      );
-                    default:
-                  }
-                  break;
+                  return (
+                    <Elem
+                      key={control.key}
+                      editorState={editorState}
+                      onChange={onChange}
+                      modifier={imagePlugin.addImage}
+                      focus={focus}
+                    />
+                  );
                 default:
                   return (
                     <StyleButton
@@ -142,11 +151,11 @@ export default class Toolbar extends Component {
                       type={control.type}
                       label={control.label}
                       style={control.style}
-                      active={this.getActive(control.style, control.type, {
+                      active={this.getButtonActive(control.style, control.type, {
                         inlineStyles,
                         blockType
                       })}
-                      onToggle={onToggle}
+                      onToggle={this.toggleToolbar}
                       focus={focus}
                     />
                   );

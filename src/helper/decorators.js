@@ -3,10 +3,10 @@
 import Draft from 'draft-js';
 import Immutable, { OrderedSet } from 'immutable';
 import { stateToHTML } from 'draft-js-export-html';
-import makePlugins from './plugins/';
-import defaultDecorator from './editorUtils/decoratorsEnhance';
-import { defaultBlockRenderMap } from './editorUtils/blockEnhance';
-import { defaultInlineStyleMap } from './editorUtils/inlineEnhance';
+import makePlugins from '../plugins/';
+import defaultDecorator from '../editorUtils/decoratorsEnhance';
+import { defaultBlockRenderMap } from '../editorUtils/blockEnhance';
+import { defaultInlineStyleMap } from '../editorUtils/inlineEnhance';
 
 const {
   EditorState,
