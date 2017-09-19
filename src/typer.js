@@ -33,6 +33,7 @@ const Editor = PluginEditor;
 // const Editor = OriginalEditor;
 
 const { plugins: defaultPlugins } = makePlugins();
+
 const composedDecorators = composeDecorators(textEditDecorator, entityEditDecorator);
 
 /**
