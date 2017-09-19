@@ -3,10 +3,6 @@
 import Draft from 'draft-js';
 import Immutable, { OrderedSet } from 'immutable';
 import { stateToHTML } from 'draft-js-export-html';
-import makePlugins from '../plugins/';
-import defaultDecorator from '../editorUtils/decoratorsEnhance';
-import { defaultBlockRenderMap } from '../editorUtils/blockEnhance';
-import { defaultInlineStyleMap } from '../editorUtils/inlineEnhance';
 
 const {
   EditorState,
@@ -17,12 +13,19 @@ const {
   AtomicBlockUtils
 } = Draft;
 
-const { plugins: defaultPlugins } = makePlugins();
-
 const noop = () => {};
 
-// static
-export function typerDecorator(target) {
+export function composeDecorators(...decorators) {
+  return target =>
+    decorators.forEach(d => {
+      if (typeof d === 'function') {
+        d(target);
+      }
+    });
+}
+
+// public typer method
+export function publicTyperDecorator(target) {
   Object.assign(target, {
     convertToHTML: (contentState, options = {}) => {
       const html = stateToHTML(contentState, options);
@@ -39,21 +42,22 @@ export function typerDecorator(target) {
       return convertFromRaw(raw);
     },
 
-    extendBlockRenderMap: blockRenderMap =>
+    extendBlockRenderMap: (blockRenderMap, defaultBlockRenderMap = {}) =>
       Draft.DefaultDraftBlockRenderMap.merge(
         Immutable.Map(Object.assign({}, defaultBlockRenderMap, blockRenderMap))
       ),
 
-    extendInlineStyleMap: inlineStyleMap =>
+    extendInlineStyleMap: (inlineStyleMap, defaultInlineStyleMap = {}) =>
       Object.assign({}, defaultInlineStyleMap, inlineStyleMap),
 
-    extendDecorators: decorators => [].concat(defaultDecorator, decorators),
+    extendDecorators: (decorators, defaultDecorator = []) =>
+      [].concat(defaultDecorator, decorators),
 
-    extendPlugins: plugins => [].concat(defaultPlugins, plugins)
+    extendPlugins: (plugins, defaultPlugins = []) => [].concat(defaultPlugins, plugins)
   });
 }
 
-// prototype
+// content state edit method
 export function textEditDecorator(target) {
   const contentModifyType = ['replaceText', 'insertText'];
 
@@ -92,7 +96,7 @@ export function textEditDecorator(target) {
           editorState.getCurrentContent(),
           editorState.getSelection(),
           text,
-          OrderedSet.of(inlineStyles),
+          inlineStyles.length > 0 ? OrderedSet.of(inlineStyles) : undefined,
           entityKey
         );
         const newEditorState = EditorState.push(editorState, contentState);
@@ -104,6 +108,7 @@ export function textEditDecorator(target) {
       const { editorState } = this.state;
       let type = '';
       if (editorState.getSelection().isCollapsed()) {
+        // isCollapsed means no selection
         type = 'insertText';
       } else {
         type = 'replaceText';
@@ -172,4 +177,9 @@ export function entityEditDecorator(target) {
       return entityKey;
     }
   });
+}
+
+// editor event handler
+export function editorEventDecorator(target) {
+  Object.assign(target.prototype, {});
 }

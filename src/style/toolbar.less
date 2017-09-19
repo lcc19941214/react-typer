@@ -31,10 +31,10 @@
   font-size: 12px;
   text-align: center;
   color: #888;
-
-  & + .RichEditor-toolbar-button {
-    margin-left: 2px;
-  }
+}
+.RichEditor-toolbar-button + .RichEditor-toolbar-button,
+.RichEditor-toolbar-button__wrapped {
+  margin-left: 2px;
 }
 
 .RichEditor-toolbar-button__active {
@@ -56,17 +56,14 @@
 .RichEditor-toolbar__add-image {
   display: inline-block;
   position: relative;
-  .RichEditor-popover {
+}
+
+.RichEditor-toolbar__add-image__popover {
+  .RichEditor-popover-inner {
     width: 250px;
     height: 36px;
     display: flex;
     box-sizing: border-box;
-  }
-}
-
-.RichEditor-toolbar__add-image__popover {
-  .add-image__button__active {
-    filter: opacity(0.5);
   }
   .add-image__input {
     flex: 1 1 0;
@@ -96,6 +93,39 @@
   .add-image__upload-button {
     input {
       display: none;
+    }
+  }
+}
+
+// color-picker
+.RichEditor-toolbar__color-picker {
+  display: inline-block;
+  position: relative;
+
+  .color-picker_indicator {
+    width: 100%;
+    height: 3px;
+  }
+}
+
+.RichEditor-toolbar__color-picker__popover {
+  .RichEditor-popover-inner {
+    overflow: hidden;
+    padding: 20px 13px 13px 20px;
+    width: 108px;
+  }
+  .color-picker__item {
+    float: left;
+    display: block;
+    border: 1px solid transparent;
+    margin: 0 7px 7px 0px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    &:hover,
+    &.color-picker__item__active {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #8888ff;
     }
   }
 }

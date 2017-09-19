@@ -1,4 +1,4 @@
-import { defaultInlineStyleMap } from '../editorUtils/inlineEnhance';
+import { defaultInlineStyleMap, COLORS } from '../editorUtils/inlineEnhance';
 import * as EntityType from '../constants/entity';
 
 const ALIGNMENT = {
@@ -9,8 +9,12 @@ const ALIGNMENT = {
   right: {
     marginLeft: 'auto'
   }
-}
+};
 
+const COLORS_FOR_HTML = {};
+Object.keys(COLORS).forEach(color => {
+  COLORS_FOR_HTML[color] = { style: COLORS[color] };
+});
 export const inlineStyles = {
   ITALIC: {
     element: 'i'
@@ -26,7 +30,8 @@ export const inlineStyles = {
       defaultInlineStyleMap.LABEL,
       defaultInlineStyleMap['LABEL-HIGHLIGHT']
     )
-  }
+  },
+  ...COLORS_FOR_HTML
 };
 
 export const entityStyleFn = entity => {
@@ -42,7 +47,7 @@ export const entityStyleFn = entity => {
           : inlineStyles.LABEL.style
       };
     case EntityType.IMAGE:
-      const { src, alignment = 'default' , width = 100 } = data;
+      const { src, alignment = 'default', width = 100 } = data;
       return {
         element: 'img',
         attributes: {
@@ -52,7 +57,7 @@ export const entityStyleFn = entity => {
           width: `${width}%`,
           ...ALIGNMENT[alignment]
         }
-      }
+      };
     default:
   }
 };

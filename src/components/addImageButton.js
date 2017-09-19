@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
 import Popover from './popover';
+import { PLUGINS } from '../plugins/';
+
+const { imagePlugin } = PLUGINS;
 
 const noop = () => {};
 
@@ -26,7 +29,7 @@ export default class AddImage extends Component {
 
   addImage = (url, cb = noop) => {
     const { editorState, onChange, focus } = this.props;
-    onChange(this.props.modifier(editorState, url), focus);
+    onChange(imagePlugin.addImage(editorState, url), focus);
     this.Popover.close();
     cb();
   };
@@ -68,7 +71,7 @@ export default class AddImage extends Component {
   render() {
     const { active, url } = this.state;
     return (
-      <div className="RichEditor-toolbar__add-image">
+      <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
         <span
           className={classnames(
             'RichEditor-toolbar-button',

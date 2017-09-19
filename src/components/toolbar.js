@@ -3,9 +3,6 @@ import classnames from 'classnames';
 import { RichUtils } from 'draft-js';
 import ColorPicker from './colorPicker';
 import AddImageButton from './addImageButton';
-import { PLUGINS } from '../plugins/';
-
-const { imagePlugin } = PLUGINS;
 
 const noop = () => {};
 
@@ -28,7 +25,8 @@ const STYLE_TYPES = [
         label: <i style={{ fontFamily: 'serif' }}>I</i>,
         style: 'ITALIC'
       },
-      { key: 'underline', type: 'inline', label: <u>U</u>, style: 'UNDERLINE' }
+      { key: 'underline', type: 'inline', label: <u>U</u>, style: 'UNDERLINE' },
+      { key: 'color', type: 'action', component: ColorPicker }
     ]
   },
   {
@@ -40,41 +38,24 @@ const STYLE_TYPES = [
   },
   {
     key: 'action',
-    controls: [
-      // { key: 'color', component: ColorPicker },
-      { key: 'image', type: 'action', component: AddImageButton }
-    ]
+    controls: [{ key: 'image', type: 'action', component: AddImageButton }]
   }
 ];
 
 // common button for both inline and block style
-const StyleButton = props => {
-  const { type, active, style, label } = props;
-
-  function onToggle(e) {
-    e.preventDefault();
-
-    let cb = noop;
-    switch (type) {
-      case 'block':
-        cb = props.focus;
-        break;
-      default:
-    }
-    props.onToggle(style, type, cb);
-  }
-
-  return (
-    <span
-      className={classnames('RichEditor-toolbar-button', {
-        'RichEditor-toolbar-button__active': active
-      })}
-      onMouseDown={onToggle}
-    >
-      {label}
-    </span>
-  );
-};
+const StyleButton = ({ style, type, active, label, onToggle, focus }) => (
+  <span
+    className={classnames('RichEditor-toolbar-button', {
+      'RichEditor-toolbar-button__active': active
+    })}
+    onMouseDown={e => {
+      e.preventDefault();
+      onToggle(style, type, type === 'block' ? focus : noop);
+    }}
+  >
+    {label}
+  </span>
+);
 
 // buttons grouped by style type
 export default class Toolbar extends Component {
@@ -126,7 +107,7 @@ export default class Toolbar extends Component {
   render() {
     const { controls, editorState, onChange, focus } = this.props;
     const groups = this.matchStyleControls(controls);
-    const { inlineStyles, blockType } = this.getCurrentStyles(editorState);
+    const currentStyles = this.getCurrentStyles(editorState);
     return (
       <div className="RichEditor-toolbar">
         {groups.map(group => (
@@ -140,7 +121,7 @@ export default class Toolbar extends Component {
                       key={control.key}
                       editorState={editorState}
                       onChange={onChange}
-                      modifier={imagePlugin.addImage}
+                      onToggle={this.toggleToolbar}
                       focus={focus}
                     />
                   );
@@ -151,10 +132,11 @@ export default class Toolbar extends Component {
                       type={control.type}
                       label={control.label}
                       style={control.style}
-                      active={this.getButtonActive(control.style, control.type, {
-                        inlineStyles,
-                        blockType
-                      })}
+                      active={this.getButtonActive(
+                        control.style,
+                        control.type,
+                        currentStyles
+                      )}
                       onToggle={this.toggleToolbar}
                       focus={focus}
                     />

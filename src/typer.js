@@ -2,9 +2,17 @@ import React, { Component, PropTypes } from 'react';
 import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
 import Toolbar from './components/toolbar.js';
-import { typerDecorator, textEditDecorator, entityEditDecorator } from './helper/decorators';
+import {
+  publicTyperDecorator,
+  textEditDecorator,
+  entityEditDecorator,
+  composeDecorators
+} from './helper/decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
-import { AlignmentTool } from './plugins/';
+import makePlugins, { AlignmentTool } from './plugins/';
+import defaultDecorator from './editorUtils/decoratorsEnhance';
+import { defaultBlockRenderMap } from './editorUtils/blockEnhance';
+import { defaultInlineStyleMap } from './editorUtils/inlineEnhance';
 
 import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
@@ -23,6 +31,9 @@ const {
 
 const Editor = PluginEditor;
 // const Editor = OriginalEditor;
+
+const { plugins: defaultPlugins } = makePlugins();
+const composedDecorators = composeDecorators(textEditDecorator, entityEditDecorator);
 
 /**
  * For more information, see https://github.com/facebook/draft-js/blob/1ea57ab0b1a7e70f8f6211f96958e3bb74f2663a/docs/APIReference-Editor.md
@@ -84,14 +95,12 @@ class Typer extends Component {
       editorState: EditorState.createWithContent(ContentState.createFromText(''))
     };
 
-    textEditDecorator(Typer);
+    composedDecorators(Typer);
     this.fillText = this.fillText.bind(this);
     this.modifyText = this.modifyText.bind(this);
     this.insertText = this.insertText.bind(this);
     this.replaceText = this.replaceText.bind(this);
     this.setBlock = this.setBlock.bind(this);
-
-    entityEditDecorator(Typer);
     this.addEntity = this.addEntity.bind(this);
   }
 
@@ -170,10 +179,10 @@ class Typer extends Component {
   extendDefaultProps = props => {
     const { decorators, plugins, blockRenderMap, blockStyleFn, inlineStyleMap } = props;
     return {
-      decorators: Typer.extendDecorators(decorators),
-      plugins: Typer.extendPlugins(plugins),
-      blockRenderMap: Typer.extendBlockRenderMap(blockRenderMap),
-      customStyleMap: Typer.extendInlineStyleMap(inlineStyleMap)
+      decorators: Typer.extendDecorators(decorators, defaultDecorator),
+      plugins: Typer.extendPlugins(plugins, defaultPlugins),
+      blockRenderMap: Typer.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
+      customStyleMap: Typer.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
     };
   };
 
@@ -192,7 +201,6 @@ class Typer extends Component {
         cb
       );
 
-      const inlineStyles = highlight ? ['LABEL-HIGHLIGHT'] : ['LABEL'];
       this.insertText(val, [], entityKey, this.focus);
     }
   };
@@ -226,9 +234,9 @@ class Typer extends Component {
             <AlignmentTool />
           </div>
         </div>
-        <button onClick={this.getContent.bind(this, '')}>getContentState</button>
+        <button onClick={this.getContent.bind(this, '')}>log state</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={this.getContent.bind(this, 'json')}>getJSON</button>
+        <button onClick={this.getContent.bind(this, 'json')}>log JSON state</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button onClick={this.getContent.bind(this, 'html', exportToHTMLOptions)}>
           getHTML
@@ -284,7 +292,7 @@ class Typer extends Component {
   }
 }
 
-typerDecorator(Typer);
+publicTyperDecorator(Typer);
 
 export default Typer;
 

@@ -68,7 +68,7 @@ export default class Popover extends Component {
         })}
         onClick={this.onPopoverClick}
       >
-        {this.props.children}
+        <div className="RichEditor-popover-inner">{this.props.children}</div>
       </div>
     );
   }
