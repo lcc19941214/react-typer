@@ -1,9 +1,10 @@
 /* toolbar */
 .RichEditor-toolbar {
+  padding: 15px 20px 10px;
+  // background-color: @toolbar-bg-color;
   font-family: system, -apple-system, 'PingFang SC', 'Segoe UI', 'Microsoft YaHei',
     Helvetica, Arial, sans-serif;
   font-size: 14px;
-  margin-bottom: 10px;
   user-select: none;
 }
 
@@ -13,7 +14,7 @@
   & + .RichEditor-toolbar-group::before {
     content: '';
     display: inline-block;
-    border-right: 1px solid #e6e6e6;
+    border-right: 1px solid @toolbar-divide-line;
     margin: 0 5px;
     height: 20px;
     vertical-align: middle;
@@ -30,7 +31,7 @@
   cursor: pointer;
   font-size: 12px;
   text-align: center;
-  color: #888;
+  color: @toolbar-button-text-color;
 }
 .RichEditor-toolbar-button + .RichEditor-toolbar-button,
 .RichEditor-toolbar-button__wrapped {
@@ -38,18 +39,18 @@
 }
 
 .RichEditor-toolbar-button__active {
-  color: #444;
-  background-color: #f9f9f9;
+  color: @toolbar-button-text-color-active;
+  background-color: @toolbar-button-bg-color-active;
 }
 
 .RichEditor-toolbar-button:hover {
-  background-color: #fcfcfc;
+  background-color: @toolbar-button-bg-color-hover;
 }
 
 .RichEditor-toolbar-button__active,
 .RichEditor-toolbar-button__active:hover,
 .RichEditor-toolbar-button:hover {
-  border-color: #ddd;
+  border-color: @border-color;
 }
 
 // addImage
@@ -111,21 +112,19 @@
 .RichEditor-toolbar__color-picker__popover {
   .RichEditor-popover-inner {
     overflow: hidden;
-    padding: 20px 13px 13px 20px;
-    width: 108px;
+    padding: 15px 10px 10px 15px;
+    width: 110px;
   }
   .color-picker__item {
     float: left;
     display: block;
-    border: 1px solid transparent;
     margin: 0 7px 7px 0px;
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
     cursor: pointer;
     &:hover,
     &.color-picker__item__active {
-      border-color: #fff;
-      box-shadow: 0 0 0 2px #8888ff;
+      box-shadow: 0 1px 3px #888;
     }
   }
 }

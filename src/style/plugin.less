@@ -1,0 +1,27 @@
+// plugins
+@resizeable-border-color: #ACCEF7;
+
+.RichEditor-plugin__enhance-resizeable__hand {
+  cursor: default!important;
+  &&::before {
+    position: absolute;
+  }
+  &::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: @resizeable-border-color;
+  }
+}
+.RichEditor-plugin__enhance-resizeable__focus {
+  box-shadow: 0 0 0 3px @resizeable-border-color!important;
+}
+
+.RichEditor-plugin__enhance-resizeable__blur {
+  &:hover {
+    box-shadow: 0 0 0 3px lighten(@resizeable-border-color, .95) !important;
+  }
+}

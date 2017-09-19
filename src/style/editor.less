@@ -6,31 +6,24 @@
 .RichEditor-root {
   max-width: 700px;
   margin: 20px auto;
+  .clearfix();
 }
 
 .RichEditor-root {
   .common-font-family();
-  border: 1px solid @border-color;;
-  padding: 10px 20px;
+  border: 1px solid @border-color;
   border-radius: 2px;
   background: #fff;
   font-size: 14px;
 }
 
-
 /* Editor */
 .RichEditor-editor {
-  margin-top: 10px;
-  border-top: 1px solid @border-color;;
+  padding: 10px 20px;
   font-size: 14px;
   line-height: 1.8;
   color: @editor-text-color;
   cursor: text;
-
-  .public-DraftEditorPlaceholder-root,
-  .public-DraftEditor-content {
-    padding: 15px 0;
-  }
 
   .public-DraftEditor-content {
     min-height: 100px;
