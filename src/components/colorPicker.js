@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EditorState, Modifier, RichUtils } from 'draft-js';
 import classnames from 'classnames';
 import Popover from './popover';
-import { COLORS as INLINE_COLORS } from '../editorUtils/inlineEnhance';
+import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../editorUtils/inlineEnhance';
 
 const noop = () => {};
 
@@ -11,17 +11,12 @@ Object.keys(INLINE_COLORS).forEach(v => {
   BLOCK_COLORS[v] = { backgroundColor: INLINE_COLORS[v].color };
 });
 
-const COLORS_MAP = [
-  { key: 'Black', label: 'black', style: 'INLINE-COLOR-BLACK' },
-  { key: 'White', label: 'white', style: 'INLINE-COLOR-WHITE' },
-  { key: 'Red', label: 'red', style: 'INLINE-COLOR-RED' },
-  { key: 'Orange', label: 'orange', style: 'INLINE-COLOR-ORANGE' },
-  { key: 'Yellow', label: 'yellow', style: 'INLINE-COLOR-YELLOW' },
-  { key: 'Green', label: 'green', style: 'INLINE-COLOR-GREEN' },
-  { key: 'Blue', label: 'blue', style: 'INLINE-COLOR-BLUE' },
-  { key: 'Indigo', label: 'indigo', style: 'INLINE-COLOR-INDIGO' },
-  { key: 'Violet', label: 'violet', style: 'INLINE-COLOR-VIOLET' }
-];
+const COLORS_MAP = Object.keys(INLINE_COLORS).map(v => ({
+  key: v,
+  label: v,
+  style: v
+}));
+
 const COLORS_STYLE = COLORS_MAP.map(v => v.style);
 
 /**
@@ -37,7 +32,7 @@ export default class ColorPicker extends Component {
   };
 
   state = {
-    color: 'INLINE-COLOR-BLACK',
+    color: DEFAULT_COLOR_KEY,
     active: false
   };
 
@@ -61,7 +56,7 @@ export default class ColorPicker extends Component {
       if (selection.isCollapsed()) {
         // TODO
         // set next character color
-        return;
+        // return;
         const nextCurrentStyle = COLORS_MAP.map(v => v.style).reduce(
           (currentStyle, color) => currentStyle.delete(color),
           currentStyle
@@ -105,7 +100,7 @@ export default class ColorPicker extends Component {
     const currentStyle = editorState.getCurrentInlineStyle().toJS();
     const indicatorStyle =
       currentStyle.find(style => COLORS_STYLE.some(v => v === style)) ||
-      'INLINE-COLOR-BLACK';
+      DEFAULT_COLOR_KEY;
     return (
       <div className="RichEditor-toolbar__color-picker RichEditor-toolbar-button__wrapped">
         <span

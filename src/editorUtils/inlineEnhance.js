@@ -11,35 +11,39 @@ const LABEL_HIGHLIGHT = Object.assign({}, LABEL, {
   backgroundColor: '#ffeb22'
 });
 
+export const DEFAULT_COLOR_KEY = 'INLINE-COLOR-02';
+
 export const COLORS = {
-  'INLINE-COLOR-BLACK': {
+  'INLINE-COLOR-01': {
+    color: '#ffffff'
+  },
+  [DEFAULT_COLOR_KEY]: {
     color: '#3b3e44'
   },
-  'INLINE-COLOR-WHITE': {
-    color: 'white'
+  'INLINE-COLOR-03': {
+    color: '#fe2c23'
   },
-  'INLINE-COLOR-RED': {
-    color: 'red'
+  'INLINE-COLOR-04': {
+    color: '#ff9900'
   },
-  'INLINE-COLOR-ORANGE': {
-    color: 'orange'
+  'INLINE-COLOR-05': {
+    color: '#ffd900'
   },
-  'INLINE-COLOR-YELLOW': {
-    color: 'yellow'
+  'INLINE-COLOR-06': {
+    color: '#a3e043'
   },
-  'INLINE-COLOR-GREEN': {
-    color: 'green'
+  'INLINE-COLOR-07': {
+    color: '#37d9f0'
   },
-  'INLINE-COLOR-BLUE': {
-    color: 'blue'
+  'INLINE-COLOR-08': {
+    color: '#4da8ee'
   },
-  'INLINE-COLOR-INDIGO': {
-    color: 'indigo'
-  },
-  'INLINE-COLOR-VIOLET': {
-    color: 'violet'
+  'INLINE-COLOR-09': {
+    color: '#aa17d0'
   }
 };
+
+export const DEFAULT_COLOR = COLORS[DEFAULT_COLOR_KEY];
 
 export const defaultInlineStyleMap = {
   LABEL,
