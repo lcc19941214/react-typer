@@ -14,7 +14,8 @@ const createDecorator = (config = {}) => WrappedComponent =>
     componentWillUpdate(nextProps, nextState) {
       const { uploading, progress } = this.getData(nextProps);
       if (uploading) {
-        console.log(progress);
+        // TODO
+        // show progress bar
       }
     }
 
