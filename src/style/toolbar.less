@@ -129,3 +129,29 @@
     }
   }
 }
+
+// font-size-changer
+.RichEditor-toolbar__font-size-changer {
+  display: inline-block;
+  position: relative;
+}
+
+.RichEditor-toolbar__font-size-changer__popover {
+  .RichEditor-popover-inner {
+    overflow: hidden;
+    padding: 5px 0;
+    width: 104px;
+  }
+  .font-size-changer__item {
+    display: block;
+    padding: 5px 20px;
+    color: @editor-text-color;
+    cursor: pointer;
+    &:hover {
+      background-color: #f6f6f6;
+    }
+    &.font-size-changer__item__active {
+      background-color: #ececec;
+    }
+  }
+}

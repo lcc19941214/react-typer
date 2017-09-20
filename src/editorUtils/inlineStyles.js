@@ -1,18 +1,18 @@
-const LABEL = {
+export const LABEL = {
   borderRadius: '2px',
   padding: '0 4px',
   margin: '0 4px',
   color: '#666',
   backgroundColor: '#f1f1f1',
-  cursor: 'default'
+  cursor: 'default',
+  display: 'inline-block'
 };
 
-const LABEL_HIGHLIGHT = Object.assign({}, LABEL, {
+export const LABEL_HIGHLIGHT = Object.assign({}, LABEL, {
   backgroundColor: '#ffeb22'
 });
 
 export const DEFAULT_COLOR_KEY = 'INLINE-COLOR-02';
-
 export const COLORS = {
   'INLINE-COLOR-01': {
     color: '#ffffff'
@@ -42,11 +42,28 @@ export const COLORS = {
     color: '#aa17d0'
   }
 };
-
 export const DEFAULT_COLOR = COLORS[DEFAULT_COLOR_KEY];
+
+export const DEFAULT_FONT_SIZE_KEY = 'INLINE-FONT-SIZE-MEDIUM';
+export const FONT_SIZES = {
+  'INLINE-FONT-SIZE-SMALL': {
+    fontSize: '12px'
+  },
+  'INLINE-FONT-SIZE-MEDIUM': {
+    fontSize: 'initial'
+  },
+  'INLINE-FONT-SIZE-LARGE': {
+    fontSize: '18px'
+  },
+  'INLINE-FONT-SIZE-SUPER': {
+    fontSize: '32px'
+  }
+};
+export const DEFAULT_FONT_SIZE = FONT_SIZES[DEFAULT_FONT_SIZE_KEY];
 
 export const defaultInlineStyleMap = {
   LABEL,
   'LABEL-HIGHLIGHT': LABEL_HIGHLIGHT,
-  ...COLORS
+  ...COLORS,
+  ...FONT_SIZES
 };

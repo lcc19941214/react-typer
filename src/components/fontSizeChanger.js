@@ -2,22 +2,25 @@ import React, { Component, PropTypes } from 'react';
 import { EditorState, Modifier, RichUtils } from 'draft-js';
 import classnames from 'classnames';
 import Popover from './popover';
-import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../editorUtils/inlineStyles';
+import {
+  FONT_SIZES as INLINE_FONT_SIZE,
+  DEFAULT_FONT_SIZE_KEY
+} from '../editorUtils/inlineStyles';
 
 const noop = () => {};
 
-const BLOCK_COLORS = {};
-Object.keys(INLINE_COLORS).forEach(v => {
-  BLOCK_COLORS[v] = { backgroundColor: INLINE_COLORS[v].color };
-});
+const FONT_SIZE_LABEL = {
+  'INLINE-FONT-SIZE-SMALL': '小',
+  'INLINE-FONT-SIZE-MEDIUM': '中',
+  'INLINE-FONT-SIZE-LARGE': '大',
+  'INLINE-FONT-SIZE-SUPER': '超大'
+};
 
-const COLORS_MAP = Object.keys(INLINE_COLORS).map(v => ({
+const FONT_SIZE_MAP = Object.keys(INLINE_FONT_SIZE).map(v => ({
   key: v,
-  label: v,
+  label: FONT_SIZE_LABEL[v],
   style: v
 }));
-
-const COLORS_STYLE = COLORS_MAP.map(v => v.style);
 
 /**
  * REMIND
@@ -26,14 +29,14 @@ const COLORS_STYLE = COLORS_MAP.map(v => v.style);
  *    must use onMouseDown and preventDefault to keep editor always on focus
  */
 
-export default class ColorPicker extends Component {
+export default class FontSizeChanger extends Component {
   static propTypes = {
     onToggle: PropTypes.func,
     changeState: PropTypes.func
   };
 
   state = {
-    color: DEFAULT_COLOR_KEY,
+    fontSize: DEFAULT_FONT_SIZE_KEY,
     active: false
   };
 
@@ -47,7 +50,7 @@ export default class ColorPicker extends Component {
     this.setState(({ active }) => ({ active: false }));
   };
 
-  handleApplyColor = (style, e) => {
+  handleApplyFontSize = (style, e) => {
     e.preventDefault();
     const { editorState, changeState, onToggle, focus } = this.props;
 
@@ -57,8 +60,8 @@ export default class ColorPicker extends Component {
     if (selection.isCollapsed()) {
       // REMIND
       // manually call setInlineStyleOverride to keep other inline styles
-      const nextCurrentStyle = COLORS_MAP.map(v => v.style).reduce(
-        (currentStyle, color) => currentStyle.delete(color),
+      const nextCurrentStyle = FONT_SIZE_MAP.map(v => v.style).reduce(
+        (currentStyle, size) => currentStyle.delete(size),
         currentStyle
       );
       const nextEditorState = EditorState.setInlineStyleOverride(
@@ -66,27 +69,26 @@ export default class ColorPicker extends Component {
         nextCurrentStyle.add(style)
       );
       changeState(nextEditorState, () => {
-        this.setState({ color: style });
+        this.setState({ fontSize: style });
         this.Popover.close();
       });
     } else {
-      // turn off all active colors but apply only one color
-      const nextContentState = COLORS_MAP.map(v => v.style).reduce(
-        (contentState, color) =>
-          Modifier.removeInlineStyle(contentState, selection, color),
+      // turn off all active size but apply only one size
+      const nextContentState = FONT_SIZE_MAP.map(v => v.style).reduce(
+        (contentState, size) => Modifier.removeInlineStyle(contentState, selection, size),
         editorState.getCurrentContent()
       );
 
       let nextEditorState = EditorState.push(
         editorState,
         nextContentState,
-        'reset-inline-color'
+        'reset-inline-size'
       );
 
       nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
 
       changeState(nextEditorState, () => {
-        this.setState({ color: style });
+        this.setState({ fontSize: style });
         this.Popover.close();
         focus();
       });
@@ -95,40 +97,40 @@ export default class ColorPicker extends Component {
 
   render() {
     const { editorState } = this.props;
-    const { active, color } = this.state;
+    const { active, fontSize } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
-    const indicatorStyle = currentStyle.has(color) ? color : DEFAULT_COLOR_KEY;
     return (
-      <div className="RichEditor-toolbar__color-picker RichEditor-toolbar-button__wrapped">
+      <div className="RichEditor-toolbar__font-size-changer RichEditor-toolbar-button__wrapped">
         <span
           className={classnames(
             'RichEditor-toolbar-button',
-            'RichEditor-toolbar__color-picker__button',
+            'RichEditor-toolbar__font-size-changer__button',
             {
               'RichEditor-toolbar-button__active': active
             }
           )}
           onMouseDown={this.onTogglePopover}
         >
-          <i>A</i>
-          <div className="color-picker_indicator" style={BLOCK_COLORS[indicatorStyle]} />
+          T
         </span>
         <Popover
-          className="RichEditor-toolbar__color-picker__popover"
+          className="RichEditor-toolbar__font-size-changer__popover"
           ref={ref => (this.Popover = ref)}
           placement="bottom"
           onOpen={this.handleOnOpen}
           onClose={this.handleOnClose}
         >
-          {COLORS_MAP.map(v => (
+          {FONT_SIZE_MAP.map(v => (
             <span
               key={v.key}
-              className={classnames('color-picker__item', {
-                'color-picker__item__active': indicatorStyle === v.style
+              className={classnames('font-size-changer__item', {
+                'font-size-changer__item__active': fontSize === v.style
               })}
-              style={BLOCK_COLORS[v.style]}
-              onMouseDown={this.handleApplyColor.bind(this, v.style)}
-            />
+              style={INLINE_FONT_SIZE[v.style]}
+              onMouseDown={this.handleApplyFontSize.bind(this, v.style)}
+            >
+              {v.label}
+            </span>
           ))}
         </Popover>
       </div>

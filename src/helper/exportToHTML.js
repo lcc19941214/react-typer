@@ -1,4 +1,4 @@
-import { defaultInlineStyleMap, COLORS } from '../editorUtils/inlineStyles';
+import { defaultInlineStyleMap, COLORS, FONT_SIZES } from '../editorUtils/inlineStyles';
 import * as EntityType from '../constants/entity';
 
 const IMAGE_ALIGNMENT = {
@@ -9,8 +9,20 @@ const IMAGE_ALIGNMENT = {
 };
 
 const COLORS_FOR_HTML = {};
-Object.keys(COLORS).forEach(color => {
-  COLORS_FOR_HTML[color] = { style: COLORS[color] };
+const FONT_SIZES_FOR_HTML = {};
+[
+  {
+    from: COLORS,
+    to: COLORS_FOR_HTML
+  },
+  {
+    from: FONT_SIZES,
+    to: FONT_SIZES_FOR_HTML
+  }
+].forEach(({ from, to }) => {
+  Object.keys(from).forEach(key => {
+    to[key] = { style: from[key] };
+  });
 });
 
 export const inlineStyles = {
@@ -29,7 +41,8 @@ export const inlineStyles = {
       defaultInlineStyleMap['LABEL-HIGHLIGHT']
     )
   },
-  ...COLORS_FOR_HTML
+  ...COLORS_FOR_HTML,
+  ...FONT_SIZES_FOR_HTML
 };
 
 // inject contentState from using
@@ -42,7 +55,9 @@ export const blockRenderers = {
     switch (entityType) {
       case EntityType.IMAGE:
         const { src, alignment = 'default', width = 'auto' } = data;
-        return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[alignment]}" width="${width}"/></div>`;
+        return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[
+          alignment
+        ]}" width="${width}"/></div>`;
       default:
     }
   }

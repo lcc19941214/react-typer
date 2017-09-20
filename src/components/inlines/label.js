@@ -1,17 +1,12 @@
 import React, { Component } from 'react';
-import classnames from 'classnames';
+import { LABEL, LABEL_HIGHLIGHT } from '../../editorUtils/inlineStyles';
 
 export default props => {
   const data = props.contentState.getEntity(props.entityKey).getData();
   const { label, highlight } = data;
+  const style = Object.assign({}, LABEL, highlight ? LABEL_HIGHLIGHT : {});
   return (
-    <span className={classnames(
-      'RichEditor-style-block__label',
-      {
-        'RichEditor-style-block__label__highlight': highlight
-      }
-    )}
-      data-highlight={!!highlight}>
+    <span style={style} data-highlight={!!highlight}>
       {props.children}
     </span>
   );

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { RichUtils } from 'draft-js';
 import ColorPicker from './colorPicker';
+import FontSizeChanger from './fontSizeChanger';
 import { UploadImageButton, AddImageLinkButton } from './addImageButton';
 
 const noop = () => {};
@@ -25,8 +26,14 @@ const STYLE_TYPES = [
         label: <i style={{ fontFamily: 'serif' }}>I</i>,
         style: 'ITALIC'
       },
-      { key: 'underline', type: 'inline', label: <u>U</u>, style: 'UNDERLINE' },
-      { key: 'color', type: 'action', component: ColorPicker }
+      { key: 'underline', type: 'inline', label: <u>U</u>, style: 'UNDERLINE' }
+    ]
+  },
+  {
+    key: 'advancedFontStyle',
+    controls: [
+      { key: 'color', type: 'action', component: ColorPicker },
+      { key: 'fontSize', type: 'action', component: FontSizeChanger }
     ]
   },
   {
@@ -69,7 +76,7 @@ export default class Toolbar extends Component {
   };
 
   static defaultProps = {
-    controls: ['headline', 'fontStyle', 'list', 'action']
+    controls: ['headline', 'fontStyle', 'advancedFontStyle', 'list', 'action']
   };
 
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
