@@ -1,4 +1,7 @@
 // popover
+@popover-target-margin: 15px;
+@arrow-distance: 100%;
+
 .RichEditor-popover {
   position: absolute;
   left: 50%;
@@ -75,8 +78,8 @@
 }
 
 .RichEditor-popover__bottom {
-  top: 100%;
-  margin-top: 25px;
+  top: @arrow-distance;
+  margin-top: @popover-target-margin;
   transform-origin: top center;
   &::before {
     .RichEditor-popover-arrow-shadow__top();
@@ -87,8 +90,8 @@
 }
 
 .RichEditor-popover__top {
-  bottom: 100%;
-  margin-bottom: 25px;
+  bottom: @arrow-distance;
+  margin-bottom: @popover-target-margin;
   transform-origin: bottom center;
   &::before {
     .RichEditor-popover-arrow-shadow__bottom();
