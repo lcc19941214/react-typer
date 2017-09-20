@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import classnames from 'classnames';
 import * as EntityType from '../constants/entity';
 
@@ -6,21 +7,36 @@ import * as EntityType from '../constants/entity';
 // need focus and resizeable
 const createDecorator = (config = {}) => WrappedComponent =>
   class ImageUploadPluginDecorator extends Component {
-    render() {
-      const { contentState, block, blockProps, className } = this.props;
+    componentDidMount() {
+      this.elem = ReactDOM.findDOMNode(this);
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+      const { uploading, progress } = this.getData(nextProps);
+      if (uploading) {
+        console.log(progress);
+      }
+    }
+
+    getData = props => {
+      const { contentState, block } = this.props;
       const entity = contentState.getEntity(block.getEntityAt(0));
-      const { uploading } = entity.getData();
-      return (
-        <WrappedComponent
-          {...this.props}
-          className={classnames(
-            !uploading ? className : '',
-            'RichEditor-plugin__image-upload',
-            {
-              'RichEditor-plugin__image-upload__uploading': uploading
-            }
-          )}
-        />
+      return entity.getData();
+    };
+
+    render() {
+      const { style, className } = this.props;
+      const { uploading, src } = this.getData(this.props);
+      return uploading ? (
+        <div
+          className={classnames('RichEditor-plugin__image-upload', {
+            'RichEditor-plugin__image-upload__uploading': uploading
+          })}
+        >
+          <img src={src} style={style}/>
+        </div>
+      ) : (
+        <WrappedComponent {...this.props} className={classnames(className, 'RichEditor-plugin__image-upload__uploaded')}/>
       );
     }
   };

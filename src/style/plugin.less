@@ -2,7 +2,7 @@
 @resizeable-border-color: #ACCEF7;
 
 .RichEditor-plugin__enhance-resizeable__hand {
-  cursor: default!important;
+  cursor: default !important;
   &&::before {
     position: absolute;
   }
@@ -17,21 +17,50 @@
   }
 }
 .RichEditor-plugin__enhance-resizeable__focus {
-  border-radius: 0!important;
+  border-radius: 0 !important;
   box-shadow: 0 0 0 2px @resizeable-border-color!important;
 }
 
 .RichEditor-plugin__enhance-resizeable__blur {
   &:hover {
-    border-radius: 0!important;
-    box-shadow: 0 0 0 2px lighten(@resizeable-border-color, .95) !important;
+    border-radius: 0 !important;
+    box-shadow: 0 0 0 2px lighten(@resizeable-border-color, 0.95) !important;
   }
 }
 
 // image-upload
-img.RichEditor-plugin__image-upload {
-  transition: filter .5s ease-out;
+.RichEditor-plugin__image-upload {
 }
-img.RichEditor-plugin__image-upload__uploading {
-  filter: blur(2px);
+.RichEditor-plugin__image-upload__uploading {
+  position: relative;
+  & img {
+    filter: blur(5px);
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    border-top-color: transparent;
+    animation: spinning 1.5s linear infinite;
+  }
+}
+
+@keyframes blurOut {
+  from {
+    filter: blur(5px);
+  }
+  to {
+    filter: blur(0);
+  }
+}
+
+img.RichEditor-plugin__image-upload__uploaded {
+  animation: blurOut .4s both;
 }

@@ -100,7 +100,6 @@ class Typer extends Component {
   };
 
   Typer = null;
-  DraftEditorElem = null;
   extendedDefaultProps = {};
   isFocus = false;
 
@@ -131,7 +130,6 @@ class Typer extends Component {
       this.focus();
     }, 100);
 
-    this.DraftEditorElem = document.querySelector('.DraftEditor-root');
     document.addEventListener('paste', this.handleOnPaste, false);
   }
 
@@ -181,7 +179,6 @@ class Typer extends Component {
     this.props.onBlur(e);
   };
   handleOnPaste = e => {
-    const self = this;
     if (this.isFocus) {
       pasteAndUploadImage(e, this.handleOnPasteAndUploadImage)
       this.props.onPaste(e);
@@ -190,18 +187,23 @@ class Typer extends Component {
   handleOnPasteAndUploadImage = (file, event) => {
     const url = event.target.result;
     const nextEditorState = addImage(this.state.editorState, url, {
-      uploading: true
+      uploading: true,
+      progress: 0
     });
     this.changeState(nextEditorState, () => {
       const config = {
         onUploadProgress: event => {
-          console.log(Math.round(event.loaded / event.total * 100));
+          const progress = Math.round(event.loaded / event.total * 100);
+          if (progress !== 100) {
+            this.changeState(updateImage(this.state.editorState, { progress }, url))
+          }
         }
       };
       uploadImage(this.props.imageUploadAction, file, config).then(res => {
         const toMergeData = {
           // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
-          uploading: false
+          uploading: false,
+          progress: 100
         };
 
         this.blur();

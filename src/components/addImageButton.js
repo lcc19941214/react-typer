@@ -98,28 +98,37 @@ export class UploadImageButton extends Component {
       const url = URL.createObjectURL(file);
 
       const { editorState, changeState, focus, blur } = this.props;
-      const nextEditorState = addImage(editorState, url, { uploading: true });
+      const nextEditorState = addImage(editorState, url, {
+        uploading: true,
+        progress: 0
+      });
       changeState(nextEditorState, () => {
-        // release url
-        setTimeout(() => {
-          URL.revokeObjectURL(url);
-        }, 1000);
-
         const config = {
           onUploadProgress: event => {
-            console.log(Math.round(event.loaded / event.total * 100));
+            const progress = Math.round(event.loaded / event.total * 100);
+            if (progress !== 100) {
+              changeState(updateImage(this.props.editorState, { progress }, url));
+            }
           }
         };
         uploadImage(this.props.action, file, config).then(res => {
           const toMergeData = {
             // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
-            uploading: false
+            uploading: false,
+            progress: 100
           };
 
           // use blur now and focus later on to make rerender and change the image src
           blur();
           const newEditorState = updateImage(this.props.editorState, toMergeData, url);
-          changeState(newEditorState, focus);
+          changeState(newEditorState, () => {
+            focus();
+
+            // release url
+            setTimeout(() => {
+              URL.revokeObjectURL(url);
+            }, 1000);
+          });
         });
       });
     }
