@@ -69,19 +69,6 @@ export default class Toolbar extends Component {
     controls: ['headline', 'fontStyle', 'list', 'action']
   };
 
-  toggleToolbar = (style, type, cb = noop) => {
-    const { onChange, editorState } = this.props;
-    switch (type) {
-      case 'block':
-        onChange(RichUtils.toggleBlockType(editorState, style), cb);
-        break;
-      case 'inline':
-        onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
-        break;
-      default:
-    }
-  };
-
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
 
   getCurrentStyles = editorState => {
@@ -105,7 +92,7 @@ export default class Toolbar extends Component {
   };
 
   render() {
-    const { controls, editorState, onChange, focus } = this.props;
+    const { controls, editorState, onChange, focus, toggleToolbar } = this.props;
     const groups = this.matchStyleControls(controls);
     const currentStyles = this.getCurrentStyles(editorState);
     return (
@@ -121,7 +108,7 @@ export default class Toolbar extends Component {
                       key={control.key}
                       editorState={editorState}
                       onChange={onChange}
-                      onToggle={this.toggleToolbar}
+                      onToggle={toggleToolbar}
                       focus={focus}
                     />
                   );
@@ -137,7 +124,7 @@ export default class Toolbar extends Component {
                         control.type,
                         currentStyles
                       )}
-                      onToggle={this.toggleToolbar}
+                      onToggle={toggleToolbar}
                       focus={focus}
                     />
                   );

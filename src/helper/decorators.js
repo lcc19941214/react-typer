@@ -8,6 +8,7 @@ const {
   EditorState,
   ContentState,
   Modifier,
+  RichUtils,
   convertToRaw,
   convertFromRaw,
   AtomicBlockUtils
@@ -28,7 +29,16 @@ export function composeDecorators(...decorators) {
 export function publicTyperDecorator(target) {
   Object.assign(target, {
     convertToHTML: (contentState, options = {}) => {
-      const html = stateToHTML(contentState, options);
+      // stateToHTML option api only support current contentBlock,
+      // must manually inject contentState to stateToHTML options
+      const _options = Object.assign({}, options, { blockRenderers: {} });
+      Object.keys(options.blockRenderers).forEach(key => {
+        _options.blockRenderers[key] = options.blockRenderers[key].bind(
+          undefined,
+          contentState
+        );
+      });
+      const html = stateToHTML(contentState, _options);
       return html;
     },
 
@@ -149,7 +159,7 @@ export function textEditDecorator(target) {
   });
 }
 
-// prototype
+// entity
 export function entityEditDecorator(target) {
   Object.assign(target.prototype, {
     /**
@@ -179,7 +189,20 @@ export function entityEditDecorator(target) {
   });
 }
 
-// editor event handler
-export function editorEventDecorator(target) {
-  Object.assign(target.prototype, {});
+// editor toolbar
+export function editorToolbarDecorator(target) {
+  Object.assign(target.prototype, {
+    toggleToolbar(style, type, cb = noop) {
+      const { editorState } = this.state;
+      switch (type) {
+        case 'block':
+          this.onChange(RichUtils.toggleBlockType(editorState, style), cb);
+          break;
+        case 'inline':
+          this.onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
+          break;
+        default:
+      }
+    }
+  });
 }

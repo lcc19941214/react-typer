@@ -21,8 +21,9 @@ const COLORS_STYLE = COLORS_MAP.map(v => v.style);
 
 /**
  * REMIND
- *    unable to set initial inline style for editor state
+ *    it's unable to set initial inline style for editor state
  *    when editor gets blur and selection is collapsed, inline style may get lost.
+ *    must use onMouseDown and preventDefault to keep editor always on focus
  */
 
 export default class ColorPicker extends Component {
@@ -37,6 +38,7 @@ export default class ColorPicker extends Component {
   };
 
   onTogglePopover = e => {
+    e.preventDefault();
     this.setState(({ active }) => ({ active: !active }));
     this.Popover.open();
   };
@@ -54,9 +56,8 @@ export default class ColorPicker extends Component {
       const currentStyle = editorState.getCurrentInlineStyle();
 
       if (selection.isCollapsed()) {
-        // TODO
-        // set next character color
-        // return;
+        // REMIND
+        // manually call setInlineStyleOverride to keep other inline styles
         const nextCurrentStyle = COLORS_MAP.map(v => v.style).reduce(
           (currentStyle, color) => currentStyle.delete(color),
           currentStyle
@@ -65,42 +66,42 @@ export default class ColorPicker extends Component {
           editorState,
           nextCurrentStyle.add(style)
         );
-        focus();
-        setTimeout(() => {
-          onChange(nextEditorState, () => this.setState({ color: style }));
-        }, 50);
+        onChange(nextEditorState, () => {
+          this.setState({ color: style });
+          this.Popover.close();
+        });
+      } else {
+        // turn off all active colors but apply only one color
+        const nextContentState = COLORS_MAP.map(v => v.style).reduce(
+          (contentState, color) =>
+            Modifier.removeInlineStyle(contentState, selection, color),
+          editorState.getCurrentContent()
+        );
+
+        let nextEditorState = EditorState.push(
+          editorState,
+          nextContentState,
+          'reset-inline-color'
+        );
+
+        nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
+
+        onChange(nextEditorState, () => {
+          this.setState({ color: style });
+          this.Popover.close();
+          focus();
+        });
       }
-
-      // turn off all active colors but apply only one color
-      const nextContentState = COLORS_MAP.map(v => v.style).reduce(
-        (contentState, color) =>
-          Modifier.removeInlineStyle(contentState, selection, color),
-        editorState.getCurrentContent()
-      );
-
-      let nextEditorState = EditorState.push(
-        editorState,
-        nextContentState,
-        'reset-inline-color'
-      );
-
-      nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
-
-      onChange(nextEditorState, () => {
-        this.setState({ color: style });
-        this.Popover.close();
-        focus();
-      });
+    } else {
+      this.Popover.close();
     }
   };
 
   render() {
     const { editorState } = this.props;
     const { active, color } = this.state;
-    const currentStyle = editorState.getCurrentInlineStyle().toJS();
-    const indicatorStyle =
-      currentStyle.find(style => COLORS_STYLE.some(v => v === style)) ||
-      DEFAULT_COLOR_KEY;
+    const currentStyle = editorState.getCurrentInlineStyle();
+    const indicatorStyle = currentStyle.has(color) ? color : DEFAULT_COLOR_KEY;
     return (
       <div className="RichEditor-toolbar__color-picker RichEditor-toolbar-button__wrapped">
         <span
@@ -111,7 +112,7 @@ export default class ColorPicker extends Component {
               'RichEditor-toolbar-button__active': active
             }
           )}
-          onClick={this.onTogglePopover}
+          onMouseDown={this.onTogglePopover}
         >
           <i>A</i>
           <div className="color-picker_indicator" style={BLOCK_COLORS[indicatorStyle]} />
@@ -127,10 +128,10 @@ export default class ColorPicker extends Component {
             <span
               key={v.key}
               className={classnames('color-picker__item', {
-                'color-picker__item__active': color === v.style
+                'color-picker__item__active': indicatorStyle === v.style
               })}
               style={BLOCK_COLORS[v.style]}
-              onClick={this.handleApplyColor.bind(this, v.style)}
+              onMouseDown={this.handleApplyColor.bind(this, v.style)}
             />
           ))}
         </Popover>
