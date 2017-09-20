@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { RichUtils } from 'draft-js';
 import ColorPicker from './colorPicker';
-import AddImageButton from './addImageButton';
+import { UploadImageButton, AddImageLinkButton } from './addImageButton';
 
 const noop = () => {};
 
@@ -38,7 +38,10 @@ const STYLE_TYPES = [
   },
   {
     key: 'action',
-    controls: [{ key: 'image', type: 'action', component: AddImageButton }]
+    controls: [
+      { key: 'imageUpload', type: 'action', component: UploadImageButton },
+      { key: 'imageLink', type: 'action', component: AddImageLinkButton },
+    ]
   }
 ];
 

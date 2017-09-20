@@ -59,14 +59,20 @@
   position: relative;
 }
 
-.RichEditor-toolbar__add-image__popover {
+.RichEditor-toolbar__add-image__upload {
+  input {
+    display: none;
+  }
+}
+
+.RichEditor-toolbar__add-image__link__popover {
   .RichEditor-popover-inner {
     width: 250px;
     height: 36px;
     display: flex;
     box-sizing: border-box;
   }
-  .add-image__input {
+  .add-image-link__input {
     flex: 1 1 0;
     border: none;
     padding: 10px;
@@ -77,7 +83,7 @@
       border-color: #999;
     }
   }
-  .add-image__button {
+  .add-image-link__button {
     width: 36px;
     line-height: 36px;
     background-color: #f6f6f6;
@@ -89,12 +95,7 @@
       background-color: #ececec;
     }
   }
-  .add-image__confirm-button {
-  }
-  .add-image__upload-button {
-    input {
-      display: none;
-    }
+  .add-image-link__confirm-button {
   }
 }
 
