@@ -11,9 +11,10 @@ import {
 } from './helper/decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
 import makePlugins, { AlignmentTool } from './plugins/';
-import defaultDecorator from './editorUtils/decoratorsEnhance';
-import { defaultBlockRenderMap } from './editorUtils/blockEnhance';
-import { defaultInlineStyleMap } from './editorUtils/inlineEnhance';
+import defaultDecorator from './editorUtils/editorDecorators';
+import { defaultBlockRenderMap } from './editorUtils/blockRenderMap';
+import { defaultInlineStyleMap } from './editorUtils/inlineStyles';
+import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './editorUtils/imageUtil';
 
 import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
@@ -45,9 +46,6 @@ const composedDecorators = composeDecorators(
  * For more information, see https://github.com/facebook/draft-js/blob/1ea57ab0b1a7e70f8f6211f96958e3bb74f2663a/docs/APIReference-Editor.md
  * @prop {JSON object}  content - (optional)
  *    content must be a stringified ContentState instance
- * @prop {object}       editorConfig - (optional)
- *    config options:
- *      spellCheck: boolean
  * @prop {string}       placeholder - (optional)
  *    placeholder of editor
  * @prop {array}        decorators - (optional)
@@ -65,34 +63,44 @@ const composedDecorators = composeDecorators(
  * @prop {object}       inlineStyleMap - (optional)
  *    override inline style by given type, return an object with key as style
  *    type and css properties as value
+ * @prop {func}         [eventHandler]: onFocus, onBlur, onPaste
+ * @prop {string}       imageUploadAction - required
+ *    action for upload request url
  */
 // @textEditDecorator
 class Typer extends Component {
   static propTypes = {
     content: PropTypes.string,
-    editorConfig: PropTypes.object,
     placeholder: PropTypes.string,
     decorators: PropTypes.array,
     blockRenderMap: PropTypes.object,
     blockRendererFn: PropTypes.func,
     blockStyleFn: PropTypes.func,
     inlineStyleMap: PropTypes.object,
-    plugins: PropTypes.array
+    plugins: PropTypes.array,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
+    onPaste: PropTypes.func,
+    imageUploadAction: PropTypes.string.isRequired
   };
 
   static defaultProps = {
     content: '',
-    editorConfig: {},
     placeholder: '请输入...',
     decorators: [],
     blockRenderMap: {},
     blockRendererFn: noop,
     blockStyleFn: noop,
     inlineStyleMap: {},
-    plugins: []
+    plugins: [],
+    onFocus: noop,
+    onBlur: noop,
+    onPaste: noop,
+    imageUploadAction: 'http://localhost:3000'
   };
 
   Typer = null;
+  DraftEditorElem = null;
   extendedDefaultProps = {};
   isFocus = false;
 
@@ -122,12 +130,16 @@ class Typer extends Component {
     setTimeout(() => {
       this.focus();
     }, 100);
+
+    this.DraftEditorElem = document.querySelector('.DraftEditor-root');
+    document.addEventListener('paste', this.handleOnPaste, false);
   }
 
-  onEditorChange = (editorState, enhancedEditor) => {
-    this.onChange(editorState);
-  };
-  onChange = (editorState, cb = noop) => this.setState({ editorState }, cb);
+  componentWillUnmount() {
+    document.removeEventListener('paste', this.handleOnPaste, false);
+  }
+
+  changeState = (editorState, cb = noop) => this.setState({ editorState }, cb);
   focus = () => this.Editor.focus();
   blur = () => this.Editor.blur();
 
@@ -148,19 +160,55 @@ class Typer extends Component {
   };
 
   handleKeyCommand = (command, editorState) => {
+    console.log(command);
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
-      this.onChange(newState);
+      this.changeState(newState);
       return true;
     }
     return false;
   };
 
-  handleOnFocus = () => {
-    this.isFocus = true;
+  handleOnChange = (editorState, enhancedEditor) => {
+    this.changeState(editorState);
   };
-  handleOnBlur = () => {
+  handleOnFocus = e => {
+    this.isFocus = true;
+    this.props.onFocus(e);
+  };
+  handleOnBlur = e => {
     this.isFocus = false;
+    this.props.onBlur(e);
+  };
+  handleOnPaste = e => {
+    const self = this;
+    if (this.isFocus) {
+      pasteAndUploadImage(e, this.handleOnPasteAndUploadImage)
+      this.props.onPaste(e);
+    }
+  };
+  handleOnPasteAndUploadImage = (file, event) => {
+    const url = event.target.result;
+    const nextEditorState = addImage(this.state.editorState, url, {
+      uploading: true
+    });
+    this.changeState(nextEditorState, () => {
+      const config = {
+        onUploadProgress: event => {
+          console.log(Math.round(event.loaded / event.total * 100));
+        }
+      };
+      uploadImage(this.props.imageUploadAction, file, config).then(res => {
+        const toMergeData = {
+          // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
+          uploading: false
+        };
+
+        this.blur();
+        const newEditorState = updateImage(this.state.editorState, toMergeData, url);
+        this.changeState(newEditorState, this.focus);
+      });
+    });
   };
 
   exportState = (type = '') => {
@@ -222,22 +270,27 @@ class Typer extends Component {
   };
 
   render() {
-    const { editorConfig, placeholder, blockStyleFn, blockRendererFn } = this.props;
+    const { placeholder, blockStyleFn, blockRendererFn } = this.props;
     const { editorState } = this.state;
     const EditorClassName = this.hidePlaceholder(editorState, 'RichEditor-editor');
     const extendedBlockRendererFn = this.extendBlockRendererFn(blockRendererFn);
+    const eventHandler = {
+      onFocus: this.handleOnFocus,
+      onBlur: this.handleOnBlur,
+      onChange: this.handleOnChange
+    };
     return (
       <div>
         <div className="RichEditor-root">
           <Toolbar
             editorState={editorState}
-            onChange={this.onChange}
+            changeState={this.changeState}
             focus={this.focus}
             blur={this.blur}
             toggleToolbar={this.toggleToolbar}
             config={{
               imageUpload: {
-                action: 'http://localhost:3000'
+                action: this.props.imageUploadAction
               }
             }}
           />
@@ -246,14 +299,11 @@ class Typer extends Component {
               editorState={editorState}
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
-              onChange={this.onEditorChange}
               placeholder={placeholder}
               blockRendererFn={extendedBlockRendererFn}
               blockStyleFn={blockStyleFn}
-              onFocus={this.handleOnFocus}
-              onBlur={this.handleOnBlur}
+              {...eventHandler}
               {...this.extendedDefaultProps}
-              {...editorConfig}
             />
             <AlignmentTool />
           </div>
@@ -317,12 +367,3 @@ class Typer extends Component {
 publicTyperDecorator(Typer);
 
 export default Typer;
-
-// function blockStyleFn(block) {
-//   switch (block.getType()) {
-//     case 'blockquote':
-//       return 'style-block-blockquote';
-//     default:
-//       return null;
-//   }
-// }

@@ -98,7 +98,7 @@ export default class Toolbar extends Component {
     const {
       controls,
       editorState,
-      onChange,
+      changeState,
       focus,
       blur,
       toggleToolbar,
@@ -118,7 +118,7 @@ export default class Toolbar extends Component {
                     <Elem
                       key={control.key}
                       editorState={editorState}
-                      onChange={onChange}
+                      changeState={changeState}
                       onToggle={toggleToolbar}
                       focus={focus}
                       blur={blur}

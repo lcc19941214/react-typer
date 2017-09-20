@@ -1,4 +1,4 @@
-// plugins
+// resizeable
 @resizeable-border-color: #ACCEF7;
 
 .RichEditor-plugin__enhance-resizeable__hand {
@@ -17,18 +17,21 @@
   }
 }
 .RichEditor-plugin__enhance-resizeable__focus {
-  box-shadow: 0 0 0 3px @resizeable-border-color!important;
+  border-radius: 0!important;
+  box-shadow: 0 0 0 2px @resizeable-border-color!important;
 }
 
 .RichEditor-plugin__enhance-resizeable__blur {
   &:hover {
-    box-shadow: 0 0 0 3px lighten(@resizeable-border-color, .95) !important;
+    border-radius: 0!important;
+    box-shadow: 0 0 0 2px lighten(@resizeable-border-color, .95) !important;
   }
 }
 
+// image-upload
 img.RichEditor-plugin__image-upload {
   transition: filter .5s ease-out;
 }
 img.RichEditor-plugin__image-upload__uploading {
-  filter: blur(5px);
+  filter: blur(2px);
 }

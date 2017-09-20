@@ -2,10 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { EditorState } from 'draft-js';
 import Popover from './popover';
-import { PLUGINS } from '../plugins/';
-import uploadImage from '../helper/uploadImage';
-
-const { imagePlugin } = PLUGINS;
+import { addImage, updateImage, uploadImage } from '../editorUtils/imageUtil';
 
 const noop = () => {};
 
@@ -36,10 +33,10 @@ export class AddImageLinkButton extends Component {
 
   handleConfirm = () => {
     const { url } = this.state;
-    const { editorState, onChange, focus } = this.props;
+    const { editorState, changeState, focus } = this.props;
     if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
-      const nextEditorState = imagePlugin.addImage(editorState, url);
-      onChange(nextEditorState, () => {
+      const nextEditorState = addImage(editorState, url);
+      changeState(nextEditorState, () => {
         this.setState({ url: '' });
         focus();
       });
@@ -100,17 +97,13 @@ export class UploadImageButton extends Component {
     if (file.type.includes('image/')) {
       const url = URL.createObjectURL(file);
 
-      const { editorState, onChange, focus, blur } = this.props;
-      const nextEditorState = imagePlugin.addImage(editorState, url, { uploading: true });
-      onChange(nextEditorState, () => {
+      const { editorState, changeState, focus, blur } = this.props;
+      const nextEditorState = addImage(editorState, url, { uploading: true });
+      changeState(nextEditorState, () => {
         // release url
         setTimeout(() => {
           URL.revokeObjectURL(url);
         }, 1000);
-
-        const entityKey = this.props.editorState
-          .getCurrentContent()
-          .getLastCreatedEntityKey();
 
         const config = {
           onUploadProgress: event => {
@@ -120,16 +113,13 @@ export class UploadImageButton extends Component {
         uploadImage(this.props.action, file, config).then(res => {
           const toMergeData = {
             // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
-            // src: res.src,
             uploading: false
           };
 
           // use blur now and focus later on to make rerender and change the image src
           blur();
-          const nextContentState = this.props.editorState
-            .getCurrentContent()
-            .mergeEntityData(entityKey, toMergeData);
-          onChange(EditorState.push(this.props.editorState, nextContentState), focus);
+          const newEditorState = updateImage(this.props.editorState, toMergeData, url);
+          changeState(newEditorState, focus);
         });
       });
     }

@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EditorState, Modifier, RichUtils } from 'draft-js';
 import classnames from 'classnames';
 import Popover from './popover';
-import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../editorUtils/inlineEnhance';
+import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../editorUtils/inlineStyles';
 
 const noop = () => {};
 
@@ -29,7 +29,7 @@ const COLORS_STYLE = COLORS_MAP.map(v => v.style);
 export default class ColorPicker extends Component {
   static propTypes = {
     onToggle: PropTypes.func,
-    onChange: PropTypes.func
+    changeState: PropTypes.func
   };
 
   state = {
@@ -49,7 +49,7 @@ export default class ColorPicker extends Component {
 
   handleApplyColor = (style, e) => {
     e.preventDefault();
-    const { editorState, onChange, onToggle, focus } = this.props;
+    const { editorState, changeState, onToggle, focus } = this.props;
 
     if (style !== this.state.color) {
       const selection = editorState.getSelection();
@@ -66,7 +66,7 @@ export default class ColorPicker extends Component {
           editorState,
           nextCurrentStyle.add(style)
         );
-        onChange(nextEditorState, () => {
+        changeState(nextEditorState, () => {
           this.setState({ color: style });
           this.Popover.close();
         });
@@ -86,7 +86,7 @@ export default class ColorPicker extends Component {
 
         nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
 
-        onChange(nextEditorState, () => {
+        changeState(nextEditorState, () => {
           this.setState({ color: style });
           this.Popover.close();
           focus();

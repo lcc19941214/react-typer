@@ -96,7 +96,7 @@ export function textEditDecorator(target) {
       } else {
         newEditorState = EditorState.push(this.state.editorState, contentState);
       }
-      this.onChange(newEditorState, this.focus);
+      this.changeState(newEditorState, this.focus);
     },
 
     modifyText(type, text = '', inlineStyles = [], entityKey, cb = noop) {
@@ -110,7 +110,7 @@ export function textEditDecorator(target) {
           entityKey
         );
         const newEditorState = EditorState.push(editorState, contentState);
-        this.onChange(newEditorState, cb);
+        this.changeState(newEditorState, cb);
       }
     },
 
@@ -141,7 +141,7 @@ export function textEditDecorator(target) {
           blockType
         );
         const newEditorState = EditorState.push(editorState, newContentState);
-        this.onChange(newEditorState, cb);
+        this.changeState(newEditorState, cb);
       }
     },
 
@@ -153,7 +153,7 @@ export function textEditDecorator(target) {
           entityKey,
           character
         );
-        this.onChange(AtomicBlockUtils, cb);
+        this.changeState(AtomicBlockUtils, cb);
       }
     }
   });
@@ -183,7 +183,7 @@ export function entityEditDecorator(target) {
         entityKey
       );
       const nextEditorState = EditorState.push(editorState, newContentState);
-      this.onChange(nextEditorState, cb);
+      this.changeState(nextEditorState, cb);
       return entityKey;
     }
   });
@@ -196,12 +196,12 @@ export function editorToolbarDecorator(target) {
       const { editorState } = this.state;
       switch (type) {
         case 'block':
-          this.onChange(RichUtils.toggleBlockType(editorState, style), cb);
+          this.changeState(RichUtils.toggleBlockType(editorState, style), cb);
           break;
         case 'inline':
           if (this.isFocus) {
             // prevent onblur inline style apply
-            this.onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
+            this.changeState(RichUtils.toggleInlineStyle(editorState, style), cb);
           }
           break;
         default:
