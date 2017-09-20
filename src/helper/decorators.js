@@ -199,7 +199,10 @@ export function editorToolbarDecorator(target) {
           this.onChange(RichUtils.toggleBlockType(editorState, style), cb);
           break;
         case 'inline':
-          this.onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
+          if (this.isFocus) {
+            // prevent onblur inline style apply
+            this.onChange(RichUtils.toggleInlineStyle(editorState, style), cb);
+          }
           break;
         default:
       }

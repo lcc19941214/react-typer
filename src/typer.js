@@ -6,6 +6,7 @@ import {
   publicTyperDecorator,
   textEditDecorator,
   entityEditDecorator,
+  editorToolbarDecorator,
   composeDecorators
 } from './helper/decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
@@ -34,7 +35,11 @@ const Editor = PluginEditor;
 
 const { plugins: defaultPlugins } = makePlugins();
 
-const composedDecorators = composeDecorators(textEditDecorator, entityEditDecorator);
+const composedDecorators = composeDecorators(
+  textEditDecorator,
+  entityEditDecorator,
+  editorToolbarDecorator
+);
 
 /**
  * For more information, see https://github.com/facebook/draft-js/blob/1ea57ab0b1a7e70f8f6211f96958e3bb74f2663a/docs/APIReference-Editor.md
@@ -89,6 +94,7 @@ class Typer extends Component {
 
   Typer = null;
   extendedDefaultProps = {};
+  isFocus = false;
 
   constructor(...args) {
     super(...args);
@@ -103,18 +109,20 @@ class Typer extends Component {
     this.replaceText = this.replaceText.bind(this);
     this.setBlock = this.setBlock.bind(this);
     this.addEntity = this.addEntity.bind(this);
+    this.toggleToolbar = this.toggleToolbar.bind(this);
   }
 
   componentWillMount() {
     this.extendedDefaultProps = this.extendDefaultProps(this.props);
   }
 
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.content !== this.props.content) {
-  //     const contentState = Typer.convertFromJSON(nextProps.content);
-  //     this.fill(contentState);
-  //   }
-  // }
+  componentDidMount() {
+    // REMIND
+    // editor takes some time to apply plugins and decorators
+    setTimeout(() => {
+      this.focus();
+    }, 100);
+  }
 
   onEditorChange = (editorState, enhancedEditor) => {
     this.onChange(editorState);
@@ -148,16 +156,25 @@ class Typer extends Component {
     return false;
   };
 
-  getContent = (type = '', options) => {
+  handleOnFocus = () => {
+    this.isFocus = true;
+    console.log('focus');
+  };
+  handleOnBlur = () => {
+    this.isFocus = false;
+    console.log('blur');
+  };
+
+  exportState = (type = '') => {
     const { editorState } = this.state;
     const contentState = editorState.getCurrentContent();
     let content = null;
     switch (type.toLowerCase()) {
       case 'json':
-        content = Typer.convertToJSON(contentState, options);
+        content = Typer.convertToJSON(contentState);
         break;
       case 'html':
-        content = Typer.convertToHTML(contentState, options);
+        content = Typer.convertToHTML(contentState, exportToHTMLOptions);
         break;
       default:
         content = convertToRaw(contentState);
@@ -211,7 +228,6 @@ class Typer extends Component {
     const { editorState } = this.state;
     const EditorClassName = this.hidePlaceholder(editorState, 'RichEditor-editor');
     const extendedBlockRendererFn = this.extendBlockRendererFn(blockRendererFn);
-
     return (
       <div>
         <div className="RichEditor-root">
@@ -219,6 +235,7 @@ class Typer extends Component {
             editorState={editorState}
             onChange={this.onChange}
             focus={this.focus}
+            toggleToolbar={this.toggleToolbar}
           />
           <div className={EditorClassName} onClick={this.focus}>
             <Editor
@@ -229,19 +246,19 @@ class Typer extends Component {
               placeholder={placeholder}
               blockRendererFn={extendedBlockRendererFn}
               blockStyleFn={blockStyleFn}
+              onFocus={this.handleOnFocus}
+              onBlur={this.handleOnBlur}
               {...this.extendedDefaultProps}
               {...editorConfig}
             />
             <AlignmentTool />
           </div>
         </div>
-        <button onClick={this.getContent.bind(this, '')}>log state</button>
+        <button onClick={this.exportState.bind(this, '')}>log state</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={this.getContent.bind(this, 'json')}>log JSON state</button>
+        <button onClick={this.exportState.bind(this, 'json')}>log JSON state</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={this.getContent.bind(this, 'html', exportToHTMLOptions)}>
-          getHTML
-        </button>
+        <button onClick={this.exportState.bind(this, 'html')}>getHTML</button>
         <br />
         <br />
         <input type="text" id="input-add-label" />

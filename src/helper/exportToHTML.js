@@ -1,20 +1,18 @@
 import { defaultInlineStyleMap, COLORS } from '../editorUtils/inlineEnhance';
 import * as EntityType from '../constants/entity';
 
-const ALIGNMENT = {
-  default: {},
-  center: {
-    margin: '0 auto'
-  },
-  right: {
-    marginLeft: 'auto'
-  }
+const IMAGE_ALIGNMENT = {
+  default: '',
+  center: 'margin: 0 auto;',
+  right: 'float: right;',
+  left: 'float: left;'
 };
 
 const COLORS_FOR_HTML = {};
 Object.keys(COLORS).forEach(color => {
   COLORS_FOR_HTML[color] = { style: COLORS[color] };
 });
+
 export const inlineStyles = {
   ITALIC: {
     element: 'i'
@@ -34,6 +32,22 @@ export const inlineStyles = {
   ...COLORS_FOR_HTML
 };
 
+// inject contentState from using
+export const blockRenderers = {
+  atomic: (contentState, contentBlock) => {
+    const entityKey = contentBlock.getEntityAt(0);
+    const entity = contentState.getEntity(entityKey);
+    const entityType = entity.get('type');
+    const data = entity.get('data');
+    switch (entityType) {
+      case EntityType.IMAGE:
+        const { src, alignment = 'default', width = 'auto' } = data;
+        return `<div><img src='${src}' style='${IMAGE_ALIGNMENT[alignment]}' width='${width}'/></div>`;
+      default:
+    }
+  }
+};
+
 export const entityStyleFn = entity => {
   const entityType = entity.get('type');
   const data = entity.getData();
@@ -46,23 +60,12 @@ export const entityStyleFn = entity => {
           ? inlineStyles['LABEL-HIGHLIGHT'].style
           : inlineStyles.LABEL.style
       };
-    case EntityType.IMAGE:
-      const { src, alignment = 'default', width = 100 } = data;
-      return {
-        element: 'img',
-        attributes: {
-          src: data.src
-        },
-        style: {
-          width: `${width}%`,
-          ...ALIGNMENT[alignment]
-        }
-      };
     default:
   }
 };
 
 export default {
   inlineStyles,
-  entityStyleFn
+  entityStyleFn,
+  blockRenderers
 };
