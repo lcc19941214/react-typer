@@ -42,7 +42,7 @@ export const blockRenderers = {
     switch (entityType) {
       case EntityType.IMAGE:
         const { src, alignment = 'default', width = 'auto' } = data;
-        return `<div><img src='${src}' style='${IMAGE_ALIGNMENT[alignment]}' width='${width}'/></div>`;
+        return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[alignment]}" width="${width}"/></div>`;
       default:
     }
   }
