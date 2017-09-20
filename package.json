@@ -2,7 +2,7 @@
   "name": "draft-js-demo",
   "version": "0.1.0",
   "private": true,
-  "dependencies": {
+  "devDependencies": {
     "autoprefixer": "7.1.2",
     "babel-core": "6.25.0",
     "babel-eslint": "7.2.3",
@@ -15,13 +15,6 @@
     "classnames": "^2.2.5",
     "css-loader": "0.28.4",
     "dotenv": "4.0.0",
-    "draft-js": "^0.10.1",
-    "draft-js-alignment-plugin": "^2.0.0-rc7",
-    "draft-js-export-html": "^1.1.0",
-    "draft-js-focus-plugin": "^2.0.0-rc7",
-    "draft-js-image-plugin": "^2.0.0-rc7",
-    "draft-js-plugins-editor": "^2.0.0-rc7",
-    "draft-js-resizeable-plugin": "2.0.0-rc7",
     "eslint": "4.4.1",
     "eslint-config-react-app": "^2.0.0",
     "eslint-loader": "1.9.0",
@@ -48,7 +41,18 @@
     "url-loader": "0.5.9",
     "webpack": "3.5.1",
     "webpack-dev-server": "2.7.1",
-    "webpack-manifest-plugin": "1.2.1",
+    "webpack-manifest-plugin": "1.2.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "draft-js": "^0.10.1",
+    "draft-js-alignment-plugin": "^2.0.0-rc7",
+    "draft-js-drag-n-drop-plugin": "2.0.0-rc7",
+    "draft-js-export-html": "^1.1.0",
+    "draft-js-focus-plugin": "^2.0.0-rc7",
+    "draft-js-image-plugin": "^2.0.0-rc7",
+    "draft-js-plugins-editor": "^2.0.0-rc7",
+    "draft-js-resizeable-plugin": "2.0.0-rc7",
     "whatwg-fetch": "2.0.3"
   },
   "scripts": {

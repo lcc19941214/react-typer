@@ -3,6 +3,7 @@ import createAlignmentPlugin from 'draft-js-alignment-plugin';
 import createFocusPlugin from 'draft-js-focus-plugin';
 import createResizeablePlugin from 'draft-js-resizeable-plugin';
 import createImagePlugin from 'draft-js-image-plugin';
+import createBlockDndPlugin from 'draft-js-drag-n-drop-plugin';
 import createEnhancedResizeablePlugin from './enhancedResizeablePlugin';
 import createImageUploadPlugin from './imageUploadPlugin';
 
@@ -11,7 +12,7 @@ import 'draft-js-focus-plugin/lib/plugin.css';
 
 const focusPlugin = createFocusPlugin();
 const resizeablePlugin = createResizeablePlugin();
-// const blockDndPlugin = createBlockDndPlugin();
+const blockDndPlugin = createBlockDndPlugin();
 const alignmentPlugin = createAlignmentPlugin();
 const { AlignmentTool } = alignmentPlugin;
 const enhancedResizeablePlugin = createEnhancedResizeablePlugin();
@@ -22,8 +23,8 @@ const imageDecorator = composeDecorators(
   resizeablePlugin.decorator,
   alignmentPlugin.decorator,
   enhancedResizeablePlugin.decorator,
+  blockDndPlugin.decorator,
   imageUploadPlugin.decorator // put imageUploadPlugin on the last to clear className produced by above plugins
-  // blockDndPlugin.decorator
 );
 
 const imagePlugin = createImagePlugin({ decorator: imageDecorator });
@@ -34,7 +35,8 @@ const PLUGINS = {
   imagePlugin,
   imageUploadPlugin,
   resizeablePlugin,
-  enhancedResizeablePlugin
+  enhancedResizeablePlugin,
+  blockDndPlugin
 };
 
 export { PLUGINS, AlignmentTool };
@@ -45,7 +47,8 @@ const defaultPlugins = [
   'imagePlugin',
   'resizeablePlugin',
   'enhancedResizeablePlugin',
-  'imageUploadPlugin'
+  'imageUploadPlugin',
+  'blockDndPlugin'
 ];
 
 export default function makePlugins(enabledPlugins = []) {
