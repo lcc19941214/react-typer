@@ -2,6 +2,15 @@
 @popover-target-margin: 15px;
 @arrow-distance: 100%;
 
+@keyframes scaleIn {
+  from {
+    transform: translate(-50%) scale(0);
+  }
+  to {
+    transform: translate(-50%) scale(1);
+  }
+}
+
 .RichEditor-popover {
   position: absolute;
   left: 50%;
@@ -11,8 +20,7 @@
   border-radius: 2px;
   box-shadow: 0px 1px 3px 0px #dcdcdc;
   box-sizing: border-box;
-  transition: transform .3s ease;
-  transform: translate(-50%);
+  animation: scaleIn .2s both;
   &::before {
     .RichEditor-popover-arrow-shadow();
   }
@@ -27,7 +35,7 @@
 
 // popover-arrow-common
 .RichEditor-popover-arrow-common {
-  content: ' ';
+  content: '';
   border: solid transparent;
   height: 0;
   width: 0;
