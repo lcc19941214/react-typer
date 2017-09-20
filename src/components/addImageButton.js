@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import { EditorState } from 'draft-js';
 import Popover from './popover';
 import { PLUGINS } from '../plugins/';
 
@@ -7,7 +8,7 @@ const { imagePlugin } = PLUGINS;
 
 const noop = () => {};
 
-export default class AddImage extends Component {
+export default class AddImageLink extends Component {
   // Start the popover closed
   state = {
     url: '',
@@ -27,9 +28,18 @@ export default class AddImage extends Component {
     this.setState(({ active }) => ({ active: false }));
   };
 
-  addImage = (url, cb = noop) => {
+  addImage = (...args) => {
+    const url = args[0];
+    let extraData = {};
+    let cb = args[1] || noop;
+
+    if (args.length > 2) {
+      extraData = args[1] || {};
+      cb = args[2] || noop;
+    }
+
     const { editorState, onChange, focus } = this.props;
-    onChange(imagePlugin.addImage(editorState, url), focus);
+    onChange(imagePlugin.addImage(editorState, url, extraData), focus);
     this.Popover.close();
     cb();
   };
@@ -57,14 +67,32 @@ export default class AddImage extends Component {
     const file = e.target.files[0];
     if (file.type.includes('image/')) {
       const url = URL.createObjectURL(file);
-      this.addImage(url, () => {
+      this.addImage(url, { uploading: true }, () => {
+        const { editorState, onChange, focus, blur } = this.props;
+        const contentState = editorState.getCurrentContent();
+        const entityKey = contentState.getLastCreatedEntityKey();
+
+        // release url
         setTimeout(() => {
           URL.revokeObjectURL(url);
+        }, 1000);
+
+        // TODO
+        // upload file to remote server and replace placeholder src
+        setTimeout(() => {
+          const toMergeData = {
+            // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
+            uploading: false
+          };
+
+          // use blur now and focus later on to make rerender and change the image src
+          blur();
+          const nextContentState = this.props.editorState
+            .getCurrentContent()
+            .mergeEntityData(entityKey, toMergeData);
+          onChange(EditorState.push(this.props.editorState, nextContentState), focus);
         }, 2000);
       });
-
-      // TODO
-      // upload file to remote server
     }
   };
 
@@ -119,5 +147,11 @@ export default class AddImage extends Component {
         </Popover>
       </div>
     );
+  }
+}
+
+export class UploadImage extends Component {
+  render() {
+    return <div />;
   }
 }
