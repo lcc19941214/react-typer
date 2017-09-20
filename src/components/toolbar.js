@@ -92,7 +92,7 @@ export default class Toolbar extends Component {
   };
 
   render() {
-    const { controls, editorState, onChange, focus, toggleToolbar } = this.props;
+    const { controls, editorState, onChange, focus, blur, toggleToolbar } = this.props;
     const groups = this.matchStyleControls(controls);
     const currentStyles = this.getCurrentStyles(editorState);
     return (
@@ -110,6 +110,7 @@ export default class Toolbar extends Component {
                       onChange={onChange}
                       onToggle={toggleToolbar}
                       focus={focus}
+                      blur={blur}
                     />
                   );
                 default:
@@ -126,6 +127,7 @@ export default class Toolbar extends Component {
                       )}
                       onToggle={toggleToolbar}
                       focus={focus}
+                      blur={blur}
                     />
                   );
               }

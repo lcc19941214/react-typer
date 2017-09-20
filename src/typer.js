@@ -158,11 +158,9 @@ class Typer extends Component {
 
   handleOnFocus = () => {
     this.isFocus = true;
-    console.log('focus');
   };
   handleOnBlur = () => {
     this.isFocus = false;
-    console.log('blur');
   };
 
   exportState = (type = '') => {
@@ -235,6 +233,7 @@ class Typer extends Component {
             editorState={editorState}
             onChange={this.onChange}
             focus={this.focus}
+            blur={this.blur}
             toggleToolbar={this.toggleToolbar}
           />
           <div className={EditorClassName} onClick={this.focus}>

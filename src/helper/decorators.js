@@ -182,8 +182,8 @@ export function entityEditDecorator(target) {
         selectionState,
         entityKey
       );
-      const _editorState = EditorState.push(editorState, newContentState);
-      this.onChange(_editorState, cb);
+      const nextEditorState = EditorState.push(editorState, newContentState);
+      this.onChange(nextEditorState, cb);
       return entityKey;
     }
   });
