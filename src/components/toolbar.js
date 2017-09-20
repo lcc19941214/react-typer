@@ -40,7 +40,7 @@ const STYLE_TYPES = [
     key: 'action',
     controls: [
       { key: 'imageUpload', type: 'action', component: UploadImageButton },
-      { key: 'imageLink', type: 'action', component: AddImageLinkButton },
+      { key: 'imageLink', type: 'action', component: AddImageLinkButton }
     ]
   }
 ];
@@ -95,7 +95,15 @@ export default class Toolbar extends Component {
   };
 
   render() {
-    const { controls, editorState, onChange, focus, blur, toggleToolbar } = this.props;
+    const {
+      controls,
+      editorState,
+      onChange,
+      focus,
+      blur,
+      toggleToolbar,
+      config = {}
+    } = this.props;
     const groups = this.matchStyleControls(controls);
     const currentStyles = this.getCurrentStyles(editorState);
     return (
@@ -114,6 +122,7 @@ export default class Toolbar extends Component {
                       onToggle={toggleToolbar}
                       focus={focus}
                       blur={blur}
+                      {...config[control.key] || {}}
                     />
                   );
                 default:

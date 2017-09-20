@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { EditorState } from 'draft-js';
 import Popover from './popover';
 import { PLUGINS } from '../plugins/';
+import uploadImage from '../helper/uploadImage';
 
 const { imagePlugin } = PLUGINS;
 
@@ -51,12 +52,9 @@ export class AddImageLinkButton extends Component {
     return (
       <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
         <span
-          className={classnames(
-            'RichEditor-toolbar-button',
-            {
-              'RichEditor-toolbar-button__active': active
-            }
-          )}
+          className={classnames('RichEditor-toolbar-button', {
+            'RichEditor-toolbar-button__active': active
+          })}
           onClick={this.onToggle}
         >
           +
@@ -88,6 +86,10 @@ export class AddImageLinkButton extends Component {
 }
 
 export class UploadImageButton extends Component {
+  static propTypes = {
+    action: PropTypes.string.isRequired
+  };
+
   handleUploadClick = () => {
     this.uploadInput.value = null;
     this.uploadInput.click();
@@ -110,11 +112,15 @@ export class UploadImageButton extends Component {
           .getCurrentContent()
           .getLastCreatedEntityKey();
 
-        // TODO
-        // upload file to remote server and replace placeholder src
-        setTimeout(() => {
+        const config = {
+          onUploadProgress: event => {
+            console.log(Math.round(event.loaded / event.total * 100));
+          }
+        };
+        uploadImage(this.props.action, file, config).then(res => {
           const toMergeData = {
             // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
+            // src: res.src,
             uploading: false
           };
 
@@ -124,7 +130,7 @@ export class UploadImageButton extends Component {
             .getCurrentContent()
             .mergeEntityData(entityKey, toMergeData);
           onChange(EditorState.push(this.props.editorState, nextContentState), focus);
-        }, 2000);
+        });
       });
     }
   };

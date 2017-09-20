@@ -235,6 +235,11 @@ class Typer extends Component {
             focus={this.focus}
             blur={this.blur}
             toggleToolbar={this.toggleToolbar}
+            config={{
+              imageUpload: {
+                action: 'http://localhost:3000'
+              }
+            }}
           />
           <div className={EditorClassName} onClick={this.focus}>
             <Editor
