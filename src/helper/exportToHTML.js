@@ -1,4 +1,5 @@
 import defaultInlineStyleMap, { COLORS, FONT_SIZES } from '../editorUtils/inlineStyles';
+import { INITIAL_UNSTYLED } from '../editorUtils/blockStyleFn';
 import * as EntityType from '../constants/entity';
 
 const IMAGE_ALIGNMENT = {
@@ -45,7 +46,7 @@ export const inlineStyles = {
   ...FONT_SIZES_FOR_HTML
 };
 
-// inject contentState from using
+// already injected contentState from using
 export const blockRenderers = {
   atomic: (contentState, contentBlock) => {
     const entityKey = contentBlock.getEntityAt(0);
@@ -60,6 +61,14 @@ export const blockRenderers = {
         ]}" width="${width}"/></div>`;
       default:
     }
+  }
+};
+
+export const blockStyleFn = contentBlock => {
+  if (contentBlock.getType() === EntityType.UNSTYLED) {
+    return {
+      style: INITIAL_UNSTYLED
+    };
   }
 };
 
@@ -81,6 +90,7 @@ export const entityStyleFn = entity => {
 
 export default {
   inlineStyles,
-  entityStyleFn,
-  blockRenderers
+  blockRenderers,
+  blockStyleFn,
+  entityStyleFn
 };

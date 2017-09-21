@@ -12,13 +12,13 @@ export const LABEL_HIGHLIGHT = Object.assign({}, LABEL, {
   backgroundColor: '#ffeb22'
 });
 
-export const DEFAULT_COLOR_KEY = 'INLINE-COLOR-02';
+export const DEFAULT_COLOR_KEY = 'INLINE-COLOR-01';
 export const COLORS = {
-  'INLINE-COLOR-01': {
-    color: '#ffffff'
-  },
   [DEFAULT_COLOR_KEY]: {
     color: '#3b3e44'
+  },
+  'INLINE-COLOR-02': {
+    color: '#ffffff'
   },
   'INLINE-COLOR-03': {
     color: '#fe2c23'
@@ -49,8 +49,8 @@ export const FONT_SIZES = {
   'INLINE-FONT-SIZE-SMALL': {
     fontSize: '12px'
   },
-  'INLINE-FONT-SIZE-MEDIUM': {
-    fontSize: 'initial'
+  [DEFAULT_FONT_SIZE_KEY]: {
+    fontSize: '14px'
   },
   'INLINE-FONT-SIZE-LARGE': {
     fontSize: '18px'
