@@ -175,6 +175,20 @@
     opacity: 1;
   }
 }
+.arrow {
+  padding-right: 12px;
+  &::before {
+    background-position: 7px;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 3px;
+    border: 3px solid transparent;
+    border-top-color: @toolbar-button-arrow-color;
+  }
+}
 .backgroundImage(@url, @size: 16px) {
   &::before {
     content: '';
@@ -206,9 +220,11 @@
   .backgroundImage('../static/images/underline.svg', 17px);
 }
 .RichEditor-toolbar-button-colorPicker {
+  .arrow();
   .backgroundImage('../static/images/color.svg');
 }
 .RichEditor-toolbar-button-fontSize {
+  .arrow();
   .backgroundImage('../static/images/font-size.svg');
 }
 .RichEditor-toolbar-button-ul {
