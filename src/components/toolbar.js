@@ -20,18 +20,16 @@ const STYLE_TYPES = [
   {
     key: 'fontStyle',
     controls: [
-      { key: 'bold', type: 'inline', label: <b>B</b>, style: 'BOLD', tooltip: '粗体' },
+      { key: 'bold', type: 'inline', style: 'BOLD', tooltip: '粗体' },
       {
         key: 'italic',
         type: 'inline',
-        label: <i style={{ fontFamily: 'serif' }}>I</i>,
         style: 'ITALIC',
         tooltip: '斜体'
       },
       {
         key: 'underline',
         type: 'inline',
-        label: <u>U</u>,
         style: 'UNDERLINE',
         tooltip: '下划线'
       }
@@ -40,7 +38,7 @@ const STYLE_TYPES = [
   {
     key: 'advancedFontStyle',
     controls: [
-      { key: 'color', type: 'action', component: ColorPicker, tooltip: '字体颜色' },
+      { key: 'colorPicker', type: 'action', component: ColorPicker, tooltip: '字体颜色' },
       { key: 'fontSize', type: 'action', component: FontSizeChanger, tooltip: '字号' }
     ]
   },
@@ -50,14 +48,12 @@ const STYLE_TYPES = [
       {
         key: 'ul',
         type: 'block',
-        label: 'UL',
         style: 'unordered-list-item',
         tooltip: '无序列表'
       },
       {
         key: 'ol',
         type: 'block',
-        label: 'OL',
         style: 'ordered-list-item',
         tooltip: '有序列表'
       }
@@ -73,9 +69,9 @@ const STYLE_TYPES = [
 ];
 
 // common button for both inline and block style
-const StyleButton = ({ style, type, active, label, onToggle, focus }) => (
+const StyleButton = ({ controlKey, style, type, active, label, onToggle, focus }) => (
   <span
-    className={classnames('RichEditor-toolbar-button', {
+    className={classnames('RichEditor-toolbar-button', `RichEditor-toolbar-button-${controlKey}`,{
       'RichEditor-toolbar-button__active': active
     })}
     onMouseDown={e => {
@@ -83,7 +79,7 @@ const StyleButton = ({ style, type, active, label, onToggle, focus }) => (
       onToggle(style, type, type === 'block' ? focus : noop);
     }}
   >
-    {label}
+    {label || null}
   </span>
 );
 
@@ -146,6 +142,7 @@ export default class Toolbar extends Component {
                   content = (
                     <Elem
                       key={control.key}
+                      controlKey={control.key}
                       editorState={editorState}
                       changeState={changeState}
                       onToggle={toggleToolbar}
@@ -159,6 +156,7 @@ export default class Toolbar extends Component {
                   content = (
                     <StyleButton
                       key={control.key}
+                      controlKey={control.key}
                       type={control.type}
                       label={control.label}
                       style={control.style}

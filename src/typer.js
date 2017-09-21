@@ -22,6 +22,8 @@ import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
 import './style/typer.less';
 
+import image from './static/images/image.svg';
+
 const noop = () => {};
 const equalization = val => val;
 

@@ -46,15 +46,19 @@ export class AddImageLinkButton extends Component {
 
   render() {
     const { active, url } = this.state;
+    const { controlKey } = this.props;
     return (
       <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
         <span
-          className={classnames('RichEditor-toolbar-button', {
-            'RichEditor-toolbar-button__active': active
-          })}
+          className={classnames(
+            'RichEditor-toolbar-button',
+            `RichEditor-toolbar-button-${controlKey}`,
+            {
+              'RichEditor-toolbar-button__active': active
+            }
+          )}
           onClick={this.onToggle}
         >
-          +
         </span>
         <Popover
           className="RichEditor-toolbar__add-image__link__popover"
@@ -135,13 +139,13 @@ export class UploadImageButton extends Component {
   };
 
   render() {
+    const { controlKey } = this.props;
     return (
       <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
         <span
-          className="RichEditor-toolbar-button RichEditor-toolbar__add-image__upload"
+          className={`RichEditor-toolbar-button RichEditor-toolbar__add-image__upload RichEditor-toolbar-button-${controlKey}`}
           onClick={this.handleUploadClick}
         >
-          ↑
           <input
             type="file"
             accept="image/*"

@@ -96,7 +96,7 @@ export default class FontSizeChanger extends Component {
   };
 
   render() {
-    const { editorState } = this.props;
+    const { editorState, controlKey } = this.props;
     const { active, fontSize } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
     return (
@@ -104,15 +104,13 @@ export default class FontSizeChanger extends Component {
         <span
           className={classnames(
             'RichEditor-toolbar-button',
-            'RichEditor-toolbar__font-size-changer__button',
+            `RichEditor-toolbar-button-${controlKey}`,
             {
               'RichEditor-toolbar-button__active': active
             }
           )}
           onMouseDown={this.onTogglePopover}
-        >
-          T
-        </span>
+        />
         <Popover
           className="RichEditor-toolbar__font-size-changer__popover"
           ref={ref => (this.Popover = ref)}

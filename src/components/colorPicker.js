@@ -94,7 +94,7 @@ export default class ColorPicker extends Component {
   };
 
   render() {
-    const { editorState } = this.props;
+    const { editorState, controlKey } = this.props;
     const { active, color } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
     const indicatorStyle = currentStyle.has(color) ? color : DEFAULT_COLOR_KEY;
@@ -103,14 +103,13 @@ export default class ColorPicker extends Component {
         <span
           className={classnames(
             'RichEditor-toolbar-button',
-            'RichEditor-toolbar__color-picker__button',
+            `RichEditor-toolbar-button-${controlKey}`,
             {
               'RichEditor-toolbar-button__active': active
             }
           )}
           onMouseDown={this.onTogglePopover}
         >
-          <i>A</i>
           <div className="color-picker_indicator" style={BLOCK_COLORS[indicatorStyle]} />
         </span>
         <Popover
