@@ -1,0 +1,38 @@
+@tooltip-bg-color: rgb(65, 70, 75);
+
+.RichEditor-tooltip {
+  .RichEditor-popover();
+  background-color: @tooltip-bg-color;
+  border: none;
+  color: #fff;
+  animation: scaleIn .1s both;
+}
+
+.RichEditor-tooltip-inner {
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.RichEditor-tooltip__hidden {
+  .RichEditor-popover__hidden();
+}
+
+.RichEditor-tooltip__bottom {
+  .RichEditor-popover__bottom();
+  &::before {
+    border-bottom-color: @tooltip-bg-color;
+  }
+  &::after {
+    border-bottom-color: @tooltip-bg-color;
+  }
+}
+
+.RichEditor-tooltip__top {
+  .RichEditor-popover__top();
+  &::before {
+    border-top-color: @tooltip-bg-color;
+  }
+  &::after {
+    border-top-color: @tooltip-bg-color;
+  }
+}

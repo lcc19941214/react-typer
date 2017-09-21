@@ -37,11 +37,9 @@ export const inlineStyles = {
     element: 'i'
   },
   LABEL: {
-    element: 'mark',
     style: defaultInlineStyleMap.LABEL
   },
   'LABEL-HIGHLIGHT': {
-    element: 'mark',
     style: Object.assign(
       {},
       defaultInlineStyleMap.LABEL,

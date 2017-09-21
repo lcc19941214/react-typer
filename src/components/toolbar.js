@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { RichUtils } from 'draft-js';
+import Tooltip from './tooltip';
 import ColorPicker from './colorPicker';
 import FontSizeChanger from './fontSizeChanger';
 import { UploadImageButton, AddImageLinkButton } from './addImageButton';
@@ -11,43 +12,62 @@ const STYLE_TYPES = [
   {
     key: 'headline',
     controls: [
-      { key: 'h1', type: 'block', label: 'H1', style: 'header-one' },
-      { key: 'h2', type: 'block', label: 'H2', style: 'header-two' },
-      { key: 'h3', type: 'block', label: 'H3', style: 'header-three' }
+      { key: 'h1', type: 'block', label: 'H1', style: 'header-one', tooltip: '一级标题' },
+      { key: 'h2', type: 'block', label: 'H2', style: 'header-two', tooltip: '二级标题' },
+      { key: 'h3', type: 'block', label: 'H3', style: 'header-three', tooltip: '三级标题' }
     ]
   },
   {
     key: 'fontStyle',
     controls: [
-      { key: 'bold', type: 'inline', label: <b>B</b>, style: 'BOLD' },
+      { key: 'bold', type: 'inline', label: <b>B</b>, style: 'BOLD', tooltip: '粗体' },
       {
         key: 'italic',
         type: 'inline',
         label: <i style={{ fontFamily: 'serif' }}>I</i>,
-        style: 'ITALIC'
+        style: 'ITALIC',
+        tooltip: '斜体'
       },
-      { key: 'underline', type: 'inline', label: <u>U</u>, style: 'UNDERLINE' }
+      {
+        key: 'underline',
+        type: 'inline',
+        label: <u>U</u>,
+        style: 'UNDERLINE',
+        tooltip: '下划线'
+      }
     ]
   },
   {
     key: 'advancedFontStyle',
     controls: [
-      { key: 'color', type: 'action', component: ColorPicker },
-      { key: 'fontSize', type: 'action', component: FontSizeChanger }
+      { key: 'color', type: 'action', component: ColorPicker, tooltip: '字体颜色' },
+      { key: 'fontSize', type: 'action', component: FontSizeChanger, tooltip: '字号' }
     ]
   },
   {
     key: 'list',
     controls: [
-      { key: 'ul', type: 'block', label: 'UL', style: 'unordered-list-item' },
-      { key: 'ol', type: 'block', label: 'OL', style: 'ordered-list-item' }
+      {
+        key: 'ul',
+        type: 'block',
+        label: 'UL',
+        style: 'unordered-list-item',
+        tooltip: '无序列表'
+      },
+      {
+        key: 'ol',
+        type: 'block',
+        label: 'OL',
+        style: 'ordered-list-item',
+        tooltip: '有序列表'
+      }
     ]
   },
   {
     key: 'action',
     controls: [
-      { key: 'imageUpload', type: 'action', component: UploadImageButton },
-      { key: 'imageLink', type: 'action', component: AddImageLinkButton }
+      { key: 'imageUpload', type: 'action', component: UploadImageButton, tooltip: '图片' },
+      { key: 'imageLink', type: 'action', component: AddImageLinkButton, tooltip: '图片链接' }
     ]
   }
 ];
@@ -109,6 +129,7 @@ export default class Toolbar extends Component {
       focus,
       blur,
       toggleToolbar,
+      showTooltip,
       config = {}
     } = this.props;
     const groups = this.matchStyleControls(controls);
@@ -118,10 +139,11 @@ export default class Toolbar extends Component {
         {groups.map(group => (
           <div className="RichEditor-toolbar-group" key={group.key}>
             {group.controls.map(control => {
+              let content;
               switch (control.type) {
                 case 'action':
                   const Elem = control.component;
-                  return (
+                  content = (
                     <Elem
                       key={control.key}
                       editorState={editorState}
@@ -132,8 +154,9 @@ export default class Toolbar extends Component {
                       {...config[control.key] || {}}
                     />
                   );
+                  break;
                 default:
-                  return (
+                  content = (
                     <StyleButton
                       key={control.key}
                       type={control.type}
@@ -150,6 +173,13 @@ export default class Toolbar extends Component {
                     />
                   );
               }
+              return showTooltip ? (
+                <Tooltip placement="bottom" key={control.key} placement="bottom" content={control.tooltip}>
+                  {content}
+                </Tooltip>
+              ) : (
+                content
+              );
             })}
           </div>
         ))}

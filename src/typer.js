@@ -260,6 +260,7 @@ class Typer extends Component {
       <div>
         <div className="RichEditor-root">
           <Toolbar
+            showTooltip
             editorState={editorState}
             changeState={this.changeState}
             focus={this.focus}
