@@ -1,4 +1,4 @@
-import Editor, { composeDecorators } from 'draft-js-plugins-editor';
+import { composeDecorators } from 'draft-js-plugins-editor';
 import createAlignmentPlugin from 'draft-js-alignment-plugin';
 import createFocusPlugin from 'draft-js-focus-plugin';
 import createResizeablePlugin from 'draft-js-resizeable-plugin';

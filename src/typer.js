@@ -9,9 +9,14 @@ import {
   editorToolbarDecorator,
   composeDecorators
 } from './helper/decorators';
-import exportToHTMLOptions from './helper/exportToHTML';
+import { exportToHTMLOptions } from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
-import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './editorUtils/imageUtil';
+import {
+  addImage,
+  updateImage,
+  uploadImage,
+  pasteAndUploadImage
+} from './editorUtils/imageUtil';
 
 import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
@@ -169,7 +174,7 @@ class Typer extends Component {
   };
   handleOnPaste = e => {
     if (this.isFocus) {
-      pasteAndUploadImage(e, this.handleOnPasteAndUploadImage)
+      pasteAndUploadImage(e, this.handleOnPasteAndUploadImage);
       this.props.onPaste(e);
     }
   };
@@ -184,7 +189,7 @@ class Typer extends Component {
         onUploadProgress: event => {
           const progress = Math.round(event.loaded / event.total * 100);
           if (progress !== 100) {
-            this.changeState(updateImage(this.state.editorState, { progress }, url))
+            this.changeState(updateImage(this.state.editorState, { progress }, url));
           }
         }
       };
@@ -248,6 +253,9 @@ class Typer extends Component {
       onBlur: this.handleOnBlur,
       onChange: this.handleOnChange
     };
+
+    // const html = this.exportState('html');
+
     return (
       <div>
         <div className="RichEditor-root">
@@ -275,57 +283,52 @@ class Typer extends Component {
             <AlignmentTool />
           </div>
         </div>
-        <button onClick={this.exportState.bind(this, '')}>log state</button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={this.exportState.bind(this, 'json')}>log JSON state</button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <button onClick={this.exportState.bind(this, 'html')}>getHTML</button>
-        <br />
-        <br />
-        <input type="text" id="input-add-label" />
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <button
-          onClick={() => {
-            const input = document.querySelector('#input-add-label');
-            const val = input.value;
-            this.addLabel(val, () => {
-              input.value = '';
-            });
+        <div
+          className="action-form"
+          style={{
+            maxWidth: '700px',
+            minWidth: '600px',
+            margin: '20px auto'
+          }}
+        >
+          <button onClick={this.exportState.bind(this, '')}>log state</button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button onClick={this.exportState.bind(this, 'json')}>log JSON state</button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button onClick={this.exportState.bind(this, 'html')}>getHTML</button>
+          <br />
+          <br />
+          <input type="text" id="input-add-label" />
+          &nbsp;&nbsp;&nbsp;&nbsp;
+          <button
+            onClick={() => {
+              const input = document.querySelector('#input-add-label');
+              const val = input.value;
+              this.addLabel(val, () => {
+                input.value = '';
+              });
 
-            setTimeout(() => {
-              this.insertText(' ');
-            }, 10);
+              setTimeout(() => {
+                this.insertText(' ');
+              }, 10);
+            }}
+          >
+            addLabel
+          </button>
+        </div>
+        <div
+          className="html-previewer"
+          style={{
+            maxWidth: '680px',
+            minWidth: '580px',
+            margin: '40px auto',
+            padding: '10px',
+            border: '1px solid #ddd',
+            fontSize: '14px'
           }}
         >
-          addLabel
-        </button>
-        <br />
-        <br />
-        <input type="text" id="input-insert-text" />
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <button
-          onClick={() => {
-            const input = document.querySelector('#input-insert-text');
-            const val = input.value;
-            this.insertText(val, undefined, undefined, this.focus);
-          }}
-        >
-          insertText
-        </button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <button
-          onClick={() => {
-            this.setBlock(
-              {
-                blockType: 'header-one'
-              },
-              this.focus
-            );
-          }}
-        >
-          insertType
-        </button>
-        &nbsp;&nbsp;&nbsp;&nbsp;
+          {/* <div dangerouslySetInnerHTML={{ __html: html }} /> */}
+        </div>
       </div>
     );
   }

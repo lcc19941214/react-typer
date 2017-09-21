@@ -1,17 +1,54 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import classnames from 'classnames';
 import * as EntityType from '../constants/entity';
 
+const store = {
+  getEditorRef: undefined,
+  getEditorState: undefined
+};
+
 // applied to resizeable image
 // need focus and resizeable
-const createDecorator = (config = {}) => WrappedComponent =>
+const createDecorator = ({ config = {}, store }) => WrappedComponent =>
   class EnhancedResizeableDecorator extends Component {
+    wrapperWidth = undefined;
+    state = {
+      style: {}
+    };
+
+    componentWillUpdate(nextProps, nextState) {
+      setTimeout(() => {
+        // this.resizeImg(nextProps, nextState);
+      }, 10);
+    }
+
+    resizeImg = (nextProps, nextState) => {
+      // const wrapper = store.getEditorRef().refs.editor;
+      const imageElem = ReactDOM.findDOMNode(this);
+      const wrapper = imageElem.parentElement;
+      const wrapperWidth = wrapper.getBoundingClientRect
+        ? wrapper.getBoundingClientRect().width
+        : wrapper.clientWidth;
+      const { style } = nextProps;
+      if (style.width !== this.props.style.width || this.wrapperWidth !== wrapperWidth) {
+        this.setState({
+          style: Object.assign({}, style, {
+            width: `${wrapperWidth * parseFloat(style.width, 10) / 100}px`
+          })
+        });
+      }
+      this.wrapperWidth = wrapperWidth;
+    };
+
     render() {
-      const { blockProps, className, ...elemProps } = this.props;
+      const { blockProps, className, style, ...elemProps } = this.props;
       const { isFocused, resizeData } = blockProps;
+      const { style: overrideStyle } = this.state;
       return (
         <WrappedComponent
           {...this.props}
+          style={Object.assign({}, style, overrideStyle)}
           className={classnames(className, {
             'RichEditor-plugin__enhance-resizeable__focus': isFocused && resizeData.src,
             'RichEditor-plugin__enhance-resizeable__blur': !isFocused && resizeData.src
@@ -22,21 +59,9 @@ const createDecorator = (config = {}) => WrappedComponent =>
   };
 
 export default config => ({
-  decorator: createDecorator(config),
-  blockRendererFn: (block, { getEditorState }) => {
-    if (block.getType() === 'atomic') {
-      const contentState = getEditorState().getCurrentContent();
-      const entityKey = block.getEntityAt(0);
-      if (!entityKey) return null;
-      const entity = contentState.getEntity(entityKey);
-      const type = entity.getType();
-      if (type === 'image') {
-        return {
-          props: {
-            enhanceResizeable: true
-          }
-        };
-      }
-    }
-  }
+  initialize: ({ getEditorRef, getEditorState }) => {
+    store.getEditorRef = getEditorRef;
+    store.getEditorState = getEditorState;
+  },
+  decorator: createDecorator({ config, store })
 });

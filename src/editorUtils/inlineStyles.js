@@ -61,6 +61,12 @@ export const FONT_SIZES = {
 };
 export const DEFAULT_FONT_SIZE = FONT_SIZES[DEFAULT_FONT_SIZE_KEY];
 
+export const defaultStyleRules = {
+  ...DEFAULT_COLOR,
+  ...DEFAULT_FONT_SIZE,
+  lineHeight: '1.8'
+};
+
 const defaultInlineStyleMap = {
   LABEL,
   'LABEL-HIGHLIGHT': LABEL_HIGHLIGHT,

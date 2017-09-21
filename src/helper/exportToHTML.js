@@ -1,4 +1,10 @@
-import defaultInlineStyleMap, { COLORS, FONT_SIZES } from '../editorUtils/inlineStyles';
+import { stateToHTML } from 'draft-js-export-html';
+import defaultInlineStyleMap, {
+  COLORS,
+  FONT_SIZES,
+  defaultStyleRules
+} from '../editorUtils/inlineStyles';
+import util from '../editorUtils/util';
 import { INITIAL_UNSTYLED } from '../editorUtils/blockStyleFn';
 import * as EntityType from '../constants/entity';
 
@@ -55,10 +61,12 @@ export const blockRenderers = {
     const data = entity.get('data');
     switch (entityType) {
       case EntityType.IMAGE:
-        const { src, alignment = 'default', width = 'auto' } = data;
+        const { src, alignment = 'default' } = data;
+        const imageElem = document.querySelector(`img[src="${src}"]`);
+        const width = imageElem.clientWidth;
         return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[
           alignment
-        ]}" width="${width}"/></div>`;
+        ]} display: block;" width="${width}px"/></div>`;
       default:
     }
   }
@@ -88,9 +96,21 @@ export const entityStyleFn = entity => {
   }
 };
 
-export default {
+export const exportToHTMLOptions = {
   inlineStyles,
   blockRenderers,
   blockStyleFn,
   entityStyleFn
+};
+
+export default (contentState, options) => {
+  const html = stateToHTML(contentState, options);
+  const rules = [];
+  [defaultStyleRules].forEach(styles => {
+    Object.keys(styles).forEach(prop => {
+      rules.push(`${util.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
+    });
+  });
+  const _html = `<div style="${rules.join('; ')}">${html}</div>`;
+  return _html;
 };

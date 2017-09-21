@@ -2,9 +2,9 @@
 
 import Draft from 'draft-js';
 import Immutable, { OrderedSet } from 'immutable';
-import { stateToHTML } from 'draft-js-export-html';
 import classnames from 'classnames';
 import makePlugins from '../plugins/';
+import convertToHTML from './exportToHTML';
 import defaultDecorator from '../editorUtils/editorDecorators';
 import defaultBlockRenderMap from '../editorUtils/blockRenderMap';
 import defaultInlineStyleMap from '../editorUtils/inlineStyles';
@@ -46,7 +46,7 @@ export function publicTyperDecorator(target) {
           contentState
         );
       });
-      const html = stateToHTML(contentState, _options);
+      const html = convertToHTML(contentState, _options);
       return html;
     },
 
