@@ -3,6 +3,14 @@
 import Draft from 'draft-js';
 import Immutable, { OrderedSet } from 'immutable';
 import { stateToHTML } from 'draft-js-export-html';
+import classnames from 'classnames';
+import makePlugins from '../plugins/';
+import defaultDecorator from '../editorUtils/editorDecorators';
+import defaultBlockRenderMap from '../editorUtils/blockRenderMap';
+import defaultInlineStyleMap from '../editorUtils/inlineStyles';
+import defaultBlockStyleFn from '../editorUtils/blockStyleFn';
+import defaultBlockRendererFn from '../editorUtils/blockRendererFn';
+const { plugins: defaultPlugins } = makePlugins();
 
 const {
   EditorState,
@@ -28,7 +36,7 @@ export function composeDecorators(...decorators) {
 // public typer method
 export function publicTyperDecorator(target) {
   Object.assign(target, {
-    convertToHTML: (contentState, options = {}) => {
+    convertToHTML(contentState, options = {}) {
       // stateToHTML option api only support current contentBlock,
       // must manually inject contentState to stateToHTML options
       const _options = Object.assign({}, options, { blockRenderers: {} });
@@ -42,28 +50,70 @@ export function publicTyperDecorator(target) {
       return html;
     },
 
-    convertToJSON: contentState => {
+    convertToJSON(contentState) {
       const raw = convertToRaw(contentState);
       return JSON.stringify(raw);
     },
 
-    convertFromJSON: contentState => {
+    convertFromJSON(contentState) {
       const raw = JSON.parse(contentState);
       return convertFromRaw(raw);
     },
 
-    extendBlockRenderMap: (blockRenderMap, defaultBlockRenderMap = {}) =>
-      Draft.DefaultDraftBlockRenderMap.merge(
+    extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap = {}) {
+      return Draft.DefaultDraftBlockRenderMap.merge(
         Immutable.Map(Object.assign({}, defaultBlockRenderMap, blockRenderMap))
-      ),
+      );
+    },
 
-    extendInlineStyleMap: (inlineStyleMap, defaultInlineStyleMap = {}) =>
-      Object.assign({}, defaultInlineStyleMap, inlineStyleMap),
+    extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn) {
+      return function(contentBlock) {
+        const defaultVal = defaultBlockStyleFn(contentBlock) || {};
+        return classnames(
+          defaultBlockStyleFn(contentBlock) || '',
+          blockStyleFn(contentBlock, defaultVal) || ''
+        );
+      };
+    },
 
-    extendDecorators: (decorators, defaultDecorator = []) =>
-      [].concat(defaultDecorator, decorators),
+    extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn) {
+      return function(contentBlock) {
+        const defaultVal = defaultBlockRendererFn(contentBlock) || {};
+        return Object.assign(
+          {},
+          defaultVal,
+          blockRendererFn(contentBlock, defaultVal) || {}
+        );
+      };
+    },
 
-    extendPlugins: (plugins, defaultPlugins = []) => [].concat(defaultPlugins, plugins)
+    extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap = {}) {
+      return Object.assign({}, defaultInlineStyleMap, inlineStyleMap);
+    },
+    extendDecorators(decorators, defaultDecorator = []) {
+      return [].concat(defaultDecorator, decorators);
+    },
+    extendPlugins(plugins, defaultPlugins = []) {
+      return [].concat(defaultPlugins, plugins);
+    },
+
+    extendDefaultProps({
+      decorators = [],
+      plugins = [],
+      blockRenderMap = {},
+      blockStyleFn = noop,
+      blockRendererFn = noop,
+      inlineStyleMap = {}
+    }) {
+      return {
+        decorators: this.extendDecorators(decorators, defaultDecorator),
+        plugins: this.extendPlugins(plugins, defaultPlugins),
+        blockRenderMap: this.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
+        blockRendererFn: this.extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn),
+        blockStyleFn: this.extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn),
+        customStyleMap: this.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
+      };
+    }
   });
 }
 

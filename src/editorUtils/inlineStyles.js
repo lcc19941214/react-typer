@@ -61,9 +61,11 @@ export const FONT_SIZES = {
 };
 export const DEFAULT_FONT_SIZE = FONT_SIZES[DEFAULT_FONT_SIZE_KEY];
 
-export const defaultInlineStyleMap = {
+const defaultInlineStyleMap = {
   LABEL,
   'LABEL-HIGHLIGHT': LABEL_HIGHLIGHT,
   ...COLORS,
   ...FONT_SIZES
 };
+
+export default defaultInlineStyleMap;

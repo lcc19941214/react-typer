@@ -10,10 +10,7 @@ import {
   composeDecorators
 } from './helper/decorators';
 import exportToHTMLOptions from './helper/exportToHTML';
-import makePlugins, { AlignmentTool } from './plugins/';
-import defaultDecorator from './editorUtils/editorDecorators';
-import { defaultBlockRenderMap } from './editorUtils/blockRenderMap';
-import { defaultInlineStyleMap } from './editorUtils/inlineStyles';
+import { AlignmentTool } from './plugins/';
 import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './editorUtils/imageUtil';
 
 import 'draft-js/dist/Draft.css';
@@ -34,8 +31,6 @@ const {
 const Editor = PluginEditor;
 // const Editor = OriginalEditor;
 
-const { plugins: defaultPlugins } = makePlugins();
-
 const composedDecorators = composeDecorators(
   textEditDecorator,
   entityEditDecorator,
@@ -43,7 +38,7 @@ const composedDecorators = composeDecorators(
 );
 
 /**
- * For more information, see https://github.com/facebook/draft-js/blob/1ea57ab0b1a7e70f8f6211f96958e3bb74f2663a/docs/APIReference-Editor.md
+ * For more information, see https://github.com/facebook/draft-js/blob/master/docs/APIReference-Editor.md
  * @prop {JSON object}  content - (optional)
  *    content must be a stringified ContentState instance
  * @prop {string}       placeholder - (optional)
@@ -100,7 +95,6 @@ class Typer extends Component {
   };
 
   Typer = null;
-  extendedDefaultProps = {};
   isFocus = false;
 
   constructor(...args) {
@@ -117,10 +111,6 @@ class Typer extends Component {
     this.setBlock = this.setBlock.bind(this);
     this.addEntity = this.addEntity.bind(this);
     this.toggleToolbar = this.toggleToolbar.bind(this);
-  }
-
-  componentWillMount() {
-    this.extendedDefaultProps = this.extendDefaultProps(this.props);
   }
 
   componentDidMount() {
@@ -158,7 +148,6 @@ class Typer extends Component {
   };
 
   handleKeyCommand = (command, editorState) => {
-    console.log(command);
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       this.changeState(newState);
@@ -231,27 +220,6 @@ class Typer extends Component {
     return content;
   };
 
-  extendBlockRendererFn = blockRendererFn => {
-    return contentBlock => {
-      const type = contentBlock.getType();
-      switch (type) {
-        default:
-          const { blockRendererFn } = this.props;
-          return blockRendererFn(contentBlock);
-      }
-    };
-  };
-
-  extendDefaultProps = props => {
-    const { decorators, plugins, blockRenderMap, blockStyleFn, inlineStyleMap } = props;
-    return {
-      decorators: Typer.extendDecorators(decorators, defaultDecorator),
-      plugins: Typer.extendPlugins(plugins, defaultPlugins),
-      blockRenderMap: Typer.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
-      customStyleMap: Typer.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
-    };
-  };
-
   addLabel = (val, cb) => {
     if (val) {
       const highlight = val.length > 5;
@@ -272,10 +240,9 @@ class Typer extends Component {
   };
 
   render() {
-    const { placeholder, blockStyleFn, blockRendererFn } = this.props;
+    const { placeholder } = this.props;
     const { editorState } = this.state;
     const EditorClassName = this.hidePlaceholder(editorState, 'RichEditor-editor');
-    const extendedBlockRendererFn = this.extendBlockRendererFn(blockRendererFn);
     const eventHandler = {
       onFocus: this.handleOnFocus,
       onBlur: this.handleOnBlur,
@@ -302,10 +269,8 @@ class Typer extends Component {
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
               placeholder={placeholder}
-              blockRendererFn={extendedBlockRendererFn}
-              blockStyleFn={blockStyleFn}
               {...eventHandler}
-              {...this.extendedDefaultProps}
+              {...Typer.extendDefaultProps(this.props)}
             />
             <AlignmentTool />
           </div>

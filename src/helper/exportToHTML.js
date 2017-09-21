@@ -1,4 +1,4 @@
-import { defaultInlineStyleMap, COLORS, FONT_SIZES } from '../editorUtils/inlineStyles';
+import defaultInlineStyleMap, { COLORS, FONT_SIZES } from '../editorUtils/inlineStyles';
 import * as EntityType from '../constants/entity';
 
 const IMAGE_ALIGNMENT = {
