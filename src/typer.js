@@ -283,7 +283,7 @@ class Typer extends Component {
               {...eventHandler}
               {...Typer.extendDefaultProps(this.props)}
             />
-            <AlignmentTool />
+            {/* <AlignmentTool /> */}
           </div>
         </div>
         <div
