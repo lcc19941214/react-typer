@@ -69,11 +69,12 @@ const STYLE_TYPES = [
 ];
 
 // common button for both inline and block style
-const StyleButton = ({ controlKey, style, type, active, label, onToggle, focus }) => (
+const StyleButton = ({ controlKey, style, type, active, label, onToggle, focus, blur, ...extraProps }) => (
   <span
     className={classnames('RichEditor-toolbar-button', `RichEditor-toolbar-button-${controlKey}`,{
       'RichEditor-toolbar-button__active': active
     })}
+    {...extraProps}
     onMouseDown={e => {
       e.preventDefault();
       onToggle(style, type, type === 'block' ? focus : noop);
@@ -172,7 +173,7 @@ export default class Toolbar extends Component {
                   );
               }
               return showTooltip ? (
-                <Tooltip placement="bottom" key={control.key} placement="bottom" content={control.tooltip}>
+                <Tooltip placement="bottom" key={control.key} content={control.tooltip}>
                   {content}
                 </Tooltip>
               ) : (

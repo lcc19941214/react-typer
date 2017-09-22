@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM, { findDOMNode } from 'react-dom';
 import classnames from 'classnames';
 import util from '../editorUtils/util';
 
@@ -9,13 +9,17 @@ const defaultVal = {
   renderLayout: () => document.querySelector('body')
 };
 
+const PLACEMENT = ['top', 'bottom'];
+const TRIGGER = ['hover', 'click'];
+
 const PLACEMENT_MAP = {
   top: 'bottom',
   bottom: 'top'
 };
 
-const TooltipItem = ({ style = {}, content, placement, visible, className = '' }) => {
-  const cls = `RichEditor-tooltip__${placement}`;
+const TooltipPopup = ({ style = {}, placement, visible, className = '', children }) => {
+  const p = PLACEMENT.includes(placement) ? placement : defaultVal.placement;
+  const cls = `RichEditor-tooltip__${p}`;
   return (
     <div
       className={classnames('RichEditor-tooltip', cls, className, {
@@ -23,7 +27,7 @@ const TooltipItem = ({ style = {}, content, placement, visible, className = '' }
       })}
       style={style}
     >
-      <div className="RichEditor-tooltip-inner">{content}</div>
+      <div className="RichEditor-tooltip-inner">{children}</div>
     </div>
   );
 };
@@ -31,66 +35,48 @@ const TooltipItem = ({ style = {}, content, placement, visible, className = '' }
 export default class Tooltip extends Component {
   static defaultProps = defaultVal;
 
-  static placement = ['top', 'bottom'];
-  static trigger = ['hover', 'click'];
-
-  constructor(...arg) {
-    super(...arg);
-
-    this.eventHook = {
-      mouseenter: this.open,
-      mouseleave: this.close
-    };
-    this.renderLayout = defaultVal.renderLayout();
-    this.popup = null;
-    this.openId = 0;
-  }
-
+  openId = 0;
   state = {
     visible: false
   };
 
-  // When the tooltip is visible and users click anywhere on the page,
-  // the tooltip should close
   componentDidMount() {
-    this.elem = ReactDOM.findDOMNode(this);
+    this.elem = this.getRootDOMNode();
     this.popup = document.createElement('div');
-
-    this.createHook(this.elem, this.eventHook);
-    this.createHook(document, { click: this.close });
-  }
-
-  componentWillUnmount() {
-    ReactDOM.unmountComponentAtNode(this.popup);
-    this.renderLayout.removeChild(this.popup);
-    this.popup = null;
-
-    this.createHook(this.elem, this.eventHook, true);
-    this.createHook(document, { click: this.close }, true);
+    document.addEventListener('click', this.close);
   }
 
   componentWillUpdate(nextProps, nextState) {
-    if (this.state.visible !== nextState.visible) {
-      if (!this.openId) {
-        this.mountLayer(nextProps, nextState);
+    if (this.openId) {
+      if (!this.renderLayout) {
+        this.mountPopup(nextProps, nextState);
       }
-      this.renderLayer(nextProps, nextState);
+      if (this.renderLayout) {
+        this.renderPopup(nextProps, nextState);
+      }
     }
   }
 
-  createHook = (target, handlers, remove) => {
-    let fn = remove ? 'removeEventListener' : 'addEventListener';
-    Object.keys(handlers).forEach(event => {
-      target[fn](event, handlers[event], false);
-    });
-  };
+  componentWillUnmount() {
+    if (this.renderLayout) {
+      ReactDOM.unmountComponentAtNode(this.popup);
+      this.renderLayout.removeChild(this.popup);
+    }
+    this.popup = null;
+    document.removeEventListener('click', this.close);
+  }
 
-  mountLayer = (props, state) => {
-    this.renderLayout = props.renderLayout() || defaultVal.renderLayout();
+  getRootDOMNode = () => findDOMNode(this);
+  getPopupDOMNode = () => this.popup && findDOMNode(this.popup);
+
+  mountPopup = (props, state) => {
+    this.renderLayout = props.renderLayout
+      ? props.renderLayout()
+      : defaultVal.renderLayout();
     this.renderLayout.appendChild(this.popup);
   };
 
-  renderLayer = (props, state) => {
+  renderPopup = (props, state) => {
     const { content, placement, className } = props;
     const { visible } = state;
     this.rect = this.elem.getBoundingClientRect();
@@ -119,21 +105,22 @@ export default class Tooltip extends Component {
       [util.transformHyphenWithUpper(`margin-${PLACEMENT_MAP[placement]}`)]: '15px'
     };
     ReactDOM.render(
-      <TooltipItem
+      <TooltipPopup
         visible={visible}
-        content={content}
         placement={placement}
         className={className}
         style={style}
-      />,
+      >
+        {content}
+      </TooltipPopup>,
       this.popup
     );
   };
 
   open = e => {
     if (!this.state.visible) {
+      this.openId += 1;
       this.setState({ visible: true }, () => {
-        this.openId += 1;
         if (this.props.onOpen) {
           this.props.onOpen();
         }
@@ -150,7 +137,37 @@ export default class Tooltip extends Component {
     }
   };
 
+  fireEvent = (handler, callback) => {
+    const childProps = this.props.children.props;
+    const props = this.props;
+    return e => {
+      if (childProps[handler]) {
+        childProps[handler](e);
+      }
+      if (props[handler]) {
+        props[handler](e);
+      }
+      callback(e);
+    };
+  };
+
+  onClick = e => this.open(e);
+  onMouseEnter = e => this.open(e);
+  onMouseLeave = e => this.close(e);
+
   render() {
-    return this.props.children;
+    const { children, trigger } = this.props;
+    const child = React.Children.only(this.props.children);
+    const newChildProps = {};
+    switch (trigger) {
+      case 'click':
+        newChildProps.onClick = this.fireEvent('onClick', this.onClick);
+        break;
+      case 'hover':
+      default:
+        newChildProps.onMouseEnter = this.fireEvent('onMouseEnter', this.onMouseEnter);
+        newChildProps.onMouseLeave = this.fireEvent('onMouseLeave', this.onMouseLeave);
+    }
+    return React.cloneElement(child, newChildProps);
   }
 }

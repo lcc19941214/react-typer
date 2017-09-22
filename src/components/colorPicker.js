@@ -37,10 +37,8 @@ export default class ColorPicker extends Component {
     active: false
   };
 
-  onTogglePopover = e => {
-    e.preventDefault();
-    this.setState(({ active }) => ({ active: !active }));
-    this.Popover.open();
+  handleOnOpen = () => {
+    this.setState(({ active }) => ({ active: true }));
   };
 
   handleOnClose = () => {
@@ -94,43 +92,57 @@ export default class ColorPicker extends Component {
   };
 
   render() {
-    const { editorState, controlKey } = this.props;
+    const {
+      editorState,
+      changeState,
+      controlKey,
+      onToggle,
+      focus,
+      blur,
+      ...extraProps
+    } = this.props;
     const { active, color } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
     const indicatorStyle = currentStyle.has(color) ? color : DEFAULT_COLOR_KEY;
     return (
-      <div className="RichEditor-toolbar__color-picker RichEditor-toolbar-button__wrapped">
-        <span
-          className={classnames(
-            'RichEditor-toolbar-button',
-            `RichEditor-toolbar-button-${controlKey}`,
-            {
-              'RichEditor-toolbar-button__active': active
-            }
-          )}
-          onMouseDown={this.onTogglePopover}
+      <Popover
+        className="RichEditor-toolbar__color-picker__popover"
+        ref={ref => (this.Popover = ref)}
+        placement="bottom"
+        onOpen={this.handleOnOpen}
+        onClose={this.handleOnClose}
+        overlay={COLORS_MAP.map(v => (
+          <span
+            key={v.key}
+            className={classnames('color-picker__item', {
+              'color-picker__item__active': indicatorStyle === v.style
+            })}
+            style={BLOCK_COLORS[v.style]}
+            onMouseDown={this.handleApplyColor.bind(this, v.style)}
+          />
+        ))}
+      >
+        <div
+          className="RichEditor-toolbar__color-picker RichEditor-toolbar-button__wrapped"
+          {...extraProps}
         >
-          <div className="color-picker_indicator" style={BLOCK_COLORS[indicatorStyle]} />
-        </span>
-        <Popover
-          className="RichEditor-toolbar__color-picker__popover"
-          ref={ref => (this.Popover = ref)}
-          placement="bottom"
-          onOpen={this.handleOnOpen}
-          onClose={this.handleOnClose}
-        >
-          {COLORS_MAP.map(v => (
-            <span
-              key={v.key}
-              className={classnames('color-picker__item', {
-                'color-picker__item__active': indicatorStyle === v.style
-              })}
-              style={BLOCK_COLORS[v.style]}
-              onMouseDown={this.handleApplyColor.bind(this, v.style)}
+          <span
+            className={classnames(
+              'RichEditor-toolbar-button',
+              `RichEditor-toolbar-button-${controlKey}`,
+              {
+                'RichEditor-toolbar-button__active': active
+              }
+            )}
+            onMouseDown={e => e.preventDefault()}
+          >
+            <div
+              className="color-picker_indicator"
+              style={BLOCK_COLORS[indicatorStyle]}
             />
-          ))}
-        </Popover>
-      </div>
+          </span>
+        </div>
+      </Popover>
     );
   }
 }

@@ -40,10 +40,8 @@ export default class FontSizeChanger extends Component {
     active: false
   };
 
-  onTogglePopover = e => {
-    e.preventDefault();
-    this.setState(({ active }) => ({ active: !active }));
-    this.Popover.open();
+  handleOnOpen = () => {
+    this.setState(({ active }) => ({ active: true }));
   };
 
   handleOnClose = () => {
@@ -96,42 +94,53 @@ export default class FontSizeChanger extends Component {
   };
 
   render() {
-    const { editorState, controlKey } = this.props;
+    const {
+      editorState,
+      changeState,
+      controlKey,
+      onToggle,
+      focus,
+      blur,
+      ...extraProps
+    } = this.props;
     const { active, fontSize } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
     return (
-      <div className="RichEditor-toolbar__font-size-changer RichEditor-toolbar-button__wrapped">
-        <span
-          className={classnames(
-            'RichEditor-toolbar-button',
-            `RichEditor-toolbar-button-${controlKey}`,
-            {
-              'RichEditor-toolbar-button__active': active
-            }
-          )}
-          onMouseDown={this.onTogglePopover}
-        />
-        <Popover
-          className="RichEditor-toolbar__font-size-changer__popover"
-          ref={ref => (this.Popover = ref)}
-          placement="bottom"
-          onOpen={this.handleOnOpen}
-          onClose={this.handleOnClose}
+      <Popover
+        className="RichEditor-toolbar__font-size-changer__popover"
+        ref={ref => (this.Popover = ref)}
+        placement="bottom"
+        onOpen={this.handleOnOpen}
+        onClose={this.handleOnClose}
+        overlay={FONT_SIZE_MAP.map(v => (
+          <span
+            key={v.key}
+            className={classnames('font-size-changer__item', {
+              'font-size-changer__item__active': fontSize === v.style
+            })}
+            style={INLINE_FONT_SIZE[v.style]}
+            onMouseDown={this.handleApplyFontSize.bind(this, v.style)}
+          >
+            {v.label}
+          </span>
+        ))}
+      >
+        <div
+          className="RichEditor-toolbar__font-size-changer RichEditor-toolbar-button__wrapped"
+          {...extraProps}
         >
-          {FONT_SIZE_MAP.map(v => (
-            <span
-              key={v.key}
-              className={classnames('font-size-changer__item', {
-                'font-size-changer__item__active': fontSize === v.style
-              })}
-              style={INLINE_FONT_SIZE[v.style]}
-              onMouseDown={this.handleApplyFontSize.bind(this, v.style)}
-            >
-              {v.label}
-            </span>
-          ))}
-        </Popover>
-      </div>
+          <span
+            className={classnames(
+              'RichEditor-toolbar-button',
+              `RichEditor-toolbar-button-${controlKey}`,
+              {
+                'RichEditor-toolbar-button__active': active
+              }
+            )}
+            onMouseDown={e => e.preventDefault()}
+          />
+        </div>
+      </Popover>
     );
   }
 }

@@ -13,12 +13,8 @@ export class AddImageLinkButton extends Component {
     active: false
   };
 
-  onToggle = () => {
-    this.setState(({ active }) => ({ active: !active }));
-    this.Popover.open();
-  };
-
   handleOnOpen = () => {
+    this.setState(({ active }) => ({ active: !active }));
     document.querySelector('.add-image-link__input').focus();
   };
 
@@ -46,42 +42,55 @@ export class AddImageLinkButton extends Component {
 
   render() {
     const { active, url } = this.state;
-    const { controlKey } = this.props;
+    const {
+      editorState,
+      changeState,
+      controlKey,
+      onToggle,
+      focus,
+      blur,
+      ...extraProps
+    } = this.props;
     return (
-      <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
-        <span
-          className={classnames(
-            'RichEditor-toolbar-button',
-            `RichEditor-toolbar-button-${controlKey}`,
-            {
-              'RichEditor-toolbar-button__active': active
-            }
-          )}
-          onClick={this.onToggle}
-        >
-        </span>
-        <Popover
-          className="RichEditor-toolbar__add-image__link__popover"
-          ref={ref => (this.Popover = ref)}
-          placement="bottom"
-          onOpen={this.handleOnOpen}
-          onClose={this.handleOnClose}
-        >
+      <Popover
+        className="RichEditor-toolbar__add-image__link__popover"
+        ref={ref => (this.Popover = ref)}
+        placement="bottom"
+        onOpen={this.handleOnOpen}
+        onClose={this.handleOnClose}
+        overlay={[
           <input
+            key="input"
             type="text"
             placeholder="http://"
             className="add-image-link__input"
             onChange={this.changeURL}
             value={url}
-          />
+          />,
           <span
+            key="confirm"
             className="add-image-link__button add-image-link__confirm-button"
             onClick={this.handleConfirm}
           >
             +
           </span>
-        </Popover>
-      </div>
+        ]}
+      >
+        <div
+          className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped"
+          {...extraProps}
+        >
+          <span
+            className={classnames(
+              'RichEditor-toolbar-button',
+              `RichEditor-toolbar-button-${controlKey}`,
+              {
+                'RichEditor-toolbar-button__active': active
+              }
+            )}
+          />
+        </div>
+      </Popover>
     );
   }
 }
@@ -139,9 +148,20 @@ export class UploadImageButton extends Component {
   };
 
   render() {
-    const { controlKey } = this.props;
+    const {
+      editorState,
+      changeState,
+      controlKey,
+      onToggle,
+      focus,
+      blur,
+      ...extraProps
+    } = this.props;
     return (
-      <div className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped">
+      <div
+        className="RichEditor-toolbar__add-image RichEditor-toolbar-button__wrapped"
+        {...extraProps}
+      >
         <span
           className={`RichEditor-toolbar-button RichEditor-toolbar__add-image__upload RichEditor-toolbar-button-${controlKey}`}
           onClick={this.handleUploadClick}
