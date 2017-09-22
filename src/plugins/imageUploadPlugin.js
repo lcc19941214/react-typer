@@ -27,17 +27,26 @@ const createDecorator = (config = {}) => WrappedComponent =>
 
     render() {
       const { style, className } = this.props;
-      const { uploading, src } = this.getData(this.props);
+      const { uploading, src, tag } = this.getData(this.props);
+      const dataSet = tag
+        ? {
+            'data-image-tag': tag
+          }
+        : {};
       return uploading ? (
         <div
           className={classnames('RichEditor-plugin__image-upload', {
             'RichEditor-plugin__image-upload__uploading': uploading
           })}
         >
-          <img src={src} style={style}/>
+          <img src={src} style={style} />
         </div>
       ) : (
-        <WrappedComponent {...this.props} className={classnames(className, 'RichEditor-plugin__image-upload__uploaded')}/>
+        <WrappedComponent
+          {...this.props}
+          {...dataSet}
+          className={classnames(className, 'RichEditor-plugin__image-upload__uploaded')}
+        />
       );
     }
   };

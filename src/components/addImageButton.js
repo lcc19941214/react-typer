@@ -31,7 +31,7 @@ export class AddImageLinkButton extends Component {
     const { url } = this.state;
     const { editorState, changeState, focus } = this.props;
     if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
-      const nextEditorState = addImage(editorState, url);
+      const nextEditorState = addImage(editorState, url, { tag: Date.now() });  // use tag to identify different image with same url
       changeState(nextEditorState, () => {
         this.setState({ url: '' });
         focus();

@@ -26,6 +26,8 @@ export const updateImage = (editorState, toMergeData, localURL) => {
   return EditorState.push(editorState, nextContentState);
 };
 
+// TODO
+// add upload method
 export const uploadImage = (url, file, config = {}) => {
   const data = new FormData();
   data.append('file', file);
@@ -44,17 +46,18 @@ export const uploadImage = (url, file, config = {}) => {
     });
 };
 
-export const pasteAndUploadImage = (event, onload) => {
+export const pasteAndUploadImage = (event, cb) => {
   const items = (event.clipboardData || event.originalEvent.clipboardData).items;
   // REMIND
   // item is DataTransferItem
   // see https://developer.mozilla.org/en-US/docs/Web/API/DataTransferItem
+
+  // fileReader always return same dataURL for same image entity
   for (let item of items) {
     if (item.kind === 'file' && item.type.includes('image/')) {
       const blob = item.getAsFile();
-      const reader = new FileReader();
-      reader.onload = e => onload(blob, e);
-      reader.readAsDataURL(blob);
+      const url = URL.createObjectURL(blob);
+      cb(blob, url);
     }
   }
 };

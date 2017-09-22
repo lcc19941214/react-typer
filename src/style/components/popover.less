@@ -20,13 +20,17 @@
   border-radius: 2px;
   box-shadow: 0px 1px 3px 0px #dcdcdc;
   box-sizing: border-box;
-  animation: scaleIn .2s both;
+  animation: scaleIn 0.2s both;
   &::before {
     .RichEditor-popover-arrow-shadow();
   }
   &::after {
     .RichEditor-popover-arrow();
   }
+}
+
+.RichEditor-popover-inner {
+  box-sizing: content-box;
 }
 
 .RichEditor-popover__hidden {

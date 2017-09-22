@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
-import Toolbar from './components/toolbar.js';
+import Toolbar from './components/toolbar';
 import {
   publicTyperDecorator,
   textEditDecorator,
@@ -22,21 +22,12 @@ import 'draft-js/dist/Draft.css';
 import 'draft-js-alignment-plugin/lib/plugin.css';
 import './style/typer.less';
 
-import image from './static/images/image.svg';
-
 const noop = () => {};
 const equalization = val => val;
 
-const {
-  Editor: OriginalEditor,
-  EditorState,
-  ContentState,
-  convertToRaw,
-  RichUtils
-} = Draft;
+const { EditorState, ContentState, convertToRaw, RichUtils } = Draft;
 
 const Editor = PluginEditor;
-// const Editor = OriginalEditor;
 
 const composedDecorators = composeDecorators(
   textEditDecorator,
@@ -180,8 +171,7 @@ class Typer extends Component {
       this.props.onPaste(e);
     }
   };
-  handleOnPasteAndUploadImage = (file, event) => {
-    const url = event.target.result;
+  handleOnPasteAndUploadImage = (file, url) => {
     const nextEditorState = addImage(this.state.editorState, url, {
       uploading: true,
       progress: 0
@@ -204,7 +194,14 @@ class Typer extends Component {
 
         this.blur();
         const newEditorState = updateImage(this.state.editorState, toMergeData, url);
-        this.changeState(newEditorState, this.focus);
+        this.changeState(newEditorState, () => {
+          this.focus();
+
+          // release url
+          setTimeout(() => {
+            URL.revokeObjectURL(url);
+          }, 1000);
+        });
       });
     });
   };

@@ -54,13 +54,16 @@ export const inlineStyles = {
 export const blockRenderers = {
   atomic: (contentState, contentBlock) => {
     const entityKey = contentBlock.getEntityAt(0);
+    if (!entityKey) return '<br />';
     const entity = contentState.getEntity(entityKey);
     const entityType = entity.get('type');
     const data = entity.get('data');
     switch (entityType) {
       case EntityType.IMAGE:
-        const { src, alignment = 'default' } = data;
-        const imageElem = document.querySelector(`img[src="${src}"]`);
+        const { src, alignment = 'default', tag } = data;
+        const imageElem = !tag
+          ? document.querySelector(`img[src="${src}"]`)
+          : document.querySelector(`img[data-image-tag="${tag}"]`);
         const width = imageElem.clientWidth;
         return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[
           alignment
