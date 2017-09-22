@@ -12,9 +12,9 @@ const STYLE_TYPES = [
   {
     key: 'headline',
     controls: [
-      { key: 'h1', type: 'block', label: 'H1', style: 'header-one', tooltip: '一级标题' },
-      { key: 'h2', type: 'block', label: 'H2', style: 'header-two', tooltip: '二级标题' },
-      { key: 'h3', type: 'block', label: 'H3', style: 'header-three', tooltip: '三级标题' }
+      { key: 'h1', type: 'block', style: 'header-one', tooltip: '一级标题' },
+      { key: 'h2', type: 'block', style: 'header-two', tooltip: '二级标题' },
+      { key: 'h3', type: 'block', style: 'header-three', tooltip: '三级标题' }
     ]
   },
   {
