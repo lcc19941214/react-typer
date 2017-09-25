@@ -31,7 +31,7 @@ export class AddImageLinkButton extends Component {
     const { url } = this.state;
     const { editorState, changeState, focus } = this.props;
     if (url && (/^https?:\/\/.+/.test(url) || /data:image\/.+/.test(url))) {
-      const nextEditorState = addImage(editorState, url, { tag: Date.now() });  // use tag to identify different image with same url
+      const nextEditorState = addImage(editorState, url);
       changeState(nextEditorState, () => {
         this.setState({ url: '' });
         focus();
@@ -125,10 +125,12 @@ export class UploadImageButton extends Component {
           }
         };
         uploadImage(this.props.action, file, config).then(res => {
+          const extraMergeData = this.props.onUpload(res) || {};
           const toMergeData = {
-            // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
+            // src: res.url,
             uploading: false,
-            progress: 100
+            progress: 100,
+            ...extraMergeData
           };
 
           // use blur now and focus later on to make rerender and change the image src
@@ -155,6 +157,7 @@ export class UploadImageButton extends Component {
       onToggle,
       focus,
       blur,
+      onUpload,
       ...extraProps
     } = this.props;
     return (

@@ -60,10 +60,10 @@ export const blockRenderers = {
     const data = entity.get('data');
     switch (entityType) {
       case EntityType.IMAGE:
-        const { src, alignment = 'default', tag } = data;
-        const imageElem = !tag
+        const { src, alignment = 'default', uid } = data;
+        const imageElem = !uid
           ? document.querySelector(`img[src="${src}"]`)
-          : document.querySelector(`img[data-image-tag="${tag}"]`);
+          : document.querySelector(`img[data-image-uid="${uid}"]`);
         const width = imageElem.clientWidth;
         return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[
           alignment
@@ -104,14 +104,17 @@ export const exportToHTMLOptions = {
   entityStyleFn
 };
 
-export default (contentState, options) => {
-  const html = stateToHTML(contentState, options);
+export const htmlWrapper = (html = '') => {
   const rules = [];
   [defaultStyleRules].forEach(styles => {
     Object.keys(styles).forEach(prop => {
       rules.push(`${util.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
     });
   });
-  const _html = `<div style="${rules.join('; ')}">${html}</div>`;
-  return _html;
+  return `<div style="${rules.join('; ')}">${html}</div>`;
+};
+
+export default (contentState, options) => {
+  const html = stateToHTML(contentState, options);
+  return htmlWrapper(html);
 };

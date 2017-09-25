@@ -1,11 +1,12 @@
 export const LABEL = {
   borderRadius: '2px',
-  padding: '0 4px',
+  padding: '0 6px',
   margin: '0 4px',
   color: '#666',
   backgroundColor: '#f1f1f1',
   cursor: 'default',
-  display: 'inline-block'
+  display: 'inline-block',
+  pointerEvents: 'none'
 };
 
 export const LABEL_HIGHLIGHT = Object.assign({}, LABEL, {

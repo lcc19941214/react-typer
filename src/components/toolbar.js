@@ -69,11 +69,25 @@ const STYLE_TYPES = [
 ];
 
 // common button for both inline and block style
-const StyleButton = ({ controlKey, style, type, active, label, onToggle, focus, blur, ...extraProps }) => (
+const StyleButton = ({
+  controlKey,
+  style,
+  type,
+  active,
+  label,
+  onToggle,
+  focus,
+  blur,
+  ...extraProps
+}) => (
   <span
-    className={classnames('RichEditor-toolbar-button', `RichEditor-toolbar-button-${controlKey}`,{
-      'RichEditor-toolbar-button__active': active
-    })}
+    className={classnames(
+      'RichEditor-toolbar-button',
+      `RichEditor-toolbar-button-${controlKey}`,
+      {
+        'RichEditor-toolbar-button__active': active
+      }
+    )}
     {...extraProps}
     onMouseDown={e => {
       e.preventDefault();
@@ -92,9 +106,7 @@ export default class Toolbar extends Component {
     onToggle: PropTypes.func
   };
 
-  static defaultProps = {
-    controls: ['headline', 'fontStyle', 'advancedFontStyle', 'list', 'action']
-  };
+  static controls = ['headline', 'fontStyle', 'advancedFontStyle', 'list', 'action'];
 
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
 
@@ -131,7 +143,7 @@ export default class Toolbar extends Component {
     } = this.props;
     const groups = this.matchStyleControls(controls);
     const currentStyles = this.getCurrentStyles(editorState);
-    return (
+    return groups.length ? (
       <div className="RichEditor-toolbar">
         {groups.map(group => (
           <div className="RichEditor-toolbar-group" key={group.key}>
@@ -183,6 +195,6 @@ export default class Toolbar extends Component {
           </div>
         ))}
       </div>
-    );
+    ) : null;
   }
 }

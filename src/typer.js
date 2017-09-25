@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
+import classnames from 'classnames';
 import Toolbar from './components/toolbar';
 import {
   publicTyperDecorator,
@@ -65,30 +66,47 @@ class Typer extends Component {
   static propTypes = {
     content: PropTypes.string,
     placeholder: PropTypes.string,
+    controls: PropTypes.array,
+    showTooltip: PropTypes.bool,
     decorators: PropTypes.array,
     blockRenderMap: PropTypes.object,
     blockRendererFn: PropTypes.func,
     blockStyleFn: PropTypes.func,
     inlineStyleMap: PropTypes.object,
     plugins: PropTypes.array,
+    onChange: PropTypes.func,
+    onUpload: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onPaste: PropTypes.func,
+    autoFocus: PropTypes.bool,
+    behavior: PropTypes.object,
+    className: PropTypes.string,
     imageUploadAction: PropTypes.string.isRequired
   };
 
   static defaultProps = {
     content: '',
     placeholder: '请输入...',
+    controls: Toolbar.controls,
+    showTooltip: true,
     decorators: [],
     blockRenderMap: {},
     blockRendererFn: noop,
     blockStyleFn: noop,
     inlineStyleMap: {},
     plugins: [],
+    onChange: noop,
+    onUpload: noop,
     onFocus: noop,
     onBlur: noop,
     onPaste: noop,
+    autoFocus: false,
+    behavior: {
+      readOnly: false,
+      spellCheck: false
+    },
+    className: '',
     imageUploadAction: 'http://localhost:3000'
   };
 
@@ -102,7 +120,7 @@ class Typer extends Component {
     };
 
     composedDecorators(Typer);
-    this.fillText = this.fillText.bind(this);
+    this.fillContentState = this.fillContentState.bind(this);
     this.modifyText = this.modifyText.bind(this);
     this.insertText = this.insertText.bind(this);
     this.replaceText = this.replaceText.bind(this);
@@ -114,9 +132,11 @@ class Typer extends Component {
   componentDidMount() {
     // REMIND
     // editor takes some time to apply plugins and decorators
-    setTimeout(() => {
-      this.focus();
-    }, 100);
+    if (this.props.autoFocus) {
+      setTimeout(() => {
+        this.focus();
+      }, 100);
+    }
 
     document.addEventListener('paste', this.handleOnPaste, false);
   }
@@ -155,7 +175,7 @@ class Typer extends Component {
   };
 
   handleOnChange = (editorState, enhancedEditor) => {
-    this.changeState(editorState);
+    this.changeState(editorState, this.props.onChange);
   };
   handleOnFocus = e => {
     this.isFocus = true;
@@ -186,10 +206,12 @@ class Typer extends Component {
         }
       };
       uploadImage(this.props.imageUploadAction, file, config).then(res => {
+        const extraMergeData = this.props.onUpload(res) || {};
         const toMergeData = {
-          // src: 'https://avatars2.githubusercontent.com/u/12473993?v=4&s=88',
+          src: res.url,
           uploading: false,
-          progress: 100
+          progress: 100,
+          ...extraMergeData
         };
 
         this.blur();
@@ -244,7 +266,7 @@ class Typer extends Component {
   };
 
   render() {
-    const { placeholder } = this.props;
+    const { placeholder, behavior, className, controls, showTooltip } = this.props;
     const { editorState } = this.state;
     const EditorClassName = this.hidePlaceholder(editorState, 'RichEditor-editor');
     const eventHandler = {
@@ -257,9 +279,10 @@ class Typer extends Component {
 
     return (
       <div>
-        <div className="RichEditor-root">
+        <div className={classnames('RichEditor-root', className)}>
           <Toolbar
-            showTooltip
+            controls={controls}
+            showTooltip={showTooltip}
             editorState={editorState}
             changeState={this.changeState}
             focus={this.focus}
@@ -267,7 +290,8 @@ class Typer extends Component {
             toggleToolbar={this.toggleToolbar}
             config={{
               imageUpload: {
-                action: this.props.imageUploadAction
+                action: this.props.imageUploadAction,
+                onUpload: this.props.onUpload
               }
             }}
           />
@@ -277,6 +301,7 @@ class Typer extends Component {
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
               placeholder={placeholder}
+              {...behavior}
               {...eventHandler}
               {...Typer.extendDefaultProps(this.props)}
             />

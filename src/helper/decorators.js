@@ -129,7 +129,7 @@ export function textEditDecorator(target) {
      * @param {boolean}   hard
      *    use hard to clear history track while filling text
      */
-    fillText(contentState, ...args) {
+    fillContentState(contentState, ...args) {
       let cb = noop;
       let hard = false;
 
