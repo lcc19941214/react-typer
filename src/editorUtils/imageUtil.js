@@ -1,7 +1,9 @@
-import { EditorState, AtomicBlockUtils } from 'draft-js';
+import { EditorState, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import axios from 'axios';
 import * as EntityType from '../constants/entity';
+import brokenImage from '../static/images/broken_image.svg';
 
+const noop = () => {};
 const imageURLKeyMap = {};
 
 export const addImage = (editorState, url, extraData = {}) => {
@@ -26,23 +28,54 @@ export const updateImage = (editorState, toMergeData, localURL) => {
   return EditorState.push(editorState, nextContentState);
 };
 
-// TODO
-// add upload method
-export const uploadImage = (url, file, config = {}) => {
+const makeUpload = (action, file, config = {}, localURL) => {
   const data = new FormData();
   data.append('file', file);
   return axios
-    .post(url, data, config)
-    .then(res => {
-      return res;
-    })
+    .post(action, data, config)
+    .then(res => res)
     .catch(err => {
-      console.log;
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(err);
-        }, 2000);
-      });
+      console.error(err);
+      return {
+        url: brokenImage.slice(1, -1),
+        error: err
+      };
+    });
+};
+
+const mergeImageData = (mergeData, localURL, editor) => {
+  const toMergeData = {
+    src: mergeData.url,
+    uploading: false,
+    progress: 100,
+    ...mergeData
+  };
+
+  editor.blur();
+  const newEditorState = updateImage(editor.state.editorState, toMergeData, localURL);
+  editor.changeState(newEditorState, () => {
+    editor.focus();
+    setTimeout(() => {
+      URL.revokeObjectURL(localURL);
+    }, 1000);
+  });
+};
+
+export const uploadImage = (action, file, options) => {
+  const {
+    requestConfig = {},
+    onUpload,
+    onUploadError = noop,
+    editor,
+    localURL
+  } = options;
+  return makeUpload(action, file, requestConfig, localURL)
+    .then(res => onUpload(res) || res)
+    .then(res => {
+      if (res.error) {
+        onUploadError(res.error);
+      }
+      return mergeImageData(res, localURL, editor);
     });
 };
 

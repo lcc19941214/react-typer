@@ -11,13 +11,13 @@ const createDecorator = (config = {}) => WrappedComponent =>
       this.elem = ReactDOM.findDOMNode(this);
     }
 
-    componentWillUpdate(nextProps, nextState) {
-      const { uploading, progress } = this.getData(nextProps);
-      if (uploading) {
-        // TODO
-        // show progress bar
-      }
-    }
+    // componentWillUpdate(nextProps, nextState) {
+    //   const { uploading, progress } = this.getData(nextProps);
+    //   if (uploading) {
+    //     // TODO
+    //     // show progress bar
+    //   }
+    // }
 
     getData = props => {
       const { contentState, block } = this.props;
@@ -25,14 +25,17 @@ const createDecorator = (config = {}) => WrappedComponent =>
       return entity.getData();
     };
 
+    // TODO
+    // load err
+    // handleOnError = err => {
+    //   console.log(err);
+    //   this.elem.src = brokenImage.slice(1, -1);
+    // }
+
     render() {
       const { style, className } = this.props;
-      const { uploading, src, tag } = this.getData(this.props);
-      const dataSet = tag
-        ? {
-            'data-image-tag': tag
-          }
-        : {};
+      const { uploading, src, uid, error } = this.getData(this.props);
+      const dataSet = !error && uid ? { 'data-image-uid': uid } : {};
       return uploading ? (
         <div
           className={classnames('RichEditor-plugin__image-upload', {
@@ -45,7 +48,11 @@ const createDecorator = (config = {}) => WrappedComponent =>
         <WrappedComponent
           {...this.props}
           {...dataSet}
-          className={classnames(className, 'RichEditor-plugin__image-upload__uploaded')}
+          onError={this.handleOnError}
+          className={classnames(className, {
+            'RichEditor-plugin__image-upload__uploaded': !error && !uploading,
+            'RichEditor-plugin__image-error': error
+          })}
         />
       );
     }

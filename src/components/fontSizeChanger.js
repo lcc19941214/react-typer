@@ -101,6 +101,7 @@ export default class FontSizeChanger extends Component {
       onToggle,
       focus,
       blur,
+      getEditor,
       ...extraProps
     } = this.props;
     const { active, fontSize } = this.state;

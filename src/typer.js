@@ -76,6 +76,7 @@ class Typer extends Component {
     plugins: PropTypes.array,
     onChange: PropTypes.func,
     onUpload: PropTypes.func,
+    onUploadError: PropTypes.func,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onPaste: PropTypes.func,
@@ -97,7 +98,8 @@ class Typer extends Component {
     inlineStyleMap: {},
     plugins: [],
     onChange: noop,
-    onUpload: noop,
+    onUpload: equalization,
+    onUploadError: noop,
     onFocus: noop,
     onBlur: noop,
     onPaste: noop,
@@ -144,6 +146,8 @@ class Typer extends Component {
   componentWillUnmount() {
     document.removeEventListener('paste', this.handleOnPaste, false);
   }
+
+  getEditor = () => this;
 
   changeState = (editorState, cb = noop) => this.setState({ editorState }, cb);
   focus = () => this.Editor.focus();
@@ -205,25 +209,12 @@ class Typer extends Component {
           }
         }
       };
-      uploadImage(this.props.imageUploadAction, file, config).then(res => {
-        const extraMergeData = this.props.onUpload(res) || {};
-        const toMergeData = {
-          src: res.url,
-          uploading: false,
-          progress: 100,
-          ...extraMergeData
-        };
-
-        this.blur();
-        const newEditorState = updateImage(this.state.editorState, toMergeData, url);
-        this.changeState(newEditorState, () => {
-          this.focus();
-
-          // release url
-          setTimeout(() => {
-            URL.revokeObjectURL(url);
-          }, 1000);
-        });
+      uploadImage(this.props.imageUploadAction, file, {
+        onUpload: this.props.onUpload,
+        onUploadError: this.props.onUploadError,
+        editor: this.getEditor(),
+        requestConfig: config,
+        localURL: url
       });
     });
   };
@@ -288,10 +279,12 @@ class Typer extends Component {
             focus={this.focus}
             blur={this.blur}
             toggleToolbar={this.toggleToolbar}
+            getEditor={this.getEditor}
             config={{
               imageUpload: {
                 action: this.props.imageUploadAction,
-                onUpload: this.props.onUpload
+                onUpload: this.props.onUpload,
+                onUploadError: this.props.onUploadError,
               }
             }}
           />

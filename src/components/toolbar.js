@@ -78,6 +78,7 @@ const StyleButton = ({
   onToggle,
   focus,
   blur,
+  getEditor,
   ...extraProps
 }) => (
   <span
@@ -137,6 +138,7 @@ export default class Toolbar extends Component {
       changeState,
       focus,
       blur,
+      getEditor,
       toggleToolbar,
       showTooltip,
       config = {}
@@ -161,6 +163,7 @@ export default class Toolbar extends Component {
                       onToggle={toggleToolbar}
                       focus={focus}
                       blur={blur}
+                      getEditor={getEditor}
                       {...config[control.key] || {}}
                     />
                   );
@@ -181,6 +184,7 @@ export default class Toolbar extends Component {
                       onToggle={toggleToolbar}
                       focus={focus}
                       blur={blur}
+                      getEditor={getEditor}
                     />
                   );
               }

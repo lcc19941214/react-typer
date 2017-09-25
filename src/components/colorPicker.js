@@ -99,6 +99,7 @@ export default class ColorPicker extends Component {
       onToggle,
       focus,
       blur,
+      getEditor,
       ...extraProps
     } = this.props;
     const { active, color } = this.state;

@@ -49,6 +49,7 @@ export class AddImageLinkButton extends Component {
       onToggle,
       focus,
       blur,
+      getEditor,
       ...extraProps
     } = this.props;
     return (
@@ -110,7 +111,7 @@ export class UploadImageButton extends Component {
     if (file.type.includes('image/')) {
       const url = URL.createObjectURL(file);
 
-      const { editorState, changeState, focus, blur } = this.props;
+      const { editorState, changeState, focus, blur, getEditor } = this.props;
       const nextEditorState = addImage(editorState, url, {
         uploading: true,
         progress: 0
@@ -124,26 +125,11 @@ export class UploadImageButton extends Component {
             }
           }
         };
-        uploadImage(this.props.action, file, config).then(res => {
-          const extraMergeData = this.props.onUpload(res) || {};
-          const toMergeData = {
-            src: res.url,
-            uploading: false,
-            progress: 100,
-            ...extraMergeData
-          };
-
-          // use blur now and focus later on to make rerender and change the image src
-          blur();
-          const newEditorState = updateImage(this.props.editorState, toMergeData, url);
-          changeState(newEditorState, () => {
-            focus();
-
-            // release url
-            setTimeout(() => {
-              URL.revokeObjectURL(url);
-            }, 1000);
-          });
+        uploadImage(this.props.action, file, {
+          onUpload: this.props.onUpload,
+          editor: getEditor(),
+          requestConfig: config,
+          localURL: url
         });
       });
     }
@@ -158,6 +144,8 @@ export class UploadImageButton extends Component {
       focus,
       blur,
       onUpload,
+      onUploadError,
+      getEditor,
       ...extraProps
     } = this.props;
     return (
