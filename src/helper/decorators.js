@@ -146,7 +146,7 @@ export function textEditDecorator(target) {
       } else {
         newEditorState = EditorState.push(this.state.editorState, contentState);
       }
-      this.changeState(newEditorState, this.focus);
+      this.changeState(newEditorState, cb);
     },
 
     modifyText(type, text = '', inlineStyles = [], entityKey, cb = noop) {

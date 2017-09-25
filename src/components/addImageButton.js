@@ -127,7 +127,7 @@ export class UploadImageButton extends Component {
         uploadImage(this.props.action, file, config).then(res => {
           const extraMergeData = this.props.onUpload(res) || {};
           const toMergeData = {
-            // src: res.url,
+            src: res.url,
             uploading: false,
             progress: 100,
             ...extraMergeData
