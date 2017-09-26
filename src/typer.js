@@ -202,12 +202,12 @@ class Typer extends Component {
     });
     this.changeState(nextEditorState, () => {
       const config = {
-        onUploadProgress: event => {
-          const progress = Math.round(event.loaded / event.total * 100);
-          if (progress !== 100) {
-            this.changeState(updateImage(this.state.editorState, { progress }, url));
-          }
-        }
+        // onUploadProgress: event => {
+        //   const progress = Math.round(event.loaded / event.total * 100);
+        //   if (progress !== 100) {
+        //     this.changeState(updateImage(this.state.editorState, { progress }, url));
+        //   }
+        // }
       };
       uploadImage(this.props.imageUploadAction, file, {
         onUpload: this.props.onUpload,

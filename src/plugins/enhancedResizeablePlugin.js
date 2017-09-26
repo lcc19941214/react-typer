@@ -43,15 +43,15 @@ const createDecorator = ({ config = {}, store }) => WrappedComponent =>
 
     render() {
       const { blockProps, className, style, ...elemProps } = this.props;
-      const { isFocused, resizeData } = blockProps;
+      const { isFocused } = blockProps;
       const { style: overrideStyle } = this.state;
       return (
         <WrappedComponent
           {...this.props}
           style={Object.assign({}, style, overrideStyle)}
           className={classnames(className, {
-            'RichEditor-plugin__enhance-resizeable__focus': isFocused && resizeData.src,
-            'RichEditor-plugin__enhance-resizeable__blur': !isFocused && resizeData.src
+            'RichEditor-plugin__enhance-resizeable__focus': isFocused,
+            'RichEditor-plugin__enhance-resizeable__blur': !isFocused
           })}
         />
       );

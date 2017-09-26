@@ -118,12 +118,12 @@ export class UploadImageButton extends Component {
       });
       changeState(nextEditorState, () => {
         const config = {
-          onUploadProgress: event => {
-            const progress = Math.round(event.loaded / event.total * 100);
-            if (progress !== 100) {
-              changeState(updateImage(this.props.editorState, { progress }, url));
-            }
-          }
+        //   onUploadProgress: event => {
+        //     const progress = Math.round(event.loaded / event.total * 100);
+        //     if (progress !== 100) {
+        //       changeState(updateImage(this.props.editorState, { progress }, url));
+        //     }
+        //   }
         };
         uploadImage(this.props.action, file, {
           onUpload: this.props.onUpload,
