@@ -33,7 +33,7 @@ const makeUpload = (action, file, config = {}, localURL) => {
   data.append('file', file);
   return axios
     .post(action, data, config)
-    .then(res => res)
+    .then(res => res.data)
     .catch(err => {
       console.error(err);
       return {
