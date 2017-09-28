@@ -38,7 +38,7 @@ const makeUpload = (action, file, config = {}, localURL) => {
       console.error(err);
       return {
         url: brokenImage.slice(1, -1),
-        error: err
+        // error: err
       };
     });
 };

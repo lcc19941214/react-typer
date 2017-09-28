@@ -2,7 +2,7 @@ import decorateComponentWithProps from 'decorate-component-with-props';
 import ImageComponent from '../components/blocks/imageBlock';
 
 const defaultTheme = {
-  image: {},
+  image: {}
 };
 
 export default (config = {}) => {
@@ -11,7 +11,7 @@ export default (config = {}) => {
   if (config.decorator) {
     Image = config.decorator(Image);
   }
-  const ThemedImage = decorateComponentWithProps(Image, { theme });
+  const ThemedImage = decorateComponentWithProps(Image, { theme, horizontal: 'absolute' });
   return {
     blockRendererFn: (block, { getEditorState }) => {
       if (block.getType() === 'atomic') {
@@ -23,12 +23,12 @@ export default (config = {}) => {
         if (type === 'image') {
           return {
             component: ThemedImage,
-            editable: false,
+            editable: false
           };
         }
       }
 
       return null;
-    },
+    }
   };
 };
