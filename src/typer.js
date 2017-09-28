@@ -257,7 +257,29 @@ class Typer extends Component {
   };
 
   render() {
-    const { placeholder, behavior, className, controls, showTooltip } = this.props;
+    const {
+      content,
+      placeholder,
+      controls,
+      showTooltip,
+      decorators,
+      blockRenderMap,
+      blockRendererFn,
+      blockStyleFn,
+      inlineStyleMap,
+      plugins,
+      onChange,
+      onUpload,
+      onUploadError,
+      onFocus,
+      onBlur,
+      onPaste,
+      autoFocus,
+      behavior,
+      className,
+      imageUploadAction,
+      ...extraProps
+    } = this.props;
     const { editorState } = this.state;
     const EditorClassName = this.hidePlaceholder(editorState, 'RichEditor-editor');
     const eventHandler = {
@@ -284,12 +306,13 @@ class Typer extends Component {
               imageUpload: {
                 action: this.props.imageUploadAction,
                 onUpload: this.props.onUpload,
-                onUploadError: this.props.onUploadError,
+                onUploadError: this.props.onUploadError
               }
             }}
           />
           <div className={EditorClassName} onClick={this.focus}>
             <Editor
+              {...extraProps}
               editorState={editorState}
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
