@@ -9,10 +9,6 @@ const defaultVal = {
   renderLayout: () => document.querySelector('body')
 };
 
-const initialPopoverStyle = {
-  transform: 'translate(-50%) scale(0)'
-};
-
 const PLACEMENT = ['top', 'bottom'];
 const TRIGGER = ['hover', 'click'];
 const PLACEMENT_MAP = {
@@ -34,8 +30,50 @@ const getRelativeParent = element => {
 };
 
 class TooltipPopup extends Component {
+  state = {
+    style: {
+      transform: 'translate(-50%) scale(0)'
+    }
+  };
+
+  componentDidMount() {
+    this.Tooltip = findDOMNode(this);
+    const style = this.getStyle(this.props.placement);
+    this.setState({ style });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    setTimeout(() => {
+      const style = this.getStyle(nextProps.placement);
+      this.setState({ style });
+    }, 0);
+  }
+
+  getStyle = placement => {
+    const wrapper = this.props.getWrapper();
+    const boundingRect = wrapper.getBoundingClientRect();
+    const relativeParent = getRelativeParent(this.Tooltip.parentElement);
+    const popoverHeight = this.Tooltip.firstElementChild.clientHeight;
+    const relativeRect = relativeParent
+      ? relativeParent.getBoundingClientRect()
+      : document.body.getBoundingClientRect();
+    let height = 0;
+    if (placement === 'top') {
+      height = -(popoverHeight + 15);
+    } else if (placement === 'bottom') {
+      height = boundingRect.height + 15;
+    }
+    const style = {
+      top: boundingRect.top - relativeRect.top + height,
+      left: boundingRect.left - relativeRect.left + boundingRect.width / 2,
+      transform: 'translate(-50%) scale(1)'
+    };
+    return style;
+  };
+
   render() {
-    const { style = {}, placement, visible, className = '', children } = this.props;
+    const { placement, visible, className = '', children } = this.props;
+    const { style } = this.state;
     const p = PLACEMENT.includes(placement) ? placement : defaultVal.placement;
     const cls = `RichEditor-tooltip__${p}`;
     return (
@@ -44,7 +82,10 @@ class TooltipPopup extends Component {
           className={classnames('RichEditor-tooltip', cls, className, {
             'RichEditor-tooltip__hidden': !visible
           })}
-          style={style}
+          style={{
+            position: 'absolute',
+            ...style
+          }}
         >
           <div className="RichEditor-tooltip-inner">{children}</div>
         </div>
@@ -72,11 +113,7 @@ export default class Tooltip extends Component {
       if (!this.renderLayout) {
         this.mountPopup(nextProps, nextState);
       }
-      if (this.renderLayout) {
-        setTimeout(() => {
-          this.renderPopup(nextProps, nextState, this.getStyle(this.props.placement));
-        }, 0);
-      }
+      this.renderPopup(nextProps, nextState);
     }
   }
 
@@ -90,52 +127,23 @@ export default class Tooltip extends Component {
   }
 
   getRootDOMNode = () => findDOMNode(this);
-  getTooltipDOMNode = () => findDOMNode(this.Tooltip);
-
-  getStyle = placement => {
-    const Tooltip = this.getTooltipDOMNode();
-    const boundingRect = this.elem.getBoundingClientRect();
-    const relativeParent = getRelativeParent(this.popup.parentElement);
-    const popoverHeight = Tooltip.clientHeight;
-    const relativeRect = relativeParent
-      ? relativeParent.getBoundingClientRect()
-      : document.body.getBoundingClientRect();
-    let height = 0;
-    if (placement === 'top') {
-      height = -popoverHeight;
-    } else if (placement === 'bottom') {
-      height = boundingRect.height;
-    }
-    const style = {
-      top: boundingRect.top - relativeRect.top + height,
-      left: boundingRect.left - relativeRect.left + boundingRect.width / 2,
-      transform: 'translate(-50%) scale(1)',
-      [util.transformHyphenWithUpper(`margin-${PLACEMENT_MAP[placement]}`)]: '15px'
-    };
-    return style;
-  };
 
   mountPopup = (props, state) => {
     this.renderLayout = props.renderLayout
       ? props.renderLayout()
       : defaultVal.renderLayout();
     this.renderLayout.appendChild(this.popup);
-    this.renderPopup(props, state, initialPopoverStyle);
   };
 
-  renderPopup = (props, state, style) => {
+  renderPopup = (props, state) => {
     const { content, placement, className } = props;
     const { visible } = state;
     ReactDOM.render(
       <TooltipPopup
-        ref={ref => (this.Tooltip = ref)}
+        getWrapper={this.getRootDOMNode}
         visible={visible}
         placement={placement}
         className={className}
-        style={{
-          position: 'absolute',
-          ...style
-        }}
       >
         {content}
       </TooltipPopup>,
