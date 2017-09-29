@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-require('./alignmentTool.less');
+import './alignmentTool.less';
 
 const getRelativeParent = element => {
   if (!element) {
