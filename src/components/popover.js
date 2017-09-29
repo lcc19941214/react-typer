@@ -9,29 +9,56 @@ const defaultVal = {
   renderLayout: () => document.querySelector('body')
 };
 
-const PLACEMENT = ['top', 'bottom'];
+const initialPopoverStyle = {
+  transform: 'translate(-50%) scale(0)'
+};
 
+const PLACEMENT = ['top', 'bottom'];
 const PLACEMENT_MAP = {
   top: 'bottom',
   bottom: 'top'
 };
 
-const PopoverPopup = props => {
-  const { style = {}, placement, visible, className = '', onClick, children } = props;
-  const p = PLACEMENT.includes(placement) ? placement : defaultVal.placement;
-  const cls = `RichEditor-popover__${p}`;
-  return (
-    <div
-      className={classnames('RichEditor-popover', cls, className, {
-        'RichEditor-popover__hidden': !visible
-      })}
-      onClick={onClick}
-      style={style}
-    >
-      <div className="RichEditor-popover-inner">{children}</div>
-    </div>
-  );
+const getRelativeParent = element => {
+  if (!element) {
+    return null;
+  }
+
+  const position = window.getComputedStyle(element).getPropertyValue('position');
+  if (position !== 'static') {
+    return element;
+  }
+
+  return getRelativeParent(element.parentElement);
 };
+
+class PopoverPopup extends Component {
+  render() {
+    const {
+      style = {},
+      placement,
+      visible,
+      className = '',
+      onClick,
+      children
+    } = this.props;
+    const p = PLACEMENT.includes(placement) ? placement : defaultVal.placement;
+    const cls = `RichEditor-popover__${p}`;
+    return (
+      <div>
+        <div
+          className={classnames('RichEditor-popover', cls, className, {
+            'RichEditor-popover__hidden': !visible
+          })}
+          onClick={onClick}
+          style={style}
+        >
+          <div className="RichEditor-popover-inner">{children}</div>
+        </div>
+      </div>
+    );
+  }
+}
 
 export default class Popover extends Component {
   static defaultProps = {
@@ -55,7 +82,9 @@ export default class Popover extends Component {
         this.mountPopup(nextProps, nextState);
       }
       if (this.renderLayout) {
-        this.renderPopup(nextProps, nextState);
+        setTimeout(() => {
+          this.renderPopup(nextProps, nextState, this.getStyle(this.props.placement));
+        }, 0);
       }
     }
   }
@@ -70,50 +99,53 @@ export default class Popover extends Component {
   }
 
   getRootDOMNode = () => findDOMNode(this);
-  getPopupDOMNode = () => this.popup && findDOMNode(this.popup);
+  getPopoverDOMNode = () => findDOMNode(this.Popover);
+
+  getStyle = placement => {
+    const Popover = this.getPopoverDOMNode();
+    const boundingRect = this.elem.getBoundingClientRect();
+    const relativeParent = getRelativeParent(this.popup.parentElement);
+    const popoverHeight = Popover.clientHeight;
+    const relativeRect = relativeParent
+      ? relativeParent.getBoundingClientRect()
+      : document.body.getBoundingClientRect();
+    let height = 0;
+    if (placement === 'top') {
+      height = -popoverHeight;
+    } else if (placement === 'bottom') {
+      height = boundingRect.height;
+    }
+    const style = {
+      top: boundingRect.top - relativeRect.top + height,
+      left: boundingRect.left - relativeRect.left + boundingRect.width / 2,
+      transform: 'translate(-50%) scale(1)',
+      [util.transformHyphenWithUpper(`margin-${PLACEMENT_MAP[placement]}`)]: '15px'
+    };
+    return style;
+  };
 
   mountPopup = (props, state) => {
     this.renderLayout = props.renderLayout
       ? props.renderLayout()
       : defaultVal.renderLayout();
     this.renderLayout.appendChild(this.popup);
+    this.renderPopup(props, state, initialPopoverStyle);
   };
 
-  renderPopup = (props, state) => {
+  renderPopup = (props, state, style) => {
     const { content, placement, className, overlay } = props;
     const { visible } = state;
-    this.rect = this.elem.getBoundingClientRect();
-    const { left, top, width, height } = this.rect;
-    const scrollTop = document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight;
-
-    let poxY = 0;
-    switch (placement) {
-      case 'top':
-        poxY = `${scrollHeight - scrollTop - top}px`;
-        break;
-      case 'bottom':
-        poxY = `${scrollTop + top + height}px`;
-        break;
-      default:
-        break;
-    }
-
-    const style = {
-      position: 'absolute',
-      bottom: 'auto',
-      top: 'auto',
-      [PLACEMENT_MAP[placement]]: poxY,
-      left: `${left + width / 2}px`,
-      [util.transformHyphenWithUpper(`margin-${PLACEMENT_MAP[placement]}`)]: '15px'
-    };
     ReactDOM.render(
       <PopoverPopup
+        ref={ref => (this.Popover = ref)}
         visible={visible}
         content={content}
         placement={placement}
         className={className}
-        style={style}
+        style={{
+          position: 'absolute',
+          ...style
+        }}
         onClick={this.onPopoverClick}
       >
         {overlay}
