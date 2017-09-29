@@ -39,7 +39,7 @@ export function publicTyperDecorator(target) {
     convertToHTML(contentState, options = {}) {
       // stateToHTML option api only support current contentBlock,
       // must manually inject contentState to stateToHTML options
-      const _options = Object.assign({}, options, { blockRenderers: {} });
+      const _options = { ...options, blockRenderers: {} };
       Object.keys(options.blockRenderers).forEach(key => {
         _options.blockRenderers[key] = options.blockRenderers[key].bind(
           undefined,
@@ -62,7 +62,7 @@ export function publicTyperDecorator(target) {
 
     extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap = {}) {
       return Draft.DefaultDraftBlockRenderMap.merge(
-        Immutable.Map(Object.assign({}, defaultBlockRenderMap, blockRenderMap))
+        Immutable.Map({ ...defaultBlockRenderMap, ...blockRenderMap })
       );
     },
 
@@ -109,7 +109,10 @@ export function publicTyperDecorator(target) {
         decorators: this.extendDecorators(decorators, defaultDecorator),
         plugins: this.extendPlugins(plugins, defaultPlugins),
         blockRenderMap: this.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
-        blockRendererFn: this.extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn),
+        blockRendererFn: this.extendBlockRendererFn(
+          blockRendererFn,
+          defaultBlockRendererFn
+        ),
         blockStyleFn: this.extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn),
         customStyleMap: this.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
       };

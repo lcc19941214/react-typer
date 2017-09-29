@@ -40,11 +40,10 @@ export const inlineStyles = {
     style: defaultInlineStyleMap.LABEL
   },
   'LABEL-HIGHLIGHT': {
-    style: Object.assign(
-      {},
-      defaultInlineStyleMap.LABEL,
-      defaultInlineStyleMap['LABEL-HIGHLIGHT']
-    )
+    style: {
+      ...defaultInlineStyleMap.LABEL,
+      ...defaultInlineStyleMap['LABEL-HIGHLIGHT']
+    }
   },
   ...COLORS_FOR_HTML,
   ...FONT_SIZES_FOR_HTML
