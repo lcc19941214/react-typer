@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM, { findDOMNode } from 'react-dom';
 import classnames from 'classnames';
-import util from '../editorUtils/util';
+import chore from '../utils/chore';
 
 const defaultVal = {
   placement: 'top',

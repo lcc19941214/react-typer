@@ -5,11 +5,11 @@ import Immutable, { OrderedSet } from 'immutable';
 import classnames from 'classnames';
 import makePlugins from '../plugins/';
 import convertToHTML from './exportToHTML';
-import defaultDecorator from '../editorUtils/editorDecorators';
-import defaultBlockRenderMap from '../editorUtils/blockRenderMap';
-import defaultInlineStyleMap from '../editorUtils/inlineStyles';
-import defaultBlockStyleFn from '../editorUtils/blockStyleFn';
-import defaultBlockRendererFn from '../editorUtils/blockRendererFn';
+import defaultDecorator from '../utils/editorDecorators';
+import defaultBlockRenderMap from '../utils/blockRenderMap';
+import defaultInlineStyleMap from '../utils/inlineStyles';
+import defaultBlockStyleFn from '../utils/blockStyleFn';
+import defaultBlockRendererFn from '../utils/blockRendererFn';
 const { plugins: defaultPlugins } = makePlugins();
 
 const {

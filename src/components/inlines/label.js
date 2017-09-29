@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { LABEL, LABEL_HIGHLIGHT } from '../../editorUtils/inlineStyles';
+import { LABEL, LABEL_HIGHLIGHT } from '../../utils/inlineStyles';
 
 export default props => {
   const data = props.contentState.getEntity(props.entityKey).getData();

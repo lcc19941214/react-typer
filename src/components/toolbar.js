@@ -65,6 +65,35 @@ const STYLE_TYPES = [
       { key: 'imageUpload', type: 'action', component: UploadImageButton, tooltip: '图片' },
       { key: 'imageLink', type: 'action', component: AddImageLinkButton, tooltip: '图片链接' }
     ]
+  },
+  {
+    key: 'textAlign',
+    controls: [
+      {
+        key: 'text-align-left',
+        type: 'inline',
+        style: 'TEXT_ALIGN_LEFT',
+        tooltip: '左对齐'
+      },
+      {
+        key: 'text-align-center',
+        type: 'inline',
+        style: 'TEXT_ALIGN_CENTER',
+        tooltip: '居中对齐'
+      },
+      {
+        key: 'text-align-right',
+        type: 'inline',
+        style: 'TEXT_ALIGN_RIGHT',
+        tooltip: '右对齐'
+      },
+      {
+        key: 'text-align-justify',
+        type: 'inline',
+        style: 'TEXT_ALIGN_JUSTIFY',
+        tooltip: '分散对齐'
+      }
+    ]
   }
 ];
 
@@ -107,7 +136,14 @@ export default class Toolbar extends Component {
     onToggle: PropTypes.func
   };
 
-  static controls = ['headline', 'fontStyle', 'advancedFontStyle', 'list', 'action'];
+  static controls = [
+    'headline',
+    'fontStyle',
+    'advancedFontStyle',
+    'textAlign',
+    'list',
+    'action'
+  ];
 
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
 

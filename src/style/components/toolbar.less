@@ -45,13 +45,15 @@
   margin-left: 2px;
 }
 
-.RichEditor-toolbar-button__active,
-.RichEditor-toolbar-button__active:hover, {
-  background-color: @toolbar-button-bg-color-active!important;
-}
-
 .RichEditor-toolbar-button:hover {
   background-color: @toolbar-button-bg-color-hover;
+}
+
+.RichEditor-toolbar-button__active {
+  &,
+  &:hover {
+    background-color: @toolbar-button-bg-color-active;
+  }
 }
 
 // toolbar icon
@@ -125,6 +127,18 @@
 }
 .RichEditor-toolbar-button-imageLink {
   .backgroundImage('../../static/images/image-link.svg', 20px);
+}
+.RichEditor-toolbar-button-text-align-left {
+  .backgroundImage('../../static/images/text-align-left.svg');
+}
+.RichEditor-toolbar-button-text-align-center {
+  .backgroundImage('../../static/images/text-align-center.svg');
+}
+.RichEditor-toolbar-button-text-align-right {
+  .backgroundImage('../../static/images/text-align-right.svg');
+}
+.RichEditor-toolbar-button-text-align-justify {
+  .backgroundImage('../../static/images/text-align-justify.svg');
 }
 
 // addImage

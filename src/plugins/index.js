@@ -1,5 +1,4 @@
 import { composeDecorators } from 'draft-js-plugins-editor';
-import createAlignmentPlugin from 'draft-js-alignment-plugin';
 import createFocusPlugin from 'draft-js-focus-plugin';
 import createResizeablePlugin from 'draft-js-resizeable-plugin';
 // import createImagePlugin from 'draft-js-image-plugin';
@@ -7,8 +6,8 @@ import createImagePlugin from './imagePlugin';
 import createBlockDndPlugin from 'draft-js-drag-n-drop-plugin';
 import createEnhancedResizeablePlugin from './enhancedResizeablePlugin';
 import createImageUploadPlugin from './imageUploadPlugin';
+import createAlignmentPlugin from './alignmentPlugin';
 
-import 'draft-js-alignment-plugin/lib/plugin.css';
 import 'draft-js-focus-plugin/lib/plugin.css';
 
 const focusPlugin = createFocusPlugin();

@@ -3,16 +3,16 @@ import defaultInlineStyleMap, {
   COLORS,
   FONT_SIZES,
   defaultStyleRules
-} from '../editorUtils/inlineStyles';
-import util from '../editorUtils/util';
-import { INITIAL_UNSTYLED } from '../editorUtils/blockStyleFn';
+} from '../utils/inlineStyles';
+import chore from '../utils/chore';
+import { INITIAL_UNSTYLED } from '../utils/blockStyleFn';
 import * as EntityType from '../constants/entity';
 
 const IMAGE_ALIGNMENT = {
   default: '',
-  center: 'margin: 0 auto;',
-  right: 'float: right;',
-  left: 'float: left;'
+  center: 'text-align: center',
+  right: 'text-align: right;',
+  left: 'text-align: left;'
 };
 
 const COLORS_FOR_HTML = {};
@@ -64,9 +64,9 @@ export const blockRenderers = {
           ? document.querySelector(`img[src="${src}"]`)
           : document.querySelector(`img[data-image-uid="${uid}"]`);
         const width = imageElem.clientWidth;
-        return `<div><img src="${src}" style="${IMAGE_ALIGNMENT[
-          alignment
-        ]} display: block;" width="${width}px"/></div>`;
+        return `<div style="${IMAGE_ALIGNMENT[alignment]}">
+          <img src="${src}" style="width: ${width}px" width="${width}"/>
+        </div>`;
       default:
     }
   }
@@ -107,7 +107,7 @@ export const htmlWrapper = (html = '') => {
   const rules = [];
   [defaultStyleRules].forEach(styles => {
     Object.keys(styles).forEach(prop => {
-      rules.push(`${util.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
+      rules.push(`${chore.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
     });
   });
   return `<div style="${rules.join('; ')}">${html}</div>`;

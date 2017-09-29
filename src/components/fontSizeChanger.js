@@ -5,15 +5,15 @@ import Popover from './popover';
 import {
   FONT_SIZES as INLINE_FONT_SIZE,
   DEFAULT_FONT_SIZE_KEY
-} from '../editorUtils/inlineStyles';
+} from '../utils/inlineStyles';
 
 const noop = () => {};
 
 const FONT_SIZE_LABEL = {
-  'INLINE-FONT-SIZE-SMALL': '小',
-  'INLINE-FONT-SIZE-MEDIUM': '中',
-  'INLINE-FONT-SIZE-LARGE': '大',
-  'INLINE-FONT-SIZE-SUPER': '超大'
+  'INLINE_FONT_SIZE_SMALL': '小',
+  'INLINE_FONT_SIZE_MEDIUM': '中',
+  'INLINE_FONT_SIZE_LARGE': '大',
+  'INLINE_FONT_SIZE_SUPER': '超大'
 };
 
 const FONT_SIZE_MAP = Object.keys(INLINE_FONT_SIZE).map(v => ({

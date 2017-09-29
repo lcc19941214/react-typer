@@ -17,10 +17,9 @@ import {
   updateImage,
   uploadImage,
   pasteAndUploadImage
-} from './editorUtils/imageUtil';
+} from './utils/imageUtil';
 
 import 'draft-js/dist/Draft.css';
-import 'draft-js-alignment-plugin/lib/plugin.css';
 import './style/typer.less';
 
 const noop = () => {};
@@ -321,7 +320,7 @@ class Typer extends Component {
               {...eventHandler}
               {...Typer.extendDefaultProps(this.props)}
             />
-            {/* <AlignmentTool /> */}
+            <AlignmentTool />
           </div>
         </div>
         <div

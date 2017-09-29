@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 import { EditorState } from 'draft-js';
 import Popover from './popover';
-import { addImage, updateImage, uploadImage } from '../editorUtils/imageUtil';
+import { addImage, updateImage, uploadImage } from '../utils/imageUtil';
 
 const noop = () => {};
 
