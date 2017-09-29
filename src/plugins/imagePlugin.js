@@ -11,7 +11,10 @@ export default (config = {}) => {
   if (config.decorator) {
     Image = config.decorator(Image);
   }
-  const ThemedImage = decorateComponentWithProps(Image, { theme, horizontal: 'absolute' });
+  const ThemedImage = decorateComponentWithProps(Image, {
+    theme,
+    ...(config.props || {})
+  });
   return {
     blockRendererFn: (block, { getEditorState }) => {
       if (block.getType() === 'atomic') {

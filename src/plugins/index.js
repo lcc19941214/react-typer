@@ -28,7 +28,12 @@ const imageDecorator = composeDecorators(
   imageUploadPlugin.decorator // put imageUploadPlugin on the last to clear className produced by above plugins
 );
 
-const imagePlugin = createImagePlugin({ decorator: imageDecorator });
+const imagePlugin = createImagePlugin({
+  decorator: imageDecorator,
+  props: {
+    horizontal: 'absolute'
+  }
+});
 
 const PLUGINS = {
   focusPlugin,

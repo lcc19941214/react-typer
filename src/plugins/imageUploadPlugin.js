@@ -25,17 +25,10 @@ const createDecorator = (config = {}) => WrappedComponent =>
       return entity.getData();
     };
 
-    // TODO
-    // load err
-    // handleOnError = err => {
-    //   console.log(err);
-    //   this.elem.src = brokenImage.slice(1, -1);
-    // }
-
     render() {
       const { style, className } = this.props;
       const { uploading, src, uid, error } = this.getData(this.props);
-      const dataSet = !error && uid ? { 'data-image-uid': uid } : {};
+      const dataSet = { 'data-image-uid': uid };
       return uploading ? (
         <div
           className={classnames('RichEditor-plugin__image-upload', {

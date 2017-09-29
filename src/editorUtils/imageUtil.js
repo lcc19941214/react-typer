@@ -6,9 +6,14 @@ import brokenImage from '../static/images/broken_image.svg';
 const noop = () => {};
 const imageURLKeyMap = {};
 
+const INITIAL_IMAGE_BLOCK_PROPS = {
+  alignment: 'center',
+  width: 'auto'
+};
+
 export const addImage = (editorState, url, extraData = {}) => {
   const contentState = editorState.getCurrentContent();
-  const entityData = Object.assign({ alignment: 'center' }, extraData);
+  const entityData = { ...INITIAL_IMAGE_BLOCK_PROPS, ...extraData, uid: Date.now() };
   const contentStateWithEntity = contentState.createEntity(
     EntityType.IMAGE,
     'IMMUTABLE',
@@ -38,7 +43,7 @@ const makeUpload = (action, file, config = {}, localURL) => {
       console.error(err);
       return {
         url: brokenImage.slice(1, -1),
-        // error: err
+        error: err
       };
     });
 };
