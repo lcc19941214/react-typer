@@ -141,12 +141,16 @@ export default class Toolbar extends Component {
     'headline',
     'fontStyle',
     'advancedFontStyle',
-    'textAlign',
     'list',
+    'textAlign',
     'image'
   ];
 
-  matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));
+  matchStyleControls = controls => {
+    const cts = STYLE_TYPES.filter(v => controls.includes(v.key));
+    cts.sort((a, b) => controls.indexOf(a.key) - controls.indexOf(b.key));
+    return cts;
+  };
 
   getCurrentStyles = editorState => {
     const selectionState = editorState.getSelection();
