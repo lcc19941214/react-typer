@@ -60,27 +60,9 @@ export const FONT_SIZES = {
 };
 export const DEFAULT_FONT_SIZE = FONT_SIZES[DEFAULT_FONT_SIZE_KEY];
 
-export const DEFAULT_TEXT_ALIGN_KEY = 'TEXT_ALIGN_LEFT';
-export const TEXT_ALIGNS = {
-  [DEFAULT_TEXT_ALIGN_KEY]: {
-    textAlign: 'left'
-  },
-  TEXT_ALIGN_CENTER: {
-    textAlign: 'center'
-  },
-  TEXT_ALIGN_RIGHT: {
-    textAlign: 'right'
-  },
-  TEXT_ALIGN_JUSTIFY: {
-    textAlign: 'justify'
-  }
-};
-export const DEFAULT_TEXT_ALIGN = TEXT_ALIGNS[DEFAULT_TEXT_ALIGN_KEY];
-
 export const defaultStyleRules = {
   ...DEFAULT_COLOR,
   ...DEFAULT_FONT_SIZE,
-  ...DEFAULT_TEXT_ALIGN,
   lineHeight: '1.8'
 };
 
@@ -88,8 +70,7 @@ const defaultInlineStyleMap = {
   LABEL,
   LABEL_HIGHLIGHT: LABEL_HIGHLIGHT,
   ...COLORS,
-  ...FONT_SIZES,
-  ...TEXT_ALIGNS
+  ...FONT_SIZES
 };
 
 export default defaultInlineStyleMap;

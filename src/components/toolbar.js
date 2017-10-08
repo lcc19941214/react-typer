@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
-import { RichUtils } from 'draft-js';
+import decorateComponentWithProps from 'decorate-component-with-props';
 import Tooltip from './tooltip';
 import ColorPicker from './colorPicker';
 import FontSizeChanger from './fontSizeChanger';
+import TextAlignment from './textAlignment';
 import { UploadImageButton, AddImageLinkButton } from './addImageButton';
 
 const noop = () => {};
@@ -60,7 +61,7 @@ const STYLE_TYPES = [
     ]
   },
   {
-    key: 'action',
+    key: 'image',
     controls: [
       { key: 'imageUpload', type: 'action', component: UploadImageButton, tooltip: '图片' },
       { key: 'imageLink', type: 'action', component: AddImageLinkButton, tooltip: '图片链接' }
@@ -71,26 +72,26 @@ const STYLE_TYPES = [
     controls: [
       {
         key: 'text-align-left',
-        type: 'inline',
-        style: 'TEXT_ALIGN_LEFT',
+        type: 'action',
+        component: decorateComponentWithProps(TextAlignment, { textAlign: 'left' }),
         tooltip: '左对齐'
       },
       {
         key: 'text-align-center',
-        type: 'inline',
-        style: 'TEXT_ALIGN_CENTER',
+        type: 'action',
+        component: decorateComponentWithProps(TextAlignment, { textAlign: 'center' }),
         tooltip: '居中对齐'
       },
       {
         key: 'text-align-right',
-        type: 'inline',
-        style: 'TEXT_ALIGN_RIGHT',
+        type: 'action',
+        component: decorateComponentWithProps(TextAlignment, { textAlign: 'right' }),
         tooltip: '右对齐'
       },
       {
         key: 'text-align-justify',
-        type: 'inline',
-        style: 'TEXT_ALIGN_JUSTIFY',
+        type: 'action',
+        component: decorateComponentWithProps(TextAlignment, { textAlign: 'justify' }),
         tooltip: '分散对齐'
       }
     ]
@@ -142,7 +143,7 @@ export default class Toolbar extends Component {
     'advancedFontStyle',
     'textAlign',
     'list',
-    'action'
+    'image'
   ];
 
   matchStyleControls = controls => STYLE_TYPES.filter(v => controls.includes(v.key));

@@ -5,7 +5,7 @@ import defaultInlineStyleMap, {
   defaultStyleRules
 } from '../utils/inlineStyles';
 import chore from '../utils/chore';
-import { INITIAL_UNSTYLED } from '../utils/blockStyleFn';
+import { INITIAL_UNSTYLED, DEFAULT_TEXT_ALIGN, TEXT_ALIGNS } from '../utils/blockStyleFn';
 import * as BlockType from '../constants/blockType';
 
 const IMAGE_ALIGNMENT = {
@@ -73,11 +73,15 @@ export const blockRenderers = {
 };
 
 export const blockStyleFn = contentBlock => {
+  const style = {};
   if (contentBlock.getType() === BlockType.UNSTYLED) {
-    return {
-      style: INITIAL_UNSTYLED
-    };
+    Object.assign(style, INITIAL_UNSTYLED);
   }
+
+  const textAlign = contentBlock.getData().get('textAlign');
+  Object.assign(style, textAlign ? TEXT_ALIGNS[textAlign] : DEFAULT_TEXT_ALIGN);
+
+  return { style };
 };
 
 export const entityStyleFn = entity => {
