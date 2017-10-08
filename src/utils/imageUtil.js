@@ -1,6 +1,6 @@
 import { EditorState, AtomicBlockUtils, convertToRaw } from 'draft-js';
 import axios from 'axios';
-import * as EntityType from '../constants/entity';
+import * as BlockType from '../constants/blockType';
 import brokenImage from '../static/images/broken_image.svg';
 
 const noop = () => {};
@@ -15,7 +15,7 @@ export const addImage = (editorState, url, extraData = {}) => {
   const contentState = editorState.getCurrentContent();
   const entityData = { ...INITIAL_IMAGE_BLOCK_PROPS, ...extraData, uid: Date.now() };
   const contentStateWithEntity = contentState.createEntity(
-    EntityType.IMAGE,
+    BlockType.IMAGE,
     'IMMUTABLE',
     { ...entityData, src: url }
   );

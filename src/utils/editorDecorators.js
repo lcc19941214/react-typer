@@ -2,14 +2,14 @@
 import React from 'react';
 import classnames from 'classnames';
 import Label from '../components/inlines/label';
-import * as EntityType from '../constants/entity';
+import * as BlockType from '../constants/blockType';
 
 // strategy
 export function findLabel(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(character => {
     const entityKey = character.getEntity();
     return (
-      entityKey !== null && contentState.getEntity(entityKey).getType() === EntityType.LABEL_BLOCK
+      entityKey !== null && contentState.getEntity(entityKey).getType() === BlockType.LABEL_BLOCK
     );
   }, callback);
 }

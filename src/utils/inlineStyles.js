@@ -86,7 +86,7 @@ export const defaultStyleRules = {
 
 const defaultInlineStyleMap = {
   LABEL,
-  'LABEL-HIGHLIGHT': LABEL_HIGHLIGHT,
+  LABEL_HIGHLIGHT: LABEL_HIGHLIGHT,
   ...COLORS,
   ...FONT_SIZES,
   ...TEXT_ALIGNS

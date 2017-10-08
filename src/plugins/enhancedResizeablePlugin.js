@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import classnames from 'classnames';
-import * as EntityType from '../constants/entity';
+import * as BlockType from '../constants/blockType';
 
 const store = {
   getEditorRef: undefined,

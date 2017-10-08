@@ -6,7 +6,7 @@ import defaultInlineStyleMap, {
 } from '../utils/inlineStyles';
 import chore from '../utils/chore';
 import { INITIAL_UNSTYLED } from '../utils/blockStyleFn';
-import * as EntityType from '../constants/entity';
+import * as BlockType from '../constants/blockType';
 
 const IMAGE_ALIGNMENT = {
   default: '',
@@ -39,10 +39,10 @@ export const inlineStyles = {
   LABEL: {
     style: defaultInlineStyleMap.LABEL
   },
-  'LABEL-HIGHLIGHT': {
+  LABEL_HIGHLIGHT: {
     style: {
       ...defaultInlineStyleMap.LABEL,
-      ...defaultInlineStyleMap['LABEL-HIGHLIGHT']
+      ...defaultInlineStyleMap['LABEL_HIGHLIGHT']
     }
   },
   ...COLORS_FOR_HTML,
@@ -58,7 +58,7 @@ export const blockRenderers = {
     const entityType = entity.get('type');
     const data = entity.get('data');
     switch (entityType) {
-      case EntityType.IMAGE:
+      case BlockType.IMAGE:
         const { src, alignment = 'default', uid } = data;
         const imageElem = !uid
           ? document.querySelector(`img[src="${src}"]`)
@@ -73,7 +73,7 @@ export const blockRenderers = {
 };
 
 export const blockStyleFn = contentBlock => {
-  if (contentBlock.getType() === EntityType.UNSTYLED) {
+  if (contentBlock.getType() === BlockType.UNSTYLED) {
     return {
       style: INITIAL_UNSTYLED
     };
@@ -84,12 +84,12 @@ export const entityStyleFn = entity => {
   const entityType = entity.get('type');
   const data = entity.getData();
   switch (entityType) {
-    case EntityType.LABEL_BLOCK:
+    case BlockType.LABEL_BLOCK:
       const { highlight } = data;
       return {
         element: 'span',
         style: highlight
-          ? inlineStyles['LABEL-HIGHLIGHT'].style
+          ? inlineStyles['LABEL_HIGHLIGHT'].style
           : inlineStyles.LABEL.style
       };
     default:
