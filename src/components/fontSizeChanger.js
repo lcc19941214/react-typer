@@ -10,10 +10,10 @@ import {
 const noop = () => {};
 
 const FONT_SIZE_LABEL = {
-  'INLINE_FONT_SIZE_SMALL': '小',
-  'INLINE_FONT_SIZE_MEDIUM': '中',
-  'INLINE_FONT_SIZE_LARGE': '大',
-  'INLINE_FONT_SIZE_SUPER': '超大'
+  INLINE_FONT_SIZE_SMALL: '小',
+  INLINE_FONT_SIZE_MEDIUM: '中',
+  INLINE_FONT_SIZE_LARGE: '大',
+  INLINE_FONT_SIZE_SUPER: '超大'
 };
 
 const FONT_SIZE_MAP = Object.keys(INLINE_FONT_SIZE).map(v => ({

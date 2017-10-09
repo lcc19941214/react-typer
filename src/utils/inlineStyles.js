@@ -54,7 +54,7 @@ export const FONT_SIZES = {
   INLINE_FONT_SIZE_LARGE: {
     fontSize: '18px'
   },
-  'INLINE_FONT_SIZE-SUPER': {
+  INLINE_FONT_SIZE_SUPER: {
     fontSize: '32px'
   }
 };
