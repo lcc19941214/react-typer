@@ -63,9 +63,23 @@ export const blockRenderers = {
         const imageElem = !uid
           ? document.querySelector(`img[src="${src}"]`)
           : document.querySelector(`img[data-image-uid="${uid}"]`);
-        const width = imageElem.clientWidth;
+        const width =
+          typeof imageElem.style.width !== undefined
+            ? imageElem.style.width
+            : `${imageElem.clientWidth}px`;
+        const maxWidth = imageElem.style.maxWidth;
+        const minWidth = imageElem.style.minWidth;
+        const style = {
+          width: width,
+          'max-width': maxWidth,
+          'min-width': minWidth
+        };
+        const styleStr = Object.keys(style)
+          .filter(key => style[key])
+          .map(key => `${key}: ${style[key]}`)
+          .join('; ');
         return `<div style="${IMAGE_ALIGNMENT[alignment]}">
-          <img src="${src}" style="width: ${width}px" width="${width}"/>
+          <img src="${src}" style="${styleStr}" width="${width}"/>
         </div>`;
       default:
     }
@@ -92,9 +106,7 @@ export const entityStyleFn = entity => {
       const { highlight } = data;
       return {
         element: 'span',
-        style: highlight
-          ? inlineStyles['LABEL_HIGHLIGHT'].style
-          : inlineStyles.LABEL.style
+        style: highlight ? inlineStyles['LABEL_HIGHLIGHT'].style : inlineStyles.LABEL.style
       };
     default:
   }
