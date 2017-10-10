@@ -14,11 +14,10 @@ const INITIAL_IMAGE_BLOCK_PROPS = {
 export const addImage = (editorState, url, extraData = {}) => {
   const contentState = editorState.getCurrentContent();
   const entityData = { ...INITIAL_IMAGE_BLOCK_PROPS, ...extraData, uid: Date.now() };
-  const contentStateWithEntity = contentState.createEntity(
-    BlockType.IMAGE,
-    'IMMUTABLE',
-    { ...entityData, src: url }
-  );
+  const contentStateWithEntity = contentState.createEntity(BlockType.IMAGE, 'IMMUTABLE', {
+    ...entityData,
+    src: url
+  });
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
   imageURLKeyMap[url] = entityKey;
   const newEditorState = AtomicBlockUtils.insertAtomicBlock(editorState, entityKey, ' ');
@@ -67,15 +66,9 @@ const mergeImageData = (mergeData, localURL, editor) => {
 };
 
 export const uploadImage = (action, file, options) => {
-  const {
-    requestConfig = {},
-    onUpload,
-    onUploadError = noop,
-    editor,
-    localURL
-  } = options;
+  const { requestConfig = {}, onUpload, onUploadError = noop, editor, localURL } = options;
   return makeUpload(action, file, requestConfig, localURL)
-    .then(res => onUpload(res) || res)
+    .then(res => (res.error ? res : onUpload(res) || res))
     .then(res => {
       if (res.error) {
         onUploadError(res.error);

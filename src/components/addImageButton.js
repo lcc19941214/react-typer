@@ -111,7 +111,7 @@ export class UploadImageButton extends Component {
     if (file.type.includes('image/')) {
       const url = URL.createObjectURL(file);
 
-      const { editorState, changeState, focus, blur, getEditor, onUpload } = this.props;
+      const { editorState, changeState, focus, blur, getEditor, onUpload, onUploadError } = this.props;
       const nextEditorState = addImage(editorState, url, {
         uploading: true,
         progress: 0
@@ -126,7 +126,8 @@ export class UploadImageButton extends Component {
         //   }
         };
         uploadImage(this.props.action, file, {
-          onUpload: onUpload,
+          onUpload,
+          onUploadError,
           editor: getEditor(),
           requestConfig: config,
           localURL: url
