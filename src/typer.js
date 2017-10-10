@@ -49,7 +49,7 @@ const composedDecorators = composeDecorators(
  *    override default ones and support HTML content pasted from clipboard
  *    every blockRender item require element and wrapper property
  * @prop {func}         blockRendererFn - (optional)
- *    override block-element by given type, return an object with component, 
+ *    override block-element by given type, return an object with component,
  *    editable, props and so
  * @prop {func}         blockStyleFn - (optional)
  *    override block-element style by given type, return a custom class name
@@ -60,7 +60,8 @@ const composedDecorators = composeDecorators(
  * @prop {string}       imageUploadAction - required
  *    action for upload request url
  */
-// @textEditDecorator
+@publicTyperDecorator
+@composedDecorators
 class Typer extends Component {
   static propTypes = {
     content: PropTypes.string,
@@ -120,7 +121,6 @@ class Typer extends Component {
       editorState: EditorState.createWithContent(ContentState.createFromText(''))
     };
 
-    composedDecorators(Typer);
     this.fillContentState = this.fillContentState.bind(this);
     this.modifyText = this.modifyText.bind(this);
     this.insertText = this.insertText.bind(this);
@@ -373,7 +373,5 @@ class Typer extends Component {
     );
   }
 }
-
-publicTyperDecorator(Typer);
 
 export default Typer;

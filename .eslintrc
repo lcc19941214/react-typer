@@ -1,0 +1,12 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["react-app"],
+  "plugins": ["eslint-plugin-react"],
+  "globals": {
+    "document": true,
+    "window": true
+  },
+  "ecmaFeatures": {
+    "experimentalDecorators": true
+  }
+}
