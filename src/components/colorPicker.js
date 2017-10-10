@@ -70,16 +70,11 @@ export default class ColorPicker extends Component {
     } else {
       // turn off all active colors but apply only one color
       const nextContentState = COLORS_MAP.map(v => v.style).reduce(
-        (contentState, color) =>
-          Modifier.removeInlineStyle(contentState, selection, color),
+        (contentState, color) => Modifier.removeInlineStyle(contentState, selection, color),
         editorState.getCurrentContent()
       );
 
-      let nextEditorState = EditorState.push(
-        editorState,
-        nextContentState,
-        'reset-inline-color'
-      );
+      let nextEditorState = EditorState.push(editorState, nextContentState, 'reset-inline-color');
 
       nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
 
@@ -89,6 +84,23 @@ export default class ColorPicker extends Component {
         focus();
       });
     }
+  };
+
+  getActiveColor = (color, currentStyle) => {
+    let style = DEFAULT_COLOR_KEY;
+    if (currentStyle.has(color)) {
+      style = color;
+    } else {
+      const currentStyleToJS = currentStyle.toJS();
+      const current = currentStyleToJS.find(x => COLORS_STYLE.some(y => x === y));
+      if (current) {
+        style = current;
+        setTimeout(() => {
+          this.setState({ color: current });
+        }, 10);
+      }
+    }
+    return style;
   };
 
   render() {
@@ -104,7 +116,7 @@ export default class ColorPicker extends Component {
     } = this.props;
     const { active, color } = this.state;
     const currentStyle = editorState.getCurrentInlineStyle();
-    const indicatorStyle = currentStyle.has(color) ? color : DEFAULT_COLOR_KEY;
+    const indicatorStyle = this.getActiveColor(color, currentStyle);
     return (
       <Popover
         className="RichEditor-toolbar__color-picker__popover"
@@ -137,10 +149,7 @@ export default class ColorPicker extends Component {
             )}
             onMouseDown={e => e.preventDefault()}
           >
-            <div
-              className="color-picker_indicator"
-              style={BLOCK_COLORS[indicatorStyle]}
-            />
+            <div className="color-picker_indicator" style={BLOCK_COLORS[indicatorStyle]} />
           </span>
         </div>
       </Popover>
