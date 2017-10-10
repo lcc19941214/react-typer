@@ -12,12 +12,7 @@ import {
 } from './helper/decorators';
 import { exportToHTMLOptions } from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
-import {
-  addImage,
-  updateImage,
-  uploadImage,
-  pasteAndUploadImage
-} from './utils/imageUtil';
+import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
 
 import 'draft-js/dist/Draft.css';
 import './style/typer.less';
@@ -83,7 +78,8 @@ class Typer extends Component {
     autoFocus: PropTypes.bool,
     behavior: PropTypes.object,
     className: PropTypes.string,
-    imageUploadAction: PropTypes.string.isRequired
+    imageUploadAction: PropTypes.string.isRequired,
+    tabLength: PropTypes.number
   };
 
   static defaultProps = {
@@ -109,7 +105,8 @@ class Typer extends Component {
       spellCheck: false
     },
     className: '',
-    imageUploadAction: 'http://localhost:3000'
+    imageUploadAction: 'http://localhost:3000',
+    tabLength: 4
   };
 
   Typer = null;
@@ -217,6 +214,12 @@ class Typer extends Component {
       });
     });
   };
+  handleOnTab = e => {
+    e.preventDefault();
+    const maxDepth = this.props.tabLength;
+    const spaces = [...new Array(maxDepth)].map(v => ' ').join('');
+    this.insertText(spaces, [], undefined, this.focus);
+  };
 
   exportState = (type = '') => {
     const { editorState } = this.state;
@@ -284,7 +287,8 @@ class Typer extends Component {
     const eventHandler = {
       onFocus: this.handleOnFocus,
       onBlur: this.handleOnBlur,
-      onChange: this.handleOnChange
+      onChange: this.handleOnChange,
+      onTab: this.handleOnTab
     };
 
     // const html = this.exportState('html');
