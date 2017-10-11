@@ -17,7 +17,7 @@ export default class TextAlignment extends Component {
     const blockData = Map({ textAlign });
 
     const nextContentState = Modifier.mergeBlockData(contentState, selection, blockData);
-    const nextEditorState = EditorState.push(editorState, nextContentState);
+    const nextEditorState = EditorState.push(editorState, nextContentState, 'change-block-data');
     changeState(nextEditorState);
   };
 

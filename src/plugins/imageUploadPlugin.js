@@ -7,6 +7,8 @@ import * as BlockType from '../constants/blockType';
 // need focus and resizeable
 const createDecorator = (config = {}) => WrappedComponent =>
   class ImageUploadPluginDecorator extends Component {
+    uploaded = false;
+
     componentDidMount() {
       this.elem = ReactDOM.findDOMNode(this);
     }
@@ -19,6 +21,13 @@ const createDecorator = (config = {}) => WrappedComponent =>
     //   }
     // }
 
+    componentDidUpdate(prevProps, prevState) {
+      const { uploading } = this.getData(prevProps);
+      if (!uploading && !this.uploaded) {
+        this.uploaded = true;
+      }
+    }
+
     getData = props => {
       const { contentState, block } = this.props;
       const entity = contentState.getEntity(block.getEntityAt(0));
@@ -29,6 +38,11 @@ const createDecorator = (config = {}) => WrappedComponent =>
       const { style, className } = this.props;
       const { uploading, src, uid, error } = this.getData(this.props);
       const dataSet = { 'data-image-uid': uid };
+
+      if (!uploading) {
+        this.uploaded = true;
+      }
+
       return uploading ? (
         <div
           className={classnames('RichEditor-plugin__image-upload', {
@@ -41,9 +55,8 @@ const createDecorator = (config = {}) => WrappedComponent =>
         <WrappedComponent
           {...this.props}
           {...dataSet}
-          onError={this.handleOnError}
           className={classnames(className, {
-            'RichEditor-plugin__image-upload__uploaded': !error && !uploading,
+            'RichEditor-plugin__image-upload__uploaded': !error && !uploading && !this.uploaded,
             'RichEditor-plugin__image-error': error
           })}
         />

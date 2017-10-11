@@ -126,7 +126,7 @@ export function textEditDecorator(target) {
 
   Object.assign(target.prototype, {
     /**
-     * 
+     *
      * @param {object}    contentState
      *    contentState must be an object converted by convertFromRaw or convertFromJSON
      * @param {boolean}   hard
@@ -147,7 +147,7 @@ export function textEditDecorator(target) {
       if (hard) {
         newEditorState = EditorState.createWithContent(contentState, decorator);
       } else {
-        newEditorState = EditorState.push(this.state.editorState, contentState);
+        newEditorState = EditorState.push(this.state.editorState, contentState, 'insert-fragment');
       }
       this.changeState(newEditorState, cb);
     },
@@ -162,7 +162,7 @@ export function textEditDecorator(target) {
           inlineStyles.length > 0 ? OrderedSet.of(inlineStyles) : undefined,
           entityKey
         );
-        const newEditorState = EditorState.push(editorState, contentState);
+        const newEditorState = EditorState.push(editorState, contentState, 'insert-characters');
         this.changeState(newEditorState, cb);
       }
     },
@@ -235,7 +235,7 @@ export function entityEditDecorator(target) {
         selectionState,
         entityKey
       );
-      const nextEditorState = EditorState.push(editorState, newContentState);
+      const nextEditorState = EditorState.push(editorState, newContentState, 'apply-entity');
       this.changeState(nextEditorState, cb);
       return entityKey;
     }

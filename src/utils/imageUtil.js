@@ -29,7 +29,7 @@ export const updateImage = (editorState, toMergeData, localURL) => {
   const entityKey = imageURLKeyMap[localURL];
   const nextContentState = contentState.mergeEntityData(entityKey, toMergeData);
   delete imageURLKeyMap[localURL];
-  return EditorState.push(editorState, nextContentState);
+  return EditorState.push(editorState, nextContentState, 'update-image-url');
 };
 
 const makeUpload = (action, file, config = {}, localURL) => {

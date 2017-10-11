@@ -74,7 +74,7 @@ export default class ColorPicker extends Component {
         editorState.getCurrentContent()
       );
 
-      let nextEditorState = EditorState.push(editorState, nextContentState, 'reset-inline-color');
+      let nextEditorState = EditorState.push(editorState, nextContentState, 'change-inline-style');
 
       nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
 

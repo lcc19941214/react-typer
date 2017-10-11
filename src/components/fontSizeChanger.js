@@ -76,7 +76,7 @@ export default class FontSizeChanger extends Component {
         editorState.getCurrentContent()
       );
 
-      let nextEditorState = EditorState.push(editorState, nextContentState, 'reset-inline-size');
+      let nextEditorState = EditorState.push(editorState, nextContentState, 'change-inline-style');
 
       nextEditorState = RichUtils.toggleInlineStyle(nextEditorState, style);
 
