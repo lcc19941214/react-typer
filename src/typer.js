@@ -13,6 +13,7 @@ import {
 import { exportToHTMLOptions } from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
 import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
+import { setAlignmentDecorator } from './components/textAlignment';
 
 import 'draft-js/dist/Draft.css';
 import './style/typer.less';
@@ -118,6 +119,7 @@ class Typer extends Component {
       editorState: EditorState.createWithContent(ContentState.createFromText(''))
     };
 
+    this.changeState = this.changeState.bind(this);
     this.fillContentState = this.fillContentState.bind(this);
     this.modifyText = this.modifyText.bind(this);
     this.insertText = this.insertText.bind(this);
@@ -145,7 +147,10 @@ class Typer extends Component {
 
   getEditor = () => this;
 
-  changeState = (editorState, cb = noop) => this.setState({ editorState }, cb);
+  @setAlignmentDecorator
+  changeState(editorState, cb = noop, ...args) {
+    this.setState({ editorState }, cb)
+  };
   focus = () => this.Editor.focus();
   blur = () => this.Editor.blur();
 
@@ -166,13 +171,20 @@ class Typer extends Component {
   };
 
   handleKeyCommand = (command, editorState) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
-    if (newState) {
-      this.changeState(newState);
-      return true;
+    let result = 'not-handled';
+    const { keyCommandHandlers } = this.props;
+    if (keyCommandHandlers && keyCommandHandlers[command]) {
+      keyCommandHandlers[command](command, editorState, this.changeState);
+      result = 'handled';
+    } else {
+      const newState = RichUtils.handleKeyCommand(editorState, command);
+      if (newState) {
+        this.changeState(newState);
+        result = 'handled';
+      }
     }
-    return false;
-  };
+    return result;
+  }
 
   handleOnChange = (editorState, enhancedEditor) => {
     this.changeState(editorState, this.props.onChange);
