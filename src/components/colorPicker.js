@@ -141,10 +141,10 @@ export default class ColorPicker extends Component {
         >
           <span
             className={classnames(
-              'RichEditor-toolbar-button',
-              `RichEditor-toolbar-button-${controlKey}`,
+              'RichEditor-button',
+              `RichEditor-button-${controlKey}`,
               {
-                'RichEditor-toolbar-button__active': active
+                'RichEditor-button__active': active
               }
             )}
             onMouseDown={e => e.preventDefault()}

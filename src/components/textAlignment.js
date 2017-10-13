@@ -102,10 +102,10 @@ export default class TextAlignment extends Component {
     return (
       <span
         className={classnames(
-          'RichEditor-toolbar-button',
-          `RichEditor-toolbar-button-${controlKey}`,
+          'RichEditor-button',
+          `RichEditor-button-${controlKey}`,
           {
-            'RichEditor-toolbar-button__active': this.getActive(editorState, textAlign)
+            'RichEditor-button__active': this.getActive(editorState, textAlign)
           }
         )}
         {...extraProps}

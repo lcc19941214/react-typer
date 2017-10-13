@@ -1,4 +1,20 @@
-/* toolbar */
+// toolbar icon
+.arrow {
+  padding-right: 12px;
+  &::before {
+    background-position: 7px;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 3px;
+    border: 3px solid transparent;
+    border-top-color: @button-arrow-color;
+  }
+}
+
+// toolbar
 .RichEditor-toolbar {
   padding: 5px 20px;
   border-bottom: 1px solid #ddd;
@@ -7,6 +23,16 @@
     Helvetica, Arial, sans-serif;
   font-size: 14px;
   user-select: none;
+
+  .RichEditor-button + .RichEditor-button,
+  .RichEditor-toolbar-button__wrapped {
+    margin-left: 2px;
+  }
+
+  .RichEditor-button-colorPicker,
+  .RichEditor-button-fontSize {
+    .arrow();
+  }
 }
 
 .RichEditor-toolbar-group {
@@ -23,122 +49,6 @@
   &:last-child::after {
     display: none;
   }
-}
-
-.RichEditor-toolbar-button {
-  box-sizing: content-box;
-  position: relative;
-  display: inline-block;
-  padding: 7px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  font-size: 12px;
-  text-align: center;
-  color: @toolbar-button-text-color;
-  vertical-align: middle;
-}
-.RichEditor-toolbar-button + .RichEditor-toolbar-button,
-.RichEditor-toolbar-button__wrapped {
-  margin-left: 2px;
-}
-
-.RichEditor-toolbar-button:hover {
-  background-color: @toolbar-button-bg-color-hover;
-}
-
-.RichEditor-toolbar-button__active {
-  &,
-  &:hover {
-    background-color: @toolbar-button-bg-color-active;
-  }
-}
-
-// toolbar icon
-.arrow {
-  padding-right: 12px;
-  &::before {
-    background-position: 7px;
-  }
-  &::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 3px;
-    border: 3px solid transparent;
-    border-top-color: @toolbar-button-arrow-color;
-  }
-}
-.backgroundImage(@url, @size: 16px) {
-  &::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0.6;
-    transition: opacity 0.35s;
-    background: url(@url) no-repeat center;
-    background-size: @size;
-  }
-  &.RichEditor-toolbar-button__active {
-    &::before {
-      opacity: 1;
-    }
-  }
-}
-.RichEditor-toolbar-button-h1 {
-  .backgroundImage('../../static/images/h1.svg', 18px);
-}
-.RichEditor-toolbar-button-h2 {
-  .backgroundImage('../../static/images/h2.svg', 18px);
-}
-.RichEditor-toolbar-button-h3 {
-  .backgroundImage('../../static/images/h3.svg', 18px);
-}
-.RichEditor-toolbar-button-bold {
-  .backgroundImage('../../static/images/bold.svg');
-}
-.RichEditor-toolbar-button-italic {
-  .backgroundImage('../../static/images/italic.svg');
-}
-.RichEditor-toolbar-button-underline {
-  .backgroundImage('../../static/images/underline.svg', 17px);
-}
-.RichEditor-toolbar-button-colorPicker {
-  .backgroundImage('../../static/images/color.svg');
-  .arrow();
-}
-.RichEditor-toolbar-button-fontSize {
-  .backgroundImage('../../static/images/font-size.svg');
-  .arrow();
-}
-.RichEditor-toolbar-button-ul {
-  .backgroundImage('../../static/images/ul.svg');
-}
-.RichEditor-toolbar-button-ol {
-  .backgroundImage('../../static/images/ol.svg');
-}
-.RichEditor-toolbar-button-imageUpload {
-  .backgroundImage('../../static/images/image.svg', 18px);
-}
-.RichEditor-toolbar-button-imageLink {
-  .backgroundImage('../../static/images/image-link.svg', 20px);
-}
-.RichEditor-toolbar-button-text-align-left {
-  .backgroundImage('../../static/images/text-align-left.svg');
-}
-.RichEditor-toolbar-button-text-align-center {
-  .backgroundImage('../../static/images/text-align-center.svg');
-}
-.RichEditor-toolbar-button-text-align-right {
-  .backgroundImage('../../static/images/text-align-right.svg');
-}
-.RichEditor-toolbar-button-text-align-justify {
-  .backgroundImage('../../static/images/text-align-justify.svg');
 }
 
 // addImage
@@ -172,18 +82,19 @@
     }
   }
   .add-image-link__button {
-    width: 36px;
+    width: 20px;
     line-height: 36px;
+    height: 20px;
     background-color: #f6f6f6;
     color: #888;
     text-align: center;
     cursor: pointer;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     &:hover {
       color: #444;
       background-color: #ececec;
     }
-  }
-  .add-image-link__confirm-button {
   }
 }
 

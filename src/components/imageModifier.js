@@ -6,7 +6,7 @@ import { addImage, updateImage, uploadImage } from '../utils/imageUtil';
 
 const noop = () => {};
 
-export class AddImageLinkButton extends Component {
+export class AddImageLink extends Component {
   // Start the popover closed
   state = {
     url: '',
@@ -70,11 +70,9 @@ export class AddImageLinkButton extends Component {
           />,
           <span
             key="confirm"
-            className="add-image-link__button add-image-link__confirm-button"
+            className="add-image-link__button RichEditor-button RichEditor-button-confirm"
             onClick={this.handleConfirm}
-          >
-            +
-          </span>
+          />
         ]}
       >
         <div
@@ -82,13 +80,9 @@ export class AddImageLinkButton extends Component {
           {...extraProps}
         >
           <span
-            className={classnames(
-              'RichEditor-toolbar-button',
-              `RichEditor-toolbar-button-${controlKey}`,
-              {
-                'RichEditor-toolbar-button__active': active
-              }
-            )}
+            className={classnames('RichEditor-button', `RichEditor-button-${controlKey}`, {
+              'RichEditor-button__active': active
+            })}
           />
         </div>
       </Popover>
@@ -96,7 +90,7 @@ export class AddImageLinkButton extends Component {
   }
 }
 
-export class UploadImageButton extends Component {
+export class UploadImage extends Component {
   static propTypes = {
     action: PropTypes.string.isRequired
   };
@@ -111,19 +105,27 @@ export class UploadImageButton extends Component {
     if (file.type.includes('image/')) {
       const url = URL.createObjectURL(file);
 
-      const { editorState, changeState, focus, blur, getEditor, onUpload, onUploadError } = this.props;
+      const {
+        editorState,
+        changeState,
+        focus,
+        blur,
+        getEditor,
+        onUpload,
+        onUploadError
+      } = this.props;
       const nextEditorState = addImage(editorState, url, {
         uploading: true,
         progress: 0
       });
       changeState(nextEditorState, () => {
         const config = {
-        //   onUploadProgress: event => {
-        //     const progress = Math.round(event.loaded / event.total * 100);
-        //     if (progress !== 100) {
-        //       changeState(updateImage(this.props.editorState, { progress }, url));
-        //     }
-        //   }
+          //   onUploadProgress: event => {
+          //     const progress = Math.round(event.loaded / event.total * 100);
+          //     if (progress !== 100) {
+          //       changeState(updateImage(this.props.editorState, { progress }, url));
+          //     }
+          //   }
         };
         uploadImage(this.props.action, file, {
           onUpload,
@@ -155,7 +157,7 @@ export class UploadImageButton extends Component {
         {...extraProps}
       >
         <span
-          className={`RichEditor-toolbar-button RichEditor-toolbar__add-image__upload RichEditor-toolbar-button-${controlKey}`}
+          className={`RichEditor-button RichEditor-toolbar__add-image__upload RichEditor-button-${controlKey}`}
           onClick={this.handleUploadClick}
         >
           <input

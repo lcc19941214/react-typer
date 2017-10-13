@@ -3,9 +3,9 @@ import classnames from 'classnames';
 import decorateComponentWithProps from 'decorate-component-with-props';
 import Tooltip from './tooltip';
 import ColorPicker from './colorPicker';
-import FontSizeChanger from './fontSizeChanger';
+import FontSizeSelector from './fontSizeSelector';
 import TextAlignment from './textAlignment';
-import { UploadImageButton, AddImageLinkButton } from './addImageButton';
+import { UploadImage, AddImageLink } from './imageModifier';
 
 const noop = () => {};
 
@@ -40,7 +40,7 @@ const STYLE_TYPES = [
     key: 'advancedFontStyle',
     controls: [
       { key: 'colorPicker', type: 'action', component: ColorPicker, tooltip: '字体颜色' },
-      { key: 'fontSize', type: 'action', component: FontSizeChanger, tooltip: '字号' }
+      { key: 'fontSize', type: 'action', component: FontSizeSelector, tooltip: '字号' }
     ]
   },
   {
@@ -61,35 +61,36 @@ const STYLE_TYPES = [
     ]
   },
   {
-    key: 'image',
+    key: 'insert',
     controls: [
-      { key: 'imageUpload', type: 'action', component: UploadImageButton, tooltip: '图片' },
-      { key: 'imageLink', type: 'action', component: AddImageLinkButton, tooltip: '图片链接' }
+      // { key: 'link', type: 'inline', component: <div></div>, tooltip: '链接' },
+      { key: 'imageUpload', type: 'action', component: UploadImage, tooltip: '图片' },
+      { key: 'imageLink', type: 'action', component: AddImageLink, tooltip: '图片链接' }
     ]
   },
   {
     key: 'textAlign',
     controls: [
       {
-        key: 'text-align-left',
+        key: 'textAlignLeft',
         type: 'action',
         component: decorateComponentWithProps(TextAlignment, { textAlign: 'left' }),
         tooltip: '左对齐'
       },
       {
-        key: 'text-align-center',
+        key: 'textAlignCenter',
         type: 'action',
         component: decorateComponentWithProps(TextAlignment, { textAlign: 'center' }),
         tooltip: '居中对齐'
       },
       {
-        key: 'text-align-right',
+        key: 'textAlignRight',
         type: 'action',
         component: decorateComponentWithProps(TextAlignment, { textAlign: 'right' }),
         tooltip: '右对齐'
       },
       {
-        key: 'text-align-justify',
+        key: 'textAlignJustify',
         type: 'action',
         component: decorateComponentWithProps(TextAlignment, { textAlign: 'justify' }),
         tooltip: '分散对齐'
@@ -113,10 +114,10 @@ const StyleButton = ({
 }) => (
   <span
     className={classnames(
-      'RichEditor-toolbar-button',
-      `RichEditor-toolbar-button-${controlKey}`,
+      'RichEditor-button',
+      `RichEditor-button-${controlKey}`,
       {
-        'RichEditor-toolbar-button__active': active
+        'RichEditor-button__active': active
       }
     )}
     {...extraProps}
@@ -143,7 +144,7 @@ export default class Toolbar extends Component {
     'advancedFontStyle',
     'list',
     'textAlign',
-    'image'
+    'insert'
   ];
 
   matchStyleControls = controls => {

@@ -28,7 +28,7 @@ const FONT_SIZE_STYLE = FONT_SIZE_MAP.map(v => v.style);
  *    must use onMouseDown and preventDefault to keep editor always on focus
  */
 
-export default class FontSizeChanger extends Component {
+export default class FontSizeSelector extends Component {
   static propTypes = {
     onToggle: PropTypes.func,
     changeState: PropTypes.func
@@ -145,10 +145,10 @@ export default class FontSizeChanger extends Component {
         >
           <span
             className={classnames(
-              'RichEditor-toolbar-button',
-              `RichEditor-toolbar-button-${controlKey}`,
+              'RichEditor-button',
+              `RichEditor-button-${controlKey}`,
               {
-                'RichEditor-toolbar-button__active': active
+                'RichEditor-button__active': active
               }
             )}
             onMouseDown={e => e.preventDefault()}
