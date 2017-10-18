@@ -3,9 +3,9 @@ import defaultInlineStyleMap, {
   COLORS,
   FONT_SIZES,
   defaultStyleRules
-} from '../utils/inlineStyles';
-import chore from '../utils/chore';
-import { INITIAL_UNSTYLED, DEFAULT_TEXT_ALIGN, TEXT_ALIGNS } from '../utils/blockStyleFn';
+} from '../defaultEditorOptions/inlineStyles';
+import util from '../utils/util';
+import { INITIAL_UNSTYLED, DEFAULT_TEXT_ALIGN, TEXT_ALIGNS } from '../defaultEditorOptions/blockStyleFn';
 import * as BlockType from '../constants/blockType';
 
 const IMAGE_ALIGNMENT = {
@@ -123,7 +123,7 @@ export const htmlWrapper = (html = '') => {
   const rules = [];
   [defaultStyleRules].forEach(styles => {
     Object.keys(styles).forEach(prop => {
-      rules.push(`${chore.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
+      rules.push(`${util.transformUpperWithHyphen(prop)}: ${styles[prop]}`);
     });
   });
   return `<div style="${rules.join('; ')}">${html}</div>`;

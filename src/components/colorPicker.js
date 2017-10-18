@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EditorState, Modifier, RichUtils } from 'draft-js';
 import classnames from 'classnames';
 import Popover from './popover';
-import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../utils/inlineStyles';
+import { COLORS as INLINE_COLORS, DEFAULT_COLOR_KEY } from '../defaultEditorOptions/inlineStyles';
 
 const noop = () => {};
 

@@ -5,11 +5,11 @@ import Immutable, { OrderedSet } from 'immutable';
 import classnames from 'classnames';
 import makePlugins from '../plugins/';
 import convertToHTML from './exportToHTML';
-import defaultDecorator from '../utils/editorDecorators';
-import defaultBlockRenderMap from '../utils/blockRenderMap';
-import defaultInlineStyleMap from '../utils/inlineStyles';
-import defaultBlockStyleFn from '../utils/blockStyleFn';
-import defaultBlockRendererFn from '../utils/blockRendererFn';
+import defaultDecorator from '../defaultEditorOptions/editorDecorators';
+import defaultBlockRenderMap from '../defaultEditorOptions/blockRenderMap';
+import defaultInlineStyleMap from '../defaultEditorOptions/inlineStyles';
+import defaultBlockStyleFn from '../defaultEditorOptions/blockStyleFn';
+import defaultBlockRendererFn from '../defaultEditorOptions/blockRendererFn';
 const { plugins: defaultPlugins } = makePlugins();
 
 const {
@@ -41,10 +41,7 @@ export function publicTyperDecorator(target) {
       // must manually inject contentState to stateToHTML options
       const _options = { ...options, blockRenderers: {} };
       Object.keys(options.blockRenderers).forEach(key => {
-        _options.blockRenderers[key] = options.blockRenderers[key].bind(
-          undefined,
-          contentState
-        );
+        _options.blockRenderers[key] = options.blockRenderers[key].bind(undefined, contentState);
       });
       const html = convertToHTML(contentState, _options);
       return html;
@@ -79,11 +76,7 @@ export function publicTyperDecorator(target) {
     extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn) {
       return function(contentBlock) {
         const defaultVal = defaultBlockRendererFn(contentBlock) || {};
-        return Object.assign(
-          {},
-          defaultVal,
-          blockRendererFn(contentBlock, defaultVal) || {}
-        );
+        return Object.assign({}, defaultVal, blockRendererFn(contentBlock, defaultVal) || {});
       };
     },
 
@@ -109,10 +102,7 @@ export function publicTyperDecorator(target) {
         decorators: this.extendDecorators(decorators, defaultDecorator),
         plugins: this.extendPlugins(plugins, defaultPlugins),
         blockRenderMap: this.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
-        blockRendererFn: this.extendBlockRendererFn(
-          blockRendererFn,
-          defaultBlockRendererFn
-        ),
+        blockRendererFn: this.extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn),
         blockStyleFn: this.extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn),
         customStyleMap: this.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
       };
@@ -121,7 +111,7 @@ export function publicTyperDecorator(target) {
 }
 
 // content state edit method
-export function textEditDecorator(target) {
+export function contentStateDecorator(target) {
   const contentModifyType = ['replaceText', 'insertText'];
 
   Object.assign(target.prototype, {
@@ -188,11 +178,7 @@ export function textEditDecorator(target) {
         const { editorState } = this.state;
         const _contentState = contentState || editorState.getCurrentContent();
         const _selectionState = selectionState || editorState.getSelection();
-        const newContentState = Modifier.setBlockType(
-          _contentState,
-          _selectionState,
-          blockType
-        );
+        const newContentState = Modifier.setBlockType(_contentState, _selectionState, blockType);
         const newEditorState = EditorState.push(editorState, newContentState);
         this.changeState(newEditorState, cb);
       }
@@ -213,7 +199,7 @@ export function textEditDecorator(target) {
 }
 
 // entity
-export function entityEditDecorator(target) {
+export function entityDecorator(target) {
   Object.assign(target.prototype, {
     /**
      * @param {object}    entity
@@ -242,8 +228,8 @@ export function entityEditDecorator(target) {
   });
 }
 
-// editor toolbar
-export function editorToolbarDecorator(target) {
+// content style
+export function contentStyleDecorator(target) {
   Object.assign(target.prototype, {
     toggleToolbar(style, type, cb = noop) {
       const { editorState } = this.state;
@@ -262,3 +248,25 @@ export function editorToolbarDecorator(target) {
     }
   });
 }
+
+// selection
+export function selectionDecorator(target) {
+  Object.assign(target.prototype, {
+    selectText(editorState, start, end) {
+      const selection = editorState.getSelection();
+      const nextSelection = selection.merge({
+        anchorOffset: start,
+        focusOffset: end
+      });
+      const nextEditorState = EditorState.forceSelection(editorState, nextSelection);
+      return nextEditorState;
+    }
+  });
+}
+
+export default composeDecorators(
+  contentStateDecorator,
+  entityDecorator,
+  contentStyleDecorator,
+  selectionDecorator
+);

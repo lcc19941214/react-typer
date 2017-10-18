@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { EditorState, Modifier, RichUtils } from 'draft-js';
 import classnames from 'classnames';
 import Popover from './popover';
-import { FONT_SIZES as INLINE_FONT_SIZE, DEFAULT_FONT_SIZE_KEY } from '../utils/inlineStyles';
+import { FONT_SIZES as INLINE_FONT_SIZE, DEFAULT_FONT_SIZE_KEY } from '../defaultEditorOptions/inlineStyles';
 
 const noop = () => {};
 

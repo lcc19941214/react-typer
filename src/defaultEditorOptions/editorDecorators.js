@@ -2,10 +2,11 @@
 import React from 'react';
 import classnames from 'classnames';
 import Label from '../components/inlines/label';
+import Link from '../components/linkModifier/link';
 import * as BlockType from '../constants/blockType';
 
 // strategy
-export function findLabel(contentBlock, callback, contentState) {
+export function labelStrategy(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(character => {
     const entityKey = character.getEntity();
     return (
@@ -14,12 +15,22 @@ export function findLabel(contentBlock, callback, contentState) {
   }, callback);
 }
 
+export function linkStrategy(contentBlock, callback, contentState) {
+  contentBlock.findEntityRanges(character => {
+    const entityKey = character.getEntity();
+    return entityKey !== null && contentState.getEntity(entityKey).getType() === BlockType.LINK;
+  }, callback);
+}
 
 // decorator
 const decorator = [
   {
-    strategy: findLabel,
+    strategy: labelStrategy,
     component: Label
+  },
+  {
+    strategy: linkStrategy,
+    component: Link
   }
 ];
 

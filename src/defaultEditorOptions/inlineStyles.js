@@ -11,6 +11,11 @@ export const LABEL = {
 
 export const LABEL_HIGHLIGHT = { ...LABEL, backgroundColor: '#ffeb22' };
 
+export const LINK = {
+  color: '#0000ee',
+  textDecoration: 'underline'
+};
+
 export const DEFAULT_COLOR_KEY = 'INLINE_COLOR_01';
 export const COLORS = {
   [DEFAULT_COLOR_KEY]: {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM, { findDOMNode } from 'react-dom';
 import classnames from 'classnames';
-import chore from '../utils/chore';
+import util from '../utils/util';
 
 const defaultVal = {
   placement: 'top',
@@ -14,19 +14,6 @@ const TRIGGER = ['hover', 'click'];
 const PLACEMENT_MAP = {
   top: 'bottom',
   bottom: 'top'
-};
-
-const getRelativeParent = element => {
-  if (!element) {
-    return null;
-  }
-
-  const position = window.getComputedStyle(element).getPropertyValue('position');
-  if (position !== 'static') {
-    return element;
-  }
-
-  return getRelativeParent(element.parentElement);
 };
 
 class TooltipPopup extends Component {
@@ -52,7 +39,7 @@ class TooltipPopup extends Component {
   getStyle = placement => {
     const wrapper = this.props.getWrapper();
     const boundingRect = wrapper.getBoundingClientRect();
-    const relativeParent = getRelativeParent(this.Tooltip.parentElement);
+    const relativeParent = util.getRelativeParent(this.Tooltip.parentElement);
     const popoverHeight = this.Tooltip.firstElementChild.clientHeight;
     const relativeRect = relativeParent
       ? relativeParent.getBoundingClientRect()

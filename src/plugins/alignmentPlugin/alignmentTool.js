@@ -1,19 +1,8 @@
 import React, { Component } from 'react';
+import { findDOMNode } from 'react-dom';
 import classnames from 'classnames';
+import util from '../../utils/util';
 import './alignmentTool.less';
-
-const getRelativeParent = element => {
-  if (!element) {
-    return null;
-  }
-
-  const position = window.getComputedStyle(element).getPropertyValue('position');
-  if (position !== 'static') {
-    return element;
-  }
-
-  return getRelativeParent(element.parentElement);
-};
 
 class AlignmentButton extends Component {
   activate = event => {
@@ -68,7 +57,7 @@ export default class AlignmentTool extends React.Component {
       let position;
       const boundingRect = this.props.store.getItem('boundingRect');
       if (visibleBlock) {
-        const relativeParent = getRelativeParent(this.toolbar.parentElement);
+        const relativeParent = util.getRelativeParent(findDOMNode(this.toolbar).parentElement);
         const toolbarHeight = this.toolbar.clientHeight;
         const relativeRect = relativeParent
           ? relativeParent.getBoundingClientRect()
