@@ -1,0 +1,173 @@
+@keyframes shake {
+  from,
+  to {
+    transform: translate(0);
+  }
+
+  20%,
+  60% {
+    transform: translate(-10px);
+  }
+
+  40%,
+  80% {
+    transform: translate(10px);
+  }
+}
+
+.shake {
+  animation-name: shake;
+}
+
+@keyframes scaleInWithoutTranslate {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.react-typer__link-modifier {
+  position: absolute;
+  z-index: 100;
+  width: 320px;
+  height: 38px;
+  box-sizing: border-box;
+  transform-origin: left top;
+  transition: translate(0) scale(1);
+  animation: scaleInWithoutTranslate 0.2s;
+
+  &.react-typer__link-modifier__hidden {
+    display: none;
+  }
+
+
+  .link-modifier__inner {
+    display: flex;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0px 1px 3px 0px #dcdcdc;
+    &.link-modifier__status-error {
+      border-color: #f72222;
+      .link-modifier__arrow::before {
+        border-bottom-color: #f72222;
+      }
+    }
+    &.link-modifier__status-shake {
+      .shake();
+      animation-fill-mode: both;
+      animation-duration: 0.5s;
+    }
+  }
+
+  .link-modifier__arrow {
+    position: absolute;
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 5px;
+      transform: translate(-50%);
+      border: solid transparent;
+    }
+    &::before {
+      border-bottom-color: #ddd;
+      border-width: 6px;
+    }
+    &::after {
+      border-bottom-color: #fff;
+      border-width: 4px;
+    }
+  }
+
+  .link-modifier__edit {
+    display: flex;
+    width: 100%;
+    input {
+      flex: 1 1 0;
+      font-family: initial;
+      border: none;
+      height: 36px;
+      padding: 0 10px;
+      color: #666;
+      &:focus {
+        outline: 0;
+        border-color: #999;
+      }
+      &::-webkit-input-placeholder {
+        color: #ccc;
+      }
+    }
+  }
+
+  .link-modifier__display {
+    display: flex;
+    width: 100%;
+    .link-wrapper {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 36px;
+      padding: 0 10px;
+      font-size: 12px;
+      a,
+      a:visited,
+      a:active,
+      a:hover {
+        color: #0000ee;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .link-modifier__button {
+    padding: 10px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    &:hover {
+      background-color: #ececec;
+    }
+  }
+
+  .link-modifier__button__solid {
+    background-color: #f6f6f6;
+  }
+
+  .backgroundImage(@url, @size: 16px) {
+    opacity: 0.6;
+    transition: opacity 0.35s;
+    background-image: url(@url);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: @size;
+    &.link-modifier__button__active {
+      opacity: 1;
+    }
+  }
+
+  .link-modifier__button-confirm {
+    .backgroundImage('./assets/confirm.svg');
+  }
+  .link-modifier__button-delete {
+    .backgroundImage('./assets/delete.svg');
+  }
+  .link-modifier__button-edit {
+    .backgroundImage('./assets/edit.svg');
+  }
+}
+
+.react-typer__slection-container {
+  .selection {
+    position: absolute;
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+}

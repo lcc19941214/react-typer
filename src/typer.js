@@ -3,17 +3,13 @@ import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
 import classnames from 'classnames';
 import Toolbar from './components/toolbar';
-import {
-  publicTyperDecorator,
-  textEditDecorator,
-  entityEditDecorator,
-  editorToolbarDecorator,
-  composeDecorators
-} from './helper/decorators';
+import editorDecorator, { publicTyperDecorator } from './helper/decorators';
 import { exportToHTMLOptions } from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
+import LinkModifierTool, { LinkDisplayTool } from './components/linkModifier/linkModifierTool';
 import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
 import { setAlignmentDecorator } from './components/textAlignment';
+import linkModifierDecorator from './components/linkModifier/decorator';
 
 import 'draft-js/dist/Draft.css';
 import './style/typer.less';
@@ -24,12 +20,6 @@ const equalization = val => val;
 const { EditorState, ContentState, convertToRaw, RichUtils } = Draft;
 
 const Editor = PluginEditor;
-
-const composedDecorators = composeDecorators(
-  textEditDecorator,
-  entityEditDecorator,
-  editorToolbarDecorator
-);
 
 /**
  * For more information, see https://github.com/facebook/draft-js/blob/master/docs/APIReference-Editor.md
@@ -57,7 +47,7 @@ const composedDecorators = composeDecorators(
  *    action for upload request url
  */
 @publicTyperDecorator
-@composedDecorators
+@editorDecorator
 class Typer extends Component {
   static propTypes = {
     content: PropTypes.string,
@@ -127,6 +117,7 @@ class Typer extends Component {
     this.setBlock = this.setBlock.bind(this);
     this.addEntity = this.addEntity.bind(this);
     this.toggleToolbar = this.toggleToolbar.bind(this);
+    this.selectText = this.selectText.bind(this);
   }
 
   componentDidMount() {
@@ -147,10 +138,11 @@ class Typer extends Component {
 
   getEditor = () => this;
 
+  @linkModifierDecorator
   @setAlignmentDecorator
   changeState(editorState, cb = noop, ...args) {
-    this.setState({ editorState }, cb)
-  };
+    this.setState({ editorState }, cb);
+  }
   focus = () => this.Editor.focus();
   blur = () => this.Editor.blur();
 
@@ -184,7 +176,7 @@ class Typer extends Component {
       }
     }
     return result;
-  }
+  };
 
   handleOnChange = (editorState, enhancedEditor) => {
     this.changeState(editorState, this.props.onChange);
@@ -336,8 +328,10 @@ class Typer extends Component {
               {...eventHandler}
               {...Typer.extendDefaultProps(this.props)}
             />
-            <AlignmentTool />
           </div>
+          <AlignmentTool />
+          <LinkModifierTool />
+          <LinkDisplayTool />
         </div>
         <div
           className="action-form"

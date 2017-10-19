@@ -10,6 +10,7 @@ export const IMAGE = 'image';
 
 // custom block
 export const LABEL_BLOCK = 'labelBlock';
+export const LINK = 'link';
 
 // group
 export const BASIC_BLOCKS = {

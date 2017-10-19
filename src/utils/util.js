@@ -1,6 +1,7 @@
 const util = {
-  transformUpperWithHyphen: (str) => str.replace(/[A-Z]/g, (...arg) => `-${arg[0].toLowerCase()}`),
-  transformHyphenWithUpper: (str) => str.replace(/-[a-z]/g, (...arg) => arg[0].slice(1).toUpperCase()),
+  transformUpperWithHyphen: str => str.replace(/[A-Z]/g, (...arg) => `-${arg[0].toLowerCase()}`),
+  transformHyphenWithUpper: str =>
+    str.replace(/-[a-z]/g, (...arg) => arg[0].slice(1).toUpperCase()),
   getRelativeParent: element => {
     if (!element) {
       return null;
@@ -12,6 +13,16 @@ const util = {
     }
 
     return util.getRelativeParent(element.parentElement);
+  },
+  getOS: () => {
+    const u = window.navigator.userAgent;
+    if (u.match(/(Mac OS)|Macintosh/)) {
+      return 'macOS';
+    } else if (u.match(/Windows/)) {
+      return 'windows';
+    } else {
+      return 'unknown';
+    }
   }
 };
 

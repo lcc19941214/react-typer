@@ -6,6 +6,10 @@ import ColorPicker from './colorPicker';
 import FontSizeSelector from './fontSizeSelector';
 import TextAlignment from './textAlignment';
 import { UploadImage, AddImageLink } from './imageModifier';
+import LinkModifier from './linkModifier/';
+import util from '../utils/util';
+
+const shortcuts = require('../constants/shortcuts.json')[util.getOS()] || {};
 
 const noop = () => {};
 
@@ -63,7 +67,7 @@ const STYLE_TYPES = [
   {
     key: 'insert',
     controls: [
-      // { key: 'link', type: 'inline', component: <div></div>, tooltip: '链接' },
+      { key: 'link', type: 'action', component: LinkModifier, tooltip: '链接' },
       { key: 'imageUpload', type: 'action', component: UploadImage, tooltip: '图片' },
       { key: 'imageLink', type: 'action', component: AddImageLink, tooltip: '图片链接' }
     ]
@@ -113,13 +117,9 @@ const StyleButton = ({
   ...extraProps
 }) => (
   <span
-    className={classnames(
-      'RichEditor-button',
-      `RichEditor-button-${controlKey}`,
-      {
-        'RichEditor-button__active': active
-      }
-    )}
+    className={classnames('RichEditor-button', `RichEditor-button-${controlKey}`, {
+      'RichEditor-button__active': active
+    })}
     {...extraProps}
     onMouseDown={e => {
       e.preventDefault();
@@ -138,14 +138,7 @@ export default class Toolbar extends Component {
     onToggle: PropTypes.func
   };
 
-  static controls = [
-    'headline',
-    'fontStyle',
-    'advancedFontStyle',
-    'list',
-    'textAlign',
-    'insert'
-  ];
+  static controls = ['headline', 'fontStyle', 'advancedFontStyle', 'list', 'textAlign', 'insert'];
 
   matchStyleControls = controls => {
     const cts = STYLE_TYPES.filter(v => controls.includes(v.key));
@@ -218,11 +211,7 @@ export default class Toolbar extends Component {
                       type={control.type}
                       label={control.label}
                       style={control.style}
-                      active={this.getButtonActive(
-                        control.style,
-                        control.type,
-                        currentStyles
-                      )}
+                      active={this.getButtonActive(control.style, control.type, currentStyles)}
                       onToggle={toggleToolbar}
                       focus={focus}
                       blur={blur}
@@ -230,8 +219,15 @@ export default class Toolbar extends Component {
                     />
                   );
               }
+              const shortcut = shortcuts[control.key];
+              // const appendix = shortcut ? ` (${shortcut})` : '';
+              const appendix = '';
               return showTooltip ? (
-                <Tooltip placement="bottom" key={control.key} content={control.tooltip}>
+                <Tooltip
+                  placement="bottom"
+                  key={control.key}
+                  content={`${control.tooltip}${appendix}`}
+                >
                   {content}
                 </Tooltip>
               ) : (
