@@ -33,7 +33,7 @@ export function computePopoverPosition(selectionRect, el, baseRect = {}) {
 
   const bodyRect =
     document.body === relativeParent ? relativeRect : document.body.getBoundingClientRect();
-  if (x + popoverWidth > bodyRect.width) {
+  if (x + relativeRect.left + popoverWidth > bodyRect.width) {
     const offsetLeft = bodyRect.width - popoverWidth - relativeRect.left;
     arrowOffsetLeft += x - offsetLeft;
     x = offsetLeft;
