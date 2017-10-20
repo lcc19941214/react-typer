@@ -23,11 +23,14 @@ const createStore = (initialState) => {
 
   const getItem = (key) => state[key];
 
+  const getAllItems = () => state;
+
   return {
     subscribeToItem,
     unsubscribeFromItem,
     updateItem,
     getItem,
+    getAllItems
   };
 };
 

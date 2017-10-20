@@ -192,6 +192,7 @@ export function showLinkModifierTool(editorState, store) {
   const startOffset = selection.getStartOffset();
   const endOffset = selection.getEndOffset();
   const offset = { startOffset, endOffset };
+
   if (!selection.isCollapsed()) {
     const startKey = selection.getStartKey();
     const contentBlock = contentState.getBlockForKey(startKey);
@@ -208,17 +209,19 @@ export function showLinkModifierTool(editorState, store) {
       var s = window.getSelection();
       if (s.rangeCount > 0) {
         var r = s.getRangeAt(0);
-        // keep this order!
-        store.updateItem('range', {
-          range: r,
-          container: r.startContainer.parentElement
-        });
-        store.updateItem('entity', {});
-        store.updateItem('selectionRect', getVisibleSelectionRect(window));
-        store.updateItem('selectedTextNodes', getSelectedTextNodes());
-        store.updateItem('selection', { startOffset, endOffset });
-        store.updateItem('visible', true);
-        store.updateItem('url', '');
+        if (r.startContainer && document.querySelector('.DraftEditor-root').contains(r.startContainer)) {
+          // keep this order!
+          store.updateItem('range', {
+            range: r,
+            container: r.startContainer.parentElement
+          });
+          store.updateItem('entity', {});
+          store.updateItem('selectionRect', getVisibleSelectionRect(window));
+          store.updateItem('selectedTextNodes', getSelectedTextNodes());
+          store.updateItem('selection', { startOffset, endOffset });
+          store.updateItem('visible', true);
+          store.updateItem('url', '');
+        }
       }
     }
   } else {

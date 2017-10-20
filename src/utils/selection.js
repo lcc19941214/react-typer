@@ -1,4 +1,11 @@
 import { EditorState } from 'draft-js';
+import createStore from './createStore';
+
+export const globalSelectionStore = createStore({
+  selectedTextNodes: [],
+  replacedChildNodes: [],
+  range: undefined
+});
 
 export function getTextNode(elem) {
   if (elem.hasChildNodes()) {
@@ -87,6 +94,7 @@ function generateSelectedFragment(textGroup = [], targetIndex) {
   textGroup.forEach((text, i) => {
     if (targetIndex === i) {
       selection = document.createElement('span');
+      selection.style.backgroundColor = 'rgba(0,0,0,.15)';
       selection.textContent = text;
       fragment.appendChild(selection);
     } else if (text) {
@@ -136,7 +144,7 @@ function removeRelativeTextNodes(parent, target) {
   target.previousSibling && parent.removeChild(target.previousSibling);
   target.nextSibling && parent.removeChild(target.nextSibling);
 }
-function resetChildNodes(selectedTextNodes, childNodes, range) {
+function resetChildNodes(selectedTextNodes, childNodes, range = {}) {
   childNodes.forEach((wrapper, i) => {
     const parent = wrapper.parentElement;
     const node = selectedTextNodes[i];
@@ -149,6 +157,17 @@ function resetChildNodes(selectedTextNodes, childNodes, range) {
     }
     parent.replaceChild(node, wrapper);
   });
+  globalSelectionStore.updateItem('selectedTextNodes', []);
+  globalSelectionStore.updateItem('replacedChildNodes', []);
+  globalSelectionStore.updateItem('range', undefined);
+}
+export function resetMockSelection() {
+  const selectedTextNodes = globalSelectionStore.getItem('selectedTextNodes');
+  const replacedChildNodes = globalSelectionStore.getItem('replacedChildNodes');
+  const range = globalSelectionStore.getItem('range');
+  if (selectedTextNodes.length && replacedChildNodes.length && range) {
+    resetChildNodes(selectedTextNodes, replacedChildNodes, range);
+  }
 }
 
 /*
@@ -158,48 +177,25 @@ function resetChildNodes(selectedTextNodes, childNodes, range) {
  * REMIND:
  *   it's hard to mock selection of each line, especially when selection contains multiple lines
  */
-function createSelectionBackground(rect) {
-  const selection = document.createElement('div');
-  selection.className = 'selection';
-  selection.style.top = `${rect.top}px`;
-  selection.style.left = `${rect.left}px`;
-  selection.style.width = `${rect.width}px`;
-  selection.style.height = `${rect.height}px`;
-  return selection;
-}
-export const toggleSelectRangeBackgroundColor = (() => {
-  const cls = 'react-typer__slection-container';
-  let selectionContainer = document.querySelector(`.${cls}`);
-  if (!selectionContainer) {
-    selectionContainer = document.createElement('div');
-    selectionContainer.className = cls;
-    document.body.appendChild(selectionContainer);
+
+export function toggleMockSelection(selectedTextNodes, range) {
+  var s = window.getSelection();
+
+  if (selectedTextNodes.__hasMockSelection) {
+    s.addRange(range);
+    resetMockSelection();
+    delete selectedTextNodes.__hasMockSelection;
+  } else {
+    const rangeObj = {
+      startContainer: getTextNode(range.startContainer),
+      endContainer: getTextNode(range.endContainer)
+    };
+    const replacedChildNodes = replaceChildNodes(selectedTextNodes, range);
+
+    globalSelectionStore.updateItem('selectedTextNodes', selectedTextNodes);
+    globalSelectionStore.updateItem('replacedChildNodes', replacedChildNodes);
+    globalSelectionStore.updateItem('range', rangeObj);
+
+    selectedTextNodes.__hasMockSelection = true;
   }
-
-  return (selectedTextNodes, range) => {
-    var s = window.getSelection();
-
-    if (selectedTextNodes.selections) {
-      s.addRange(range);
-      while (selectionContainer.hasChildNodes()) {
-        selectionContainer.removeChild(selectionContainer.lastChild);
-      }
-      delete selectedTextNodes.selections;
-    } else {
-      const rangeObj = {
-        startContainer: getTextNode(range.startContainer),
-        endContainer: getTextNode(range.endContainer)
-      };
-      const replacedChildNodes = replaceChildNodes(selectedTextNodes, range);
-      const selections = [];
-      replacedChildNodes.forEach(node => {
-        const rect = node.getBoundingClientRect();
-        const selection = createSelectionBackground(rect);
-        selectionContainer.appendChild(selection);
-        selections.push(selection);
-      });
-      resetChildNodes(selectedTextNodes, replacedChildNodes, rangeObj);
-      selectedTextNodes.selections = selections;
-    }
-  };
-})();
+}

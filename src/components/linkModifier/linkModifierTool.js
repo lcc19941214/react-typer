@@ -6,7 +6,7 @@ import classnames from 'classnames';
 import { modifierToolStore } from './store';
 import * as BlockType from '../../constants/blockType';
 import { computePopoverPosition } from './util';
-import { toggleSelectRangeBackgroundColor, getTextNode, forceSelect } from '../../utils/selection';
+import { toggleMockSelection, getTextNode, forceSelect } from '../../utils/selection';
 
 const URL_REGEXP = /^((https?|ftp|file):\/\/)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}[-a-zA-Z0-9@:%_+.~#?&/=]*$/;
 
@@ -72,23 +72,7 @@ class LinkModifierTool extends Component {
 
   handleToggleVisible = visible => {
     const { store } = this.props;
-    const selectedTextNodes = store.getItem('selectedTextNodes');
-    const { range, container: rangeContainer } = store.getItem('range');
-
-    if (selectedTextNodes.length) {
-      if (selectedTextNodes.length === 1 && selectedTextNodes[0] === rangeContainer) {
-        const s = window.getSelection();
-        s.removeAllRanges();
-        const r = document.createRange();
-        const textNode = getTextNode(selectedTextNodes[0]);
-        r.selectNodeContents(textNode);
-        selectedTextNodes[0] = textNode;
-        toggleSelectRangeBackgroundColor(selectedTextNodes, r);
-      } else {
-        toggleSelectRangeBackgroundColor(selectedTextNodes, range);
-      }
-    }
-
+    this.toggleSelection(store);
     if (visible) {
       // fix range dislocation after show popover
       const s = window.getSelection();
@@ -112,6 +96,23 @@ class LinkModifierTool extends Component {
     }
     this.setState({ visible });
   };
+  toggleSelection = (store) => {
+    const selectedTextNodes = store.getItem('selectedTextNodes');
+    const { range, container: rangeContainer } = store.getItem('range');
+    if (selectedTextNodes.length) {
+      if (selectedTextNodes.length === 1 && selectedTextNodes[0] === rangeContainer) {
+        const s = window.getSelection();
+        s.removeAllRanges();
+        const r = document.createRange();
+        const textNode = getTextNode(selectedTextNodes[0]);
+        r.selectNodeContents(textNode);
+        selectedTextNodes[0] = textNode;
+        toggleMockSelection(selectedTextNodes, r);
+      } else {
+        toggleMockSelection(selectedTextNodes, range);
+      }
+    }
+  }
 
   onPopoverClick = e => {
     e.stopPropagation();

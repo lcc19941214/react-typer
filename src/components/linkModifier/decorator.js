@@ -1,7 +1,8 @@
-import { displayToolStore, closeLinkDisplayTool } from './store';
+import { modifierToolStore, displayToolStore, closeLinkDisplayTool } from './store';
 import { isLinkEntity, getLinkDOMOnEdge, getLinkEntityRange, omitConnectedEntity } from './util';
+import { resetMockSelection } from '../../utils/selection';
 
-const openLinkDisplayTool = (contentState, contentBlock, offset, cb) => {
+function openLinkDisplayTool(contentState, contentBlock, offset, cb) {
   getLinkEntityRange(contentState, contentBlock, (entityRange, index, ranges) => {
     const { start, end } = entityRange;
     if (cb(entityRange)) {
@@ -20,10 +21,9 @@ const openLinkDisplayTool = (contentState, contentBlock, offset, cb) => {
       }
     }
   });
-};
+}
 
-const toggleDisplayToolVisible = editorState => {
-  const selection = editorState.getSelection();
+const toggleDisplayToolVisible = (editorState, selection) => {
   const contentState = editorState.getCurrentContent();
   const focusKey = selection.getFocusKey();
   const contentBlock = contentState.getBlockForKey(focusKey);
@@ -59,13 +59,23 @@ const toggleDisplayToolVisible = editorState => {
 };
 
 export default (() => {
+  let preSelection = null;
   return (target, key, descriptor) => {
     const fn = descriptor.value;
     descriptor.value = function(...args) {
       const ctx = this;
       const editorState = args[0];
       displayToolStore.updateItem('getEditor', this.getEditor);
-      toggleDisplayToolVisible(editorState);
+
+      const selection = editorState.getSelection();
+      if (!preSelection) preSelection = selection;
+      if (!preSelection.getHasFocus() && selection.getHasFocus()) {
+        resetMockSelection();
+        modifierToolStore.updateItem('visible', false);
+      }
+      preSelection = selection;
+
+      toggleDisplayToolVisible(editorState, selection);
 
       // TODO
       // set it to IMMUTABLE when focusOffset is at end of a link entity
