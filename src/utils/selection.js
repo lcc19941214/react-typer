@@ -88,14 +88,18 @@ function splitText(text, start = 0, end = text.length) {
   const next = text.slice(end);
   return [pre, middle, next];
 }
-function generateSelectedFragment(textGroup = [], targetIndex) {
+function createSelectRange(text) {
+  const selectionRange = document.createElement('span');
+  selectionRange.style.backgroundColor = 'rgba(0,0,0,.15)';
+  selectionRange.textContent = text;
+  return selectionRange;
+}
+function createSelectFragment(textGroup = [], targetIndex) {
   const fragment = document.createDocumentFragment();
   let selection;
   textGroup.forEach((text, i) => {
     if (targetIndex === i) {
-      selection = document.createElement('span');
-      selection.style.backgroundColor = 'rgba(0,0,0,.15)';
-      selection.textContent = text;
+      selection = createSelectRange(text);
       fragment.appendChild(selection);
     } else if (text) {
       fragment.appendChild(document.createTextNode(text));
@@ -114,22 +118,21 @@ function replaceChildNodes(selectedTextNodes, range) {
     let wrapper;
     if (range.startContainer === range.endContainer) {
       const textGroup = splitText(text, range.startOffset, range.endOffset);
-      const { fragment, selection } = generateSelectedFragment(textGroup, 1);
+      const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
     } else if (node === range.startContainer) {
       const textGroup = splitText(text, range.startOffset);
-      const { fragment, selection } = generateSelectedFragment(textGroup, 1);
+      const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
     } else if (node === range.endContainer) {
       const textGroup = splitText(text, undefined, range.endOffset);
-      const { fragment, selection } = generateSelectedFragment(textGroup, 1);
+      const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
     } else {
-      wrapper = document.createElement('span');
-      wrapper.textContent = text;
+      wrapper = createSelectRange(text)
       parent.replaceChild(wrapper, node);
     }
     childNodes.push(wrapper);
