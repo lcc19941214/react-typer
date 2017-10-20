@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
+import { EditorState, Modifier } from 'draft-js';
 import { findDOMNode } from 'react-dom';
 import { modifierToolStore, displayToolStore, closeLinkDisplayTool } from './store';
 import decorateComponentWithProps from 'decorate-component-with-props';
 import classnames from 'classnames';
 import { computePopoverPosition, showLinkModifierTool } from './util';
-
-const removeLinkEntityWithOffset = editorState => {
-  const selection = editorState.getSelection();
-  const contentState = editorState.getCurrentContent();
-  const startOffset = selection.getStartOffset();
-  const endOffset = selection.getEndOffset();
-  const offset = { startOffset, endOffset };
-};
+import { forceSelect } from '../../utils/selection';
 
 class LinkDisplayTool extends Component {
   state = {
@@ -71,15 +65,29 @@ class LinkDisplayTool extends Component {
   handleDelete = () => {
     const { store } = this.props;
     const editor = store.getItem('getEditor')();
-    const editorState = editor.state.editorState;
-    removeLinkEntityWithOffset(editorState, nextEditorState => {
-      // const nextEditorState = applyLinkEntity(editorState, selection, null);
-      // editor.changeState(nextEditorState, () => {
-      //   this.setState({ position: {} });
-      //   editor.focus();
-      // });
-      // this.handleClose();
-    });
+    const entity = store.getItem('entity') || {};
+    let editorState = editor.state.editorState;
+    let selection = editorState.getSelection();
+    if (entity.range) {
+      const { start, end } = entity.range;
+      selection = selection.merge({
+        anchorOffset: start,
+        focusOffset: end
+      });
+      editorState = EditorState.forceSelection(editorState, selection);
+      const newContentState = Modifier.applyEntity(
+        editorState.getCurrentContent(),
+        selection,
+        null
+      );
+      const nextEditorState = EditorState.push(editorState, newContentState, 'apply-entity');
+      const editorStateWithSelectEnd = forceSelect(nextEditorState, end, end);
+      editor.changeState(editorStateWithSelectEnd, () => {
+        this.setState({ position: {} });
+        editor.focus();
+      });
+      this.handleClose();
+    }
   };
 
   render() {

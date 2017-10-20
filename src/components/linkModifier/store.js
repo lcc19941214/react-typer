@@ -17,6 +17,7 @@ export const displayToolStore = createStore({
   visible: false,
   url: '',
   focusLink: null,
+  entity: {},
   getEditor: noop
 });
 
@@ -36,5 +37,6 @@ export const closeLinkDisplayTool = () => {
     displayToolStore.updateItem('visible', false);
     displayToolStore.updateItem('url', '');
     displayToolStore.updateItem('focusLink', null);
+    displayToolStore.updateItem('entity', {});
   }
 }

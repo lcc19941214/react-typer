@@ -10,7 +10,7 @@ import { toggleSelectRangeBackgroundColor, getTextNode, forceSelect } from '../.
 
 const URL_REGEXP = /^((https?|ftp|file):\/\/)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}[-a-zA-Z0-9@:%_+.~#?&/=]*$/;
 
-const createLinkEntity = (editorState, url) => {
+function createLinkEntity (editorState, url) {
   const contentState = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   const contentStateWithEntity = contentState.createEntity(BlockType.LINK, 'MUTABLE', { url });
@@ -18,7 +18,7 @@ const createLinkEntity = (editorState, url) => {
   return applyLinkEntity(editorState, selection, entityKey);
 };
 
-const applyLinkEntity = (editorState, selection, entityKey) => {
+function applyLinkEntity (editorState, selection, entityKey) {
   const newContentState = Modifier.applyEntity(
     editorState.getCurrentContent(),
     selection,
@@ -28,11 +28,12 @@ const applyLinkEntity = (editorState, selection, entityKey) => {
   return nextEditorState;
 };
 
-const extendLinkSelectionRange = (editor, editorState, entityRange, selection) => {
+function extendLinkSelectionRange (editor, editorState, entityRange, selection) {
   if (!entityRange) return editorState;
   const { start, end } = entityRange;
   const { startOffset, endOffset } = selection;
   if (start < startOffset && endOffset < end) return forceSelect(editorState, start, end);
+  return editorState;
 };
 
 class LinkModifierTool extends Component {

@@ -15,7 +15,7 @@ const openLinkDisplayTool = (contentState, contentBlock, offset, cb) => {
         const linkEl = getLinkDOMOnEdge(r, offset, entityRange);
         if (linkEl) {
           displayToolStore.updateItem('focusLink', linkEl);
-          displayToolStore.updateItem('entityRange', entityRange);
+          displayToolStore.updateItem('entity', { range: entityRange });
         }
       }
     }
