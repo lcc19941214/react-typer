@@ -249,24 +249,4 @@ export function contentStyleDecorator(target) {
   });
 }
 
-// selection
-export function selectionDecorator(target) {
-  Object.assign(target.prototype, {
-    selectText(editorState, start, end) {
-      const selection = editorState.getSelection();
-      const nextSelection = selection.merge({
-        anchorOffset: start,
-        focusOffset: end
-      });
-      const nextEditorState = EditorState.forceSelection(editorState, nextSelection);
-      return nextEditorState;
-    }
-  });
-}
-
-export default composeDecorators(
-  contentStateDecorator,
-  entityDecorator,
-  contentStyleDecorator,
-  selectionDecorator
-);
+export default composeDecorators(contentStateDecorator, entityDecorator, contentStyleDecorator);

@@ -1,11 +1,26 @@
-export const getTextNode = elem => {
+import { EditorState } from 'draft-js';
+
+export function getTextNode(elem) {
   if (elem.hasChildNodes()) {
     return getTextNode(elem.firstChild);
   } else {
     return elem.nodeType === 3 ? elem : null;
   }
-};
+}
 
+export function forceSelect(editorState, start, end) {
+  const selection = editorState.getSelection();
+  const nextSelection = selection.merge({
+    anchorOffset: start,
+    focusOffset: end
+  });
+  const nextEditorState = EditorState.forceSelection(editorState, nextSelection);
+  return nextEditorState;
+}
+
+/*
+ * find nodes in selection
+ */
 function nextNode(node) {
   if (node.hasChildNodes()) {
     return node.firstChild;
@@ -19,7 +34,6 @@ function nextNode(node) {
     return node.nextSibling;
   }
 }
-
 function getRangeSelectedNodes(range) {
   var node = range.startContainer;
   var endNode = range.endContainer;
@@ -44,7 +58,6 @@ function getRangeSelectedNodes(range) {
 
   return rangeNodes;
 }
-
 export function getSelectedNodes() {
   if (window.getSelection) {
     var s = window.getSelection();
@@ -54,20 +67,21 @@ export function getSelectedNodes() {
   }
   return [];
 }
-
 export function getSelectedTextNodes() {
   const nodes = getSelectedNodes();
   return nodes.filter(v => v.childNodes.length === 0 && v.nodeType === 3);
 }
 
-const splitText = (text, start = 0, end = text.length) => {
+/*
+ * split selected text nodes into different parts
+ */
+function splitText(text, start = 0, end = text.length) {
   const pre = text.slice(0, start);
   const middle = text.slice(start, end);
   const next = text.slice(end);
   return [pre, middle, next];
-};
-
-const generateSelectedFragment = (textGroup = [], targetIndex) => {
+}
+function generateSelectedFragment(textGroup = [], targetIndex) {
   const fragment = document.createDocumentFragment();
   let selection;
   textGroup.forEach((text, i) => {
@@ -83,14 +97,8 @@ const generateSelectedFragment = (textGroup = [], targetIndex) => {
     fragment,
     selection
   };
-};
-
-const removeRelativeTextNodes = (parent, target) => {
-  target.previousSibling && parent.removeChild(target.previousSibling);
-  target.nextSibling && parent.removeChild(target.nextSibling);
-};
-
-const replaceChildNodes = (selectedTextNodes, range) => {
+}
+function replaceChildNodes(selectedTextNodes, range) {
   const childNodes = [];
   selectedTextNodes.forEach(node => {
     const parent = node.parentElement;
@@ -119,9 +127,16 @@ const replaceChildNodes = (selectedTextNodes, range) => {
     childNodes.push(wrapper);
   });
   return childNodes;
-};
+}
 
-const resetChildNodes = (selectedTextNodes, childNodes, range) => {
+/*
+ * put different text nodes used to have same ancestor into together
+ */
+function removeRelativeTextNodes(parent, target) {
+  target.previousSibling && parent.removeChild(target.previousSibling);
+  target.nextSibling && parent.removeChild(target.nextSibling);
+}
+function resetChildNodes(selectedTextNodes, childNodes, range) {
   childNodes.forEach((wrapper, i) => {
     const parent = wrapper.parentElement;
     const node = selectedTextNodes[i];
@@ -134,10 +149,16 @@ const resetChildNodes = (selectedTextNodes, childNodes, range) => {
     }
     parent.replaceChild(node, wrapper);
   });
-};
+}
 
-// it's hard to mock selection of each line, especially when selection contains multiple lines
-const createSelectionBackground = rect => {
+/*
+ * manually mock selection
+ * TODO:
+ *   recompute position on resize
+ * REMIND:
+ *   it's hard to mock selection of each line, especially when selection contains multiple lines
+ */
+function createSelectionBackground(rect) {
   const selection = document.createElement('div');
   selection.className = 'selection';
   selection.style.top = `${rect.top}px`;
@@ -145,8 +166,7 @@ const createSelectionBackground = rect => {
   selection.style.width = `${rect.width}px`;
   selection.style.height = `${rect.height}px`;
   return selection;
-};
-
+}
 export const toggleSelectRangeBackgroundColor = (() => {
   const cls = 'react-typer__slection-container';
   let selectionContainer = document.querySelector(`.${cls}`);

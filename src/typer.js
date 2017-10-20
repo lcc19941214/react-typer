@@ -6,8 +6,8 @@ import Toolbar from './components/toolbar';
 import editorDecorator, { publicTyperDecorator } from './helper/decorators';
 import { exportToHTMLOptions } from './helper/exportToHTML';
 import { AlignmentTool } from './plugins/';
-import LinkModifierTool, { LinkDisplayTool } from './components/linkModifier/linkModifierTool';
-import { addImage, updateImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
+import LinkModifier from './components/linkModifier';
+import { addImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
 import { setAlignmentDecorator } from './components/textAlignment';
 import linkModifierDecorator from './components/linkModifier/decorator';
 
@@ -18,8 +18,10 @@ const noop = () => {};
 const equalization = val => val;
 
 const { EditorState, ContentState, convertToRaw, RichUtils } = Draft;
-
 const Editor = PluginEditor;
+
+const LinkModifierTool = LinkModifier.LinkModifierTool;
+const LinkDisplayTool = LinkModifier.LinkDisplayTool;
 
 /**
  * For more information, see https://github.com/facebook/draft-js/blob/master/docs/APIReference-Editor.md
@@ -117,7 +119,6 @@ class Typer extends Component {
     this.setBlock = this.setBlock.bind(this);
     this.addEntity = this.addEntity.bind(this);
     this.toggleToolbar = this.toggleToolbar.bind(this);
-    this.selectText = this.selectText.bind(this);
   }
 
   componentDidMount() {

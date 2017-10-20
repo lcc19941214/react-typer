@@ -10,6 +10,8 @@ const noop = () => {};
 //   selection
 //     startOffset
 //     endOffset
+//   entity
+//     range
 
 export const displayToolStore = createStore({
   visible: false,
@@ -25,6 +27,7 @@ export const modifierToolStore = createStore({
   selectionRect: null,
   selectedTextNodes: [],
   range: {},
+  entity: {},
   getEditor: noop
 });
 

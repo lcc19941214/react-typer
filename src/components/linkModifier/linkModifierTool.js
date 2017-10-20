@@ -3,11 +3,10 @@ import { findDOMNode } from 'react-dom';
 import { EditorState, Modifier } from 'draft-js';
 import decorateComponentWithProps from 'decorate-component-with-props';
 import classnames from 'classnames';
-import { modifierToolStore, displayToolStore, closeLinkDisplayTool } from './store';
+import { modifierToolStore } from './store';
 import * as BlockType from '../../constants/blockType';
 import { computePopoverPosition } from './util';
-import { toggleSelectRangeBackgroundColor, getTextNode } from '../../utils/selection';
-import LinkModifier from './index';
+import { toggleSelectRangeBackgroundColor, getTextNode, forceSelect } from '../../utils/selection';
 
 const URL_REGEXP = /^((https?|ftp|file):\/\/)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}[-a-zA-Z0-9@:%_+.~#?&/=]*$/;
 
@@ -29,114 +28,12 @@ const applyLinkEntity = (editorState, selection, entityKey) => {
   return nextEditorState;
 };
 
-class LinkDisplayTool extends Component {
-  state = {
-    position: {},
-    visible: false
-  };
-
-  componentWillMount() {
-    this.props.store.subscribeToItem('visible', this.handleToggleVisible);
-    document.addEventListener('click', this.handleClose);
-  }
-
-  componentWillUnmount() {
-    this.props.store.unsubscribeFromItem('visible', this.handleToggleVisible);
-    document.removeEventListener('click', this.handleClose);
-  }
-
-  getDOMNode = () => findDOMNode(this);
-
-  getPosition = selectionRect => {
-    const position = computePopoverPosition(selectionRect, this.getDOMNode(), {
-      left: -2
-    });
-    return position;
-  };
-
-  handleToggleVisible = visible => {
-    let position = {};
-    if (visible) {
-      this.preventNextClose = true;
-      const focusLink = this.props.store.getItem('focusLink');
-      position = this.getPosition(focusLink.getBoundingClientRect());
-    }
-    this.setState({ visible, position });
-  };
-
-  onPopoverClick = e => {
-    e.preventDefault();
-    e.stopPropagation();
-    this.preventNextClose = true;
-  };
-
-  handleClose = () => {
-    if (!this.preventNextClose && this.state.visible) {
-      closeLinkDisplayTool();
-    }
-    this.preventNextClose = false;
-  };
-
-  handleEdit = () => {
-    const { store, modifierToolStore } = this.props;
-    this.handleClose();
-    const editor = store.getItem('getEditor')();
-    LinkModifier.showLinkModifierTool(editor.state.editorState, modifierToolStore);
-  };
-
-  handleDelete = () => {
-    const { store } = this.props;
-    const editor = store.getItem('getEditor')();
-    const editorState = editor.state.editorState;
-    let selection = editorState.getSelection();
-    if (selection.isCollapsed()) {
-      return;
-    }
-    const nextEditorState = applyLinkEntity(editorState, selection, null);
-    editor.changeState(nextEditorState, () => {
-      this.setState({ position: {} });
-      editor.focus();
-    });
-    this.handleClose();
-  };
-
-  render() {
-    const { className, store } = this.props;
-    const { position, visible } = this.state;
-    const url = store.getItem('url');
-    return (
-      <div
-        className={classnames('react-typer__link-modifier', className, {
-          'react-typer__link-modifier__hidden': !visible
-        })}
-        onMouseDown={this.onPopoverClick}
-        style={{
-          ...{ top: position.top, left: position.left, transformOrigin: position.transformOrigin }
-        }}
-      >
-        <div className="link-modifier__inner">
-          <div className="link-modifier__display">
-            <div className="link-wrapper">
-              <a href={url} target="_blank">
-                {url}
-              </a>
-            </div>
-            <span
-              key="edit"
-              className="link-modifier__button link-modifier__button-edit"
-              onClick={this.handleEdit}
-            />
-            <span
-              key="delete"
-              className="link-modifier__button link-modifier__button-delete"
-              onClick={this.handleDelete}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
+const extendLinkSelectionRange = (editor, editorState, entityRange, selection) => {
+  if (!entityRange) return editorState;
+  const { start, end } = entityRange;
+  const { startOffset, endOffset } = selection;
+  if (start < startOffset && endOffset < end) return forceSelect(editorState, start, end);
+};
 
 class LinkModifierTool extends Component {
   preventNextClose = false;
@@ -173,8 +70,9 @@ class LinkModifierTool extends Component {
   };
 
   handleToggleVisible = visible => {
-    const selectedTextNodes = this.props.store.getItem('selectedTextNodes');
-    const { range, container: rangeContainer } = this.props.store.getItem('range');
+    const { store } = this.props;
+    const selectedTextNodes = store.getItem('selectedTextNodes');
+    const { range, container: rangeContainer } = store.getItem('range');
 
     if (selectedTextNodes.length) {
       if (selectedTextNodes.length === 1 && selectedTextNodes[0] === rangeContainer) {
@@ -204,8 +102,12 @@ class LinkModifierTool extends Component {
         }
       }, 10);
     } else {
-      this.props.store.updateItem('range', {});
-      this.props.store.updateItem('selectedTextNodes', []);
+      store.updateItem('url', '');
+      store.updateItem('range', {});
+      store.updateItem('entity', {});
+      store.updateItem('selectionRect', null);
+      store.updateItem('selectedTextNodes', []);
+      store.updateItem('selection', {});
     }
     this.setState({ visible });
   };
@@ -218,8 +120,6 @@ class LinkModifierTool extends Component {
   handleClose = () => {
     if (!this.preventNextClose && this.state.visible) {
       this.props.store.updateItem('visible', false);
-      this.props.store.updateItem('url', '');
-      this.props.store.updateItem('selectionRect', null);
     }
     this.preventNextClose = false;
   };
@@ -238,13 +138,22 @@ class LinkModifierTool extends Component {
   handleApplyLink = url => {
     if (url && URL_REGEXP.test(url)) {
       const urlValue = url.match(/^(https?:\/\/)/) ? url : `http://${url}`;
+
       const { store } = this.props;
       const selection = store.getItem('selection') || {};
-      const { endOffset } = selection;
+      const entity = store.getItem('entity') || {};
       const editor = store.getItem('getEditor')();
-      const editorState = editor.state.editorState;
+      const { endOffset } = selection;
+
+      const editorState = extendLinkSelectionRange(
+        editor,
+        editor.state.editorState,
+        entity.range,
+        selection
+      );
       const editorStateWithLink = createLinkEntity(editorState, urlValue);
-      const editorStateWithSelectEnd = editor.selectText(editorStateWithLink, endOffset, endOffset);
+      const editorStateWithSelectEnd = forceSelect(editorStateWithLink, endOffset, endOffset);
+
       editor.changeState(editorStateWithSelectEnd, () => {
         this.setState({ position: {} });
         editor.focus();
@@ -302,11 +211,5 @@ class LinkModifierTool extends Component {
     );
   }
 }
-
-const WrappedLinkDisplayTool = decorateComponentWithProps(LinkDisplayTool, {
-  store: displayToolStore,
-  modifierToolStore
-});
-export { WrappedLinkDisplayTool as LinkDisplayTool };
 
 export default decorateComponentWithProps(LinkModifierTool, { store: modifierToolStore });
