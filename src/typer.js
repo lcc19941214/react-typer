@@ -3,7 +3,7 @@ import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
 import classnames from 'classnames';
 import editorDecorator, { publicTyperDecorator } from './helper/decorators';
-import { exportToHTMLOptions } from './helper/exportToHTML';
+import { exportToHTMLOptions as defaultExportToHTMLOptions } from './helper/exportToHTML';
 import { addImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
 import Toolbar from './components/toolbar';
 import LinkModifier from './components/linkModifier';
@@ -72,6 +72,7 @@ class Typer extends Component {
     behavior: PropTypes.object,
     className: PropTypes.string,
     imageUploadAction: PropTypes.string.isRequired,
+    exportToHTMLOptions: PropTypes.object,
     tabLength: PropTypes.number,
     keyCommandHandlers: PropTypes.object,
     keyBindingFn: PropTypes.func
@@ -101,6 +102,7 @@ class Typer extends Component {
     },
     className: '',
     imageUploadAction: 'http://localhost:3000',
+    exportToHTMLOptions: {},
     tabLength: 4,
     keyCommandHandlers: {},
     keyBindingFn: noop
@@ -146,7 +148,7 @@ class Typer extends Component {
   @linkModifierDecorator
   @setAlignmentDecorator
   changeState(editorState, cb = noop, ...args) {
-    this.setState({ editorState }, cb);
+    this.setState({ editorState }, () => cb(editorState));
   }
   focus = () => this.Editor.focus();
   blur = () => this.Editor.blur();
@@ -231,6 +233,7 @@ class Typer extends Component {
   };
 
   exportState = (type = '') => {
+    const { exportToHTMLOptions } = this.props;
     const { editorState } = this.state;
     const contentState = editorState.getCurrentContent();
     let content = null;
@@ -239,7 +242,10 @@ class Typer extends Component {
         content = Typer.convertToJSON(contentState);
         break;
       case 'html':
-        content = Typer.convertToHTML(contentState, exportToHTMLOptions);
+        content = Typer.convertToHTML(
+          contentState,
+          Object.assign({}, defaultExportToHTMLOptions, exportToHTMLOptions)
+        );
         break;
       default:
         content = convertToRaw(contentState);
