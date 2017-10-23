@@ -143,8 +143,8 @@ class LinkModifierTool extends Component {
         break;
       case 27:
         const editor = this.props.store.getItem('getEditor')();
-        editor.blur();
         editor.focus();
+        editor.isFocus = true;
         this.handleClose();
         break;
       default:
@@ -173,8 +173,8 @@ class LinkModifierTool extends Component {
       editor.changeState(editorStateWithSelectEnd, () => {
         this.setState({ position: {} });
         // only use focus will not really set editor to get focus
-        editor.blur();
         editor.focus();
+        editor.isFocus = true;
       });
       this.handleClose();
     } else {
