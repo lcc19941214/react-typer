@@ -19,7 +19,7 @@ const checkChangeType = editorState => {
 
 const isInit = editorState => !editorState.getCurrentContent().hasText();
 
-const applyAlignment = (editorState, textAlign) => {
+export const applyAlignment = (editorState, textAlign) => {
   const selection = editorState.getSelection();
   const contentState = editorState.getCurrentContent();
 

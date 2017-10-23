@@ -136,9 +136,18 @@ class LinkModifierTool extends Component {
     this.setState({ url: e.target.value, showError: false });
   };
   handleInputKeyDown = e => {
-    if (e.keyCode === 13) {
-      e.preventDefault();
-      this.handleApplyLink(this.state.url);
+    switch (e.keyCode) {
+      case 13:
+        e.preventDefault();
+        this.handleApplyLink(this.state.url);
+        break;
+      case 27:
+        const editor = this.props.store.getItem('getEditor')();
+        editor.blur();
+        editor.focus();
+        this.handleClose();
+        break;
+      default:
     }
   };
 

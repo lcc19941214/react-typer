@@ -2,14 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
 import classnames from 'classnames';
-import Toolbar from './components/toolbar';
 import editorDecorator, { publicTyperDecorator } from './helper/decorators';
 import { exportToHTMLOptions } from './helper/exportToHTML';
-import { AlignmentTool } from './plugins/';
-import LinkModifier from './components/linkModifier';
 import { addImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
+import Toolbar from './components/toolbar';
+import LinkModifier from './components/linkModifier';
 import { setAlignmentDecorator } from './components/textAlignment';
 import linkModifierDecorator from './components/linkModifier/decorator';
+import { AlignmentTool } from './plugins/';
 
 import 'draft-js/dist/Draft.css';
 import './style/typer.less';
@@ -72,7 +72,9 @@ class Typer extends Component {
     behavior: PropTypes.object,
     className: PropTypes.string,
     imageUploadAction: PropTypes.string.isRequired,
-    tabLength: PropTypes.number
+    tabLength: PropTypes.number,
+    keyCommandHandlers: PropTypes.object,
+    keyBindingFn: PropTypes.func
   };
 
   static defaultProps = {
@@ -99,7 +101,9 @@ class Typer extends Component {
     },
     className: '',
     imageUploadAction: 'http://localhost:3000',
-    tabLength: 4
+    tabLength: 4,
+    keyCommandHandlers: {},
+    keyBindingFn: noop
   };
 
   Typer = null;
@@ -165,9 +169,9 @@ class Typer extends Component {
 
   handleKeyCommand = (command, editorState) => {
     let result = 'not-handled';
-    const { keyCommandHandlers } = this.props;
+    const keyCommandHandlers = Typer.extendKeyCommandHandlers(this.props.keyCommandHandlers);
     if (keyCommandHandlers && keyCommandHandlers[command]) {
-      keyCommandHandlers[command](command, editorState, this.changeState);
+      keyCommandHandlers[command](command, editorState, this.getEditor);
       result = 'handled';
     } else {
       const newState = RichUtils.handleKeyCommand(editorState, command);
@@ -324,6 +328,7 @@ class Typer extends Component {
               editorState={editorState}
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
+              keyBindingFn={this.keyBindingFn}
               placeholder={placeholder}
               {...behavior}
               {...eventHandler}

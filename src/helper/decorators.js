@@ -10,6 +10,8 @@ import defaultBlockRenderMap from '../defaultEditorOptions/blockRenderMap';
 import defaultInlineStyleMap from '../defaultEditorOptions/inlineStyles';
 import defaultBlockStyleFn from '../defaultEditorOptions/blockStyleFn';
 import defaultBlockRendererFn from '../defaultEditorOptions/blockRendererFn';
+import defaultKeyCommandHandlers from '../defaultEditorOptions/keyCommandHandlers';
+import defaultKeyBindingFn from '../defaultEditorOptions/keyBindingFn';
 const { plugins: defaultPlugins } = makePlugins();
 
 const {
@@ -57,13 +59,13 @@ export function publicTyperDecorator(target) {
       return convertFromRaw(raw);
     },
 
-    extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap = {}) {
+    extendBlockRenderMap(blockRenderMap = {}) {
       return Draft.DefaultDraftBlockRenderMap.merge(
         Immutable.Map({ ...defaultBlockRenderMap, ...blockRenderMap })
       );
     },
 
-    extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn) {
+    extendBlockStyleFn(blockStyleFn = noop) {
       return function(contentBlock) {
         const defaultVal = defaultBlockStyleFn(contentBlock) || {};
         return classnames(
@@ -73,20 +75,31 @@ export function publicTyperDecorator(target) {
       };
     },
 
-    extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn) {
+    extendBlockRendererFn(blockRendererFn = noop) {
       return function(contentBlock) {
         const defaultVal = defaultBlockRendererFn(contentBlock) || {};
         return Object.assign({}, defaultVal, blockRendererFn(contentBlock, defaultVal) || {});
       };
     },
 
-    extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap = {}) {
+    extendKeyBindingFn(keyBindingFn = noop) {
+      return function(event) {
+        const command = defaultKeyBindingFn(event) || '';
+        return keyBindingFn(event, command) || command;
+      };
+    },
+
+    extendKeyCommandHandlers(keyCommandHandlers = {}) {
+      return Object.assign({}, defaultKeyCommandHandlers, keyCommandHandlers);
+    },
+
+    extendInlineStyleMap(inlineStyleMap = {}) {
       return Object.assign({}, defaultInlineStyleMap, inlineStyleMap);
     },
-    extendDecorators(decorators, defaultDecorator = []) {
+    extendDecorators(decorators = []) {
       return [].concat(defaultDecorator, decorators);
     },
-    extendPlugins(plugins, defaultPlugins = []) {
+    extendPlugins(plugins = []) {
       return [].concat(defaultPlugins, plugins);
     },
 
@@ -96,15 +109,18 @@ export function publicTyperDecorator(target) {
       blockRenderMap = {},
       blockStyleFn = noop,
       blockRendererFn = noop,
-      inlineStyleMap = {}
+      inlineStyleMap = {},
+      keyBindingFn = noop,
+      keyCommandHandlers = {}
     }) {
       return {
-        decorators: this.extendDecorators(decorators, defaultDecorator),
-        plugins: this.extendPlugins(plugins, defaultPlugins),
-        blockRenderMap: this.extendBlockRenderMap(blockRenderMap, defaultBlockRenderMap),
-        blockRendererFn: this.extendBlockRendererFn(blockRendererFn, defaultBlockRendererFn),
-        blockStyleFn: this.extendBlockStyleFn(blockStyleFn, defaultBlockStyleFn),
-        customStyleMap: this.extendInlineStyleMap(inlineStyleMap, defaultInlineStyleMap)
+        decorators: this.extendDecorators(decorators),
+        plugins: this.extendPlugins(plugins),
+        blockRenderMap: this.extendBlockRenderMap(blockRenderMap),
+        blockRendererFn: this.extendBlockRendererFn(blockRendererFn),
+        blockStyleFn: this.extendBlockStyleFn(blockStyleFn),
+        customStyleMap: this.extendInlineStyleMap(inlineStyleMap),
+        keyBindingFn: this.extendKeyBindingFn(keyBindingFn)
       };
     }
   });
@@ -239,6 +255,7 @@ export function contentStyleDecorator(target) {
           break;
         case 'inline':
           if (this.isFocus) {
+            console.log(1);
             // prevent onblur inline style apply
             this.changeState(RichUtils.toggleInlineStyle(editorState, style), cb);
           }
