@@ -163,6 +163,8 @@ class LinkModifierTool extends Component {
 
       editor.changeState(editorStateWithSelectEnd, () => {
         this.setState({ position: {} });
+        // only use focus will not really set editor to get focus
+        editor.blur();
         editor.focus();
       });
       this.handleClose();
