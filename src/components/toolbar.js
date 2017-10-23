@@ -124,14 +124,13 @@ export default class Toolbar extends Component {
                     />
                   );
               }
-              const shortcut = shortcuts[control.key];
-              // const appendix = shortcut ? ` (${shortcut})` : '';
-              const appendix = '';
+              const shortcut = shortcuts[control.key] && shortcuts[control.key].tips;
+              const tips = shortcut ? ` (${shortcut})` : '';
               return showTooltip ? (
                 <Tooltip
                   placement="bottom"
                   key={control.key}
-                  content={`${control.tooltip}${appendix}`}
+                  content={`${control.tooltip}${tips}`}
                 >
                   {content}
                 </Tooltip>

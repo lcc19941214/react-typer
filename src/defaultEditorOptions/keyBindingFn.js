@@ -1,16 +1,23 @@
-import { getDefaultKeyBinding, KeyBindingUtil } from 'draft-js';
+import { getDefaultKeyBinding } from 'draft-js';
+import util from '../utils/util';
 
-const { hasCommandModifier } = KeyBindingUtil;
+const os = util.getOS();
+const shortcuts = require('../constants/shortcuts.json')[os] || {};
 
-export default function keyBindingFn(e) {
-  if (hasCommandModifier(e)) {
-    switch (e.keyCode) {
-      case 75:
-        if (e.metaKey) {
-          return 'link';
-        }
-      default:
+export default function keyBindingFn(event) {
+  let command;
+  Object.keys(shortcuts).forEach(key => {
+    const conditions = shortcuts[key].shortcuts;
+    if (
+      conditions &&
+      Object.keys(conditions).every(
+        conditionKey => event[conditionKey] === conditions[conditionKey]
+      )
+    ) {
+      command = key;
     }
-  }
-  return getDefaultKeyBinding(e);
+  });
+  if (command) return command;
+
+  return getDefaultKeyBinding(event);
 }

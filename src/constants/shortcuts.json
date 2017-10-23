@@ -1,28 +1,153 @@
 {
   "macOS": {
-    "bold": "⌘B",
-    "italic": "⌘I",
-    "underline": "⌘U",
-    "ul": "⌘⇧7",
-    "ol": "⌘⇧8",
-    "textAlignLeft": "⌘⇧L",
-    "textAlignCenter": "⌘⇧E",
-    "textAlignRight": "⌘⇧R",
-    "textAlignJustify": "⌘⇧J",
-    "link": "⌘K",
-    "imageUpload": "⌘⇧I"
+    "bold": {
+      "tips": "⌘B"
+    },
+    "italic": {
+      "tips": "⌘I"
+    },
+    "underline": {
+      "tips": "⌘U"
+    },
+    "ul": {
+      "tips": "⌘⇧7",
+      "shortcuts": {
+        "keyCode": 55,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    },
+    "ol": {
+      "tips": "⌘⇧8",
+      "shortcuts": {
+        "keyCode": 56,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    },
+    "textAlignLeft": {
+      "tips": "⌘⇧L",
+      "shortcuts": {
+        "keyCode": 76,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    },
+    "textAlignCenter": {
+      "tips": "⌘⇧⌥E",
+      "shortcuts": {
+        "keyCode": 69,
+        "shiftKey": true,
+        "metaKey": true,
+        "altKey": true
+      }
+    },
+    "textAlignRight": {
+      "tips": "⌘⇧R",
+      "shortcuts": {
+        "keyCode": 82,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    },
+    "textAlignJustify": {
+      "tips": "⌘⇧J",
+      "shortcuts": {
+        "keyCode": 74,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    },
+    "link": {
+      "tips": "⌘K",
+      "shortcuts": {
+        "keyCode": 75,
+        "metaKey": true
+      }
+    },
+    "imageUpload": {
+      "tips": "⌘⇧U",
+      "shortcuts": {
+        "keyCode": 85,
+        "shiftKey": true,
+        "metaKey": true
+      }
+    }
   },
   "windows": {
-    "bold": "ctrl+B",
-    "italic": "ctrl+I",
-    "underline": "ctrl+U",
-    "ul": "ctrl+shift+7",
-    "ol": "ctrl+shift+8",
-    "textAlignLeft": "ctrl+shift+L",
-    "textAlignCenter": "ctrl+shift+E",
-    "textAlignRight": "ctrl+shift+R",
-    "textAlignJustify": "ctrl+shift+J",
-    "link": "ctrl+K",
-    "imageUpload": "ctrl+shift+I"
+    "bold": {
+      "tips": "ctrl+B"
+    },
+    "italic": {
+      "tips": "ctrl+I"
+    },
+    "underline": {
+      "tips": "ctrl+U"
+    },
+    "ul": {
+      "tips": "ctrl+shift+7",
+      "shortcuts": {
+        "keyCode": 55,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "ol": {
+      "tips": "ctrl+shift+8",
+      "shortcuts": {
+        "keyCode": 56,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "textAlignLeft": {
+      "tips": "ctrl+shift+L",
+      "shortcuts": {
+        "keyCode": 76,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "textAlignCenter": {
+      "tips": "ctrl+shift+alt+E",
+      "shortcuts": {
+        "keyCode": 69,
+        "ctrlKey": true,
+        "shiftKey": true,
+        "altKey": true
+      }
+    },
+    "textAlignRight": {
+      "tips": "ctrl+shift+R",
+      "shortcuts": {
+        "keyCode": 82,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "textAlignJustify": {
+      "tips": "ctrl+shift+J",
+      "shortcuts": {
+        "keyCode": 74,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "link": {
+      "tips": "ctrl+K",
+      "shortcuts": {
+        "keyCode": 75,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    },
+    "imageUpload": {
+      "tips": "ctrl+shift+U",
+      "shortcuts": {
+        "keyCode": 85,
+        "ctrlKey": true,
+        "shiftKey": true
+      }
+    }
   }
 }
