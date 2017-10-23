@@ -7,12 +7,27 @@ export const globalSelectionStore = createStore({
   range: undefined
 });
 
-export function getTextNode(elem) {
-  if (elem.hasChildNodes()) {
-    return getTextNode(elem.firstChild);
+const isTextNode = node => node.nodeType === 3;
+
+export function getTextNode(node) {
+  if (node.hasChildNodes()) {
+    return getTextNode(node.firstChild);
   } else {
-    return elem.nodeType === 3 ? elem : null;
+    return isTextNode(node) ? node : null;
   }
+}
+
+export function getTextNodes(root) {
+  const textNodes = [];
+  if (isTextNode(root)) {
+    textNodes.push(root);
+  } else if (root.hasChildNodes()) {
+    const childNodes = [].slice.call(root.childNodes);
+    childNodes.forEach(child => {
+      textNodes.push(...getTextNodes(child));
+    });
+  }
+  return textNodes;
 }
 
 export function forceSelect(editorState, start, end) {
@@ -62,11 +77,12 @@ function getRangeSelectedNodes(range) {
     rangeNodes.unshift(node);
     node = node.parentNode;
   }
-
   return rangeNodes;
 }
-export function getSelectedNodes() {
-  if (window.getSelection) {
+export function getSelectedNodes(range) {
+  if (range) {
+    return getRangeSelectedNodes(range);
+  } else if (window.getSelection) {
     var s = window.getSelection();
     if (!s.isCollapsed) {
       return getRangeSelectedNodes(s.getRangeAt(0));
@@ -74,8 +90,8 @@ export function getSelectedNodes() {
   }
   return [];
 }
-export function getSelectedTextNodes() {
-  const nodes = getSelectedNodes();
+export function getSelectedTextNodes(range) {
+  const nodes = getSelectedNodes(range);
   return nodes.filter(v => v.childNodes.length === 0 && v.nodeType === 3);
 }
 
@@ -110,29 +126,31 @@ function createSelectFragment(textGroup = [], targetIndex) {
     selection
   };
 }
-function replaceChildNodes(selectedTextNodes, range) {
+function replaceTextChildNodes(selectedTextNodes, range) {
   const childNodes = [];
   selectedTextNodes.forEach(node => {
     const parent = node.parentElement;
     const text = node.nodeValue;
     let wrapper;
-    if (range.startContainer === range.endContainer) {
+
+    const { startContainer, endContainer } = range;
+    if (startContainer === endContainer && isTextNode(startContainer)) {
       const textGroup = splitText(text, range.startOffset, range.endOffset);
       const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
-    } else if (node === range.startContainer) {
+    } else if (node === startContainer) {
       const textGroup = splitText(text, range.startOffset);
       const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
-    } else if (node === range.endContainer) {
+    } else if (node === endContainer) {
       const textGroup = splitText(text, undefined, range.endOffset);
       const { fragment, selection } = createSelectFragment(textGroup, 1);
       wrapper = selection;
       parent.replaceChild(fragment, node);
     } else {
-      wrapper = createSelectRange(text)
+      wrapper = createSelectRange(text);
       parent.replaceChild(wrapper, node);
     }
     childNodes.push(wrapper);
@@ -144,15 +162,19 @@ function replaceChildNodes(selectedTextNodes, range) {
  * put different text nodes used to have same ancestor into together
  */
 function removeRelativeTextNodes(parent, target) {
-  target.previousSibling && parent.removeChild(target.previousSibling);
-  target.nextSibling && parent.removeChild(target.nextSibling);
+  while (target.previousSibling) {
+    parent.removeChild(target.previousSibling);
+  }
+  while (target.nextSibling) {
+    parent.removeChild(target.nextSibling);
+  }
 }
 function resetChildNodes(selectedTextNodes, childNodes, range = {}) {
   childNodes.forEach((wrapper, i) => {
     const parent = wrapper.parentElement;
     const node = selectedTextNodes[i];
     if (
-      range.startContainer === range.endContainer ||
+      (range.startContainer === range.endContainer && isTextNode(range.startContainer)) ||
       node === range.startContainer ||
       node === range.endContainer
     ) {
@@ -182,9 +204,8 @@ export function resetMockSelection() {
  */
 
 export function toggleMockSelection(selectedTextNodes, range) {
-  var s = window.getSelection();
-
   if (selectedTextNodes.__hasMockSelection) {
+    var s = window.getSelection();
     s.addRange(range);
     resetMockSelection();
     delete selectedTextNodes.__hasMockSelection;
@@ -193,7 +214,7 @@ export function toggleMockSelection(selectedTextNodes, range) {
       startContainer: getTextNode(range.startContainer),
       endContainer: getTextNode(range.endContainer)
     };
-    const replacedChildNodes = replaceChildNodes(selectedTextNodes, range);
+    const replacedChildNodes = replaceTextChildNodes(selectedTextNodes, range);
 
     globalSelectionStore.updateItem('selectedTextNodes', selectedTextNodes);
     globalSelectionStore.updateItem('replacedChildNodes', replacedChildNodes);

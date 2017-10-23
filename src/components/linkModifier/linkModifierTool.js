@@ -6,19 +6,19 @@ import classnames from 'classnames';
 import { modifierToolStore } from './store';
 import * as BlockType from '../../constants/blockType';
 import { computePopoverPosition } from './util';
-import { toggleMockSelection, getTextNode, forceSelect } from '../../utils/selection';
+import { toggleMockSelection, getTextNodes, forceSelect } from '../../utils/selection';
 
 const URL_REGEXP = /^((https?|ftp|file):\/\/)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}[-a-zA-Z0-9@:%_+.~#?&/=]*$/;
 
-function createLinkEntity (editorState, url) {
+function createLinkEntity(editorState, url) {
   const contentState = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   const contentStateWithEntity = contentState.createEntity(BlockType.LINK, 'MUTABLE', { url });
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
   return applyLinkEntity(editorState, selection, entityKey);
-};
+}
 
-function applyLinkEntity (editorState, selection, entityKey) {
+function applyLinkEntity(editorState, selection, entityKey) {
   const newContentState = Modifier.applyEntity(
     editorState.getCurrentContent(),
     selection,
@@ -26,15 +26,15 @@ function applyLinkEntity (editorState, selection, entityKey) {
   );
   const nextEditorState = EditorState.push(editorState, newContentState, 'apply-entity');
   return nextEditorState;
-};
+}
 
-function extendLinkSelectionRange (editor, editorState, entityRange, selection) {
+function extendLinkSelectionRange(editor, editorState, entityRange, selection) {
   if (!entityRange) return editorState;
   const { start, end } = entityRange;
   const { startOffset, endOffset } = selection;
   if (start < startOffset && endOffset < end) return forceSelect(editorState, start, end);
   return editorState;
-};
+}
 
 class LinkModifierTool extends Component {
   preventNextClose = false;
@@ -96,23 +96,28 @@ class LinkModifierTool extends Component {
     }
     this.setState({ visible });
   };
-  toggleSelection = (store) => {
+  toggleSelection = store => {
     const selectedTextNodes = store.getItem('selectedTextNodes');
     const { range, container: rangeContainer } = store.getItem('range');
     if (selectedTextNodes.length) {
       if (selectedTextNodes.length === 1 && selectedTextNodes[0] === rangeContainer) {
+        // selectedLinkNode may contains several parts because of inline styles
         const s = window.getSelection();
         s.removeAllRanges();
         const r = document.createRange();
-        const textNode = getTextNode(selectedTextNodes[0]);
-        r.selectNodeContents(textNode);
-        selectedTextNodes[0] = textNode;
-        toggleMockSelection(selectedTextNodes, r);
+        r.selectNodeContents(rangeContainer);
+        const textNodes = getTextNodes(r.startContainer);
+        store.updateItem('selectedTextNodes', textNodes);
+        store.updateItem('range', {
+          range: r,
+          container: r.startContainer
+        });
+        toggleMockSelection(textNodes, r);
       } else {
         toggleMockSelection(selectedTextNodes, range);
       }
     }
-  }
+  };
 
   onPopoverClick = e => {
     e.stopPropagation();

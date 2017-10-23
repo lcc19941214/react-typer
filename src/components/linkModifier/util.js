@@ -186,7 +186,7 @@ function getLinkEntityRangeWithOffset(contentState, contentBlock, offset, url, s
     }
   });
 }
-export function showLinkModifierTool(editorState, store) {
+export function  showLinkModifierTool(editorState, store) {
   const selection = editorState.getSelection();
   const contentState = editorState.getCurrentContent();
   const startOffset = selection.getStartOffset();
