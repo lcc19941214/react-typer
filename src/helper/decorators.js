@@ -255,7 +255,6 @@ export function contentStyleDecorator(target) {
           break;
         case 'inline':
           if (this.isFocus) {
-            console.log(1);
             // prevent onblur inline style apply
             this.changeState(RichUtils.toggleInlineStyle(editorState, style), cb);
           }

@@ -328,7 +328,6 @@ class Typer extends Component {
               editorState={editorState}
               ref={ref => (this.Editor = ref)}
               handleKeyCommand={this.handleKeyCommand}
-              keyBindingFn={this.keyBindingFn}
               placeholder={placeholder}
               {...behavior}
               {...eventHandler}

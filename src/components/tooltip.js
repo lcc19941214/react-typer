@@ -11,10 +11,6 @@ const defaultVal = {
 
 const PLACEMENT = ['top', 'bottom'];
 const TRIGGER = ['hover', 'click'];
-const PLACEMENT_MAP = {
-  top: 'bottom',
-  bottom: 'top'
-};
 
 class TooltipPopup extends Component {
   state = {

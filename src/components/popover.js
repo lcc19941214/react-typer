@@ -10,10 +10,6 @@ const defaultVal = {
 };
 
 const PLACEMENT = ['top', 'bottom'];
-const PLACEMENT_MAP = {
-  top: 'bottom',
-  bottom: 'top'
-};
 
 class PopoverPopup extends Component {
   state = {
