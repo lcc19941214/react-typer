@@ -5,8 +5,14 @@ import defaultInlineStyleMap, {
   defaultStyleRules
 } from '../defaultEditorOptions/inlineStyles';
 import util from '../utils/util';
-import { INITIAL_UNSTYLED, DEFAULT_TEXT_ALIGN, TEXT_ALIGNS } from '../defaultEditorOptions/blockStyleFn';
+import {
+  INITIAL_UNSTYLED,
+  DEFAULT_TEXT_ALIGN,
+  TEXT_ALIGNS
+} from '../defaultEditorOptions/blockStyleFn';
 import * as BlockType from '../constants/blockType';
+
+const noop = () => {};
 
 const IMAGE_ALIGNMENT = {
   default: '',
@@ -42,7 +48,7 @@ export const inlineStyles = {
   LABEL_HIGHLIGHT: {
     style: {
       ...defaultInlineStyleMap.LABEL,
-      ...defaultInlineStyleMap['LABEL_HIGHLIGHT']
+      ...defaultInlineStyleMap.LABEL_HIGHLIGHT
     }
   },
   ...COLORS_FOR_HTML,
@@ -106,7 +112,7 @@ export const entityStyleFn = entity => {
       const { highlight } = data;
       return {
         element: 'span',
-        style: highlight ? inlineStyles['LABEL_HIGHLIGHT'].style : inlineStyles.LABEL.style
+        style: highlight ? inlineStyles.LABEL_HIGHLIGHT.style : inlineStyles.LABEL.style
       };
     default:
   }
@@ -117,6 +123,50 @@ export const exportToHTMLOptions = {
   blockRenderers,
   blockStyleFn,
   entityStyleFn
+};
+
+export const overrideDefaultOptions = (options = {}) => {
+  if (Object.keys(options).length) {
+    const _inlineStyles = Object.assign(
+      {},
+      exportToHTMLOptions.inlineStyles,
+      options.inlineStyles
+    );
+
+    const _blockRenderers = {};
+    Object.keys(exportToHTMLOptions.blockRenderers).forEach(key => {
+      blockRenderers[key] = (...args) => {
+        const defaultRst = exportToHTMLOptions.blockRenderers[key](...args);
+        args.push(defaultRst);
+        return options.blockRenderers ? options.blockRenderers(...args) : defaultRst;
+      };
+    });
+
+    const _blockStyleFn = (...args) => {
+      const defaultRst = exportToHTMLOptions.blockStyleFn(...args);
+      args.push(defaultRst);
+      return Object.assign(
+        {},
+        defaultRst,
+        options.blockStyleFn ? options.blockStyleFn(...args) : {}
+      );
+    };
+
+    const _entityStyleFn = (...args) => {
+      const defaultRst = exportToHTMLOptions.entityStyleFn(...args);
+      args.push(defaultRst);
+      return options.entityStyleFn ? options.entityStyleFn(...args) : defaultRst;
+    };
+
+    return {
+      ...options,
+      inlineStyles: _inlineStyles,
+      blockRenderers: _blockRenderers,
+      blockStyleFn: _blockStyleFn,
+      entityStyleFn: _entityStyleFn
+    };
+  }
+  return exportToHTMLOptions;
 };
 
 export const htmlWrapper = (html = '') => {

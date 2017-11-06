@@ -3,7 +3,7 @@ import Draft from 'draft-js';
 import PluginEditor from 'draft-js-plugins-editor';
 import classnames from 'classnames';
 import editorDecorator, { publicTyperDecorator } from './helper/decorators';
-import { exportToHTMLOptions as defaultExportToHTMLOptions } from './helper/exportToHTML';
+import { overrideDefaultOptions } from './helper/exportToHTML';
 import { addImage, uploadImage, pasteAndUploadImage } from './utils/imageUtil';
 import Toolbar from './components/toolbar';
 import LinkModifier from './components/linkModifier';
@@ -171,7 +171,9 @@ class Typer extends Component {
 
   handleKeyCommand = (command, editorState) => {
     let result = 'not-handled';
-    const keyCommandHandlers = Typer.extendKeyCommandHandlers(this.props.keyCommandHandlers);
+    const keyCommandHandlers = Typer.extendKeyCommandHandlers(
+      this.props.keyCommandHandlers
+    );
     if (keyCommandHandlers && keyCommandHandlers[command]) {
       keyCommandHandlers[command](command, editorState, this.getEditor);
       result = 'handled';
@@ -244,7 +246,7 @@ class Typer extends Component {
       case 'html':
         content = Typer.convertToHTML(
           contentState,
-          Object.assign({}, defaultExportToHTMLOptions, exportToHTMLOptions)
+          overrideDefaultOptions(exportToHTMLOptions)
         );
         break;
       default:
