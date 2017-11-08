@@ -135,11 +135,19 @@ export const overrideDefaultOptions = (options = {}) => {
 
     const _blockRenderers = {};
     Object.keys(exportToHTMLOptions.blockRenderers).forEach(key => {
-      blockRenderers[key] = (...args) => {
-        const defaultRst = exportToHTMLOptions.blockRenderers[key](...args);
-        args.push(defaultRst);
-        return options.blockRenderers ? options.blockRenderers(...args) : defaultRst;
-      };
+      if (options.blockRenderers && options.blockRenderers[key]) return;
+      _blockRenderers[key] = exportToHTMLOptions.blockRenderers[key];
+    });
+    Object.keys(options.blockRenderers).forEach(key => {
+      if (exportToHTMLOptions.blockRenderers[key]) {
+        _blockRenderers[key] = (...args) => {
+          const defaultRst = exportToHTMLOptions.blockRenderers[key](...args);
+          args.push(defaultRst);
+          return options.blockRenderers[key] ? options.blockRenderers[key](...args) : defaultRst;
+        };
+      } else {
+        _blockRenderers[key] = options.blockRenderers[key];
+      }
     });
 
     const _blockStyleFn = (...args) => {

@@ -5,8 +5,5 @@
   "globals": {
     "document": true,
     "window": true
-  },
-  "ecmaFeatures": {
-    "experimentalDecorators": true
   }
 }
